@@ -227,6 +227,16 @@
 
 				renderer = new THREE.CanvasRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
+				// Attempt performance hack - / http://blog.tojicode.com/2011/07/dirty-full-frame-webgl-performance-hack.html
+				// renderer.setSize( window.innerWidth * 0.5, window.innerHeight * 0.5 );
+				// var scale = 2;
+				// var prioity = 'important';
+				// renderer.domElement.style.setProperty('-moz-transform', 'scale(' + scale + ',' + scale + ')', prioity); 
+				// renderer.domElement.style.setProperty('-moz-transform-origin', '0 0', prioity); 
+				// 
+				// renderer.domElement.style.setProperty('-webkit-transform', 'scale3d(' + scale + ',' + scale + ', 1.0)', prioity);
+				// renderer.domElement.style.setProperty('-webkit-transform-origin', '0 0 0', prioity);
+				
 
 				container.appendChild( renderer.domElement );
 
