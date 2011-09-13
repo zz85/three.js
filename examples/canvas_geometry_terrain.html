@@ -36,6 +36,7 @@
 		<script type="text/javascript" src="../build/Three.js"></script>
 
 		<script type="text/javascript" src="js/ImprovedNoise.js"></script>
+		<script type="text/javascript" src="js/SimplexNoise.js"></script>
 
 		<script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
 		<script type="text/javascript" src="js/Stats.js"></script>
@@ -103,8 +104,9 @@
 			}
 
 			function generateHeight( width, height ) {
-
-				var data = Float32Array ? new Float32Array() : [], perlin = new ImprovedNoise(),
+				// var start = Date.now();
+				
+				var data = Float32Array ? new Float32Array() : [], perlin = new SimplexNoise(),
 				size = width * height, quality = 2, z = Math.random() * 100;
 
 				for ( var i = 0; i < size; i ++ ) {
@@ -126,6 +128,10 @@
 					}
 
 				}
+				
+				// console.log("Time taken", Date.now() - start);
+				// Simplex chrome:1362 ff:13429 safari: 2820
+				// Improved chrome: 2955 ff:31032 safari: 4123
 
 				return data;
 
