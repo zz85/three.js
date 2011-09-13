@@ -105,9 +105,9 @@ THREE.WebGLRenderer = function ( parameters ) {
 	var depthShader = THREE.ShaderLib[ "depthRGBA" ];
 	var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
 
-	var _depthMaterial = new THREE.MeshShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
+	var _depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
 
-	var _depthMaterialMorph = new THREE.MeshShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, morphTargets: true } );
+	var _depthMaterialMorph = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, morphTargets: true } );
 
 	_depthMaterial._shadowPass = true;
 	_depthMaterialMorph._shadowPass = true;
@@ -280,6 +280,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 	this.getClearColor = function () {
 
 		return _clearColor;
+
+	};
+
+	this.getClearAlpha = function () {
+
+		return _clearAlpha;
 
 	};
 
@@ -2585,7 +2591,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			map: !!material.map, envMap: !!material.envMap, lightMap: !!material.lightMap,
 			vertexColors: material.vertexColors,
-			fog: fog, sizeAttenuation: material.sizeAttenuation,
+			fog: fog, useFog: material.fog,
+			sizeAttenuation: material.sizeAttenuation,
 			skinning: material.skinning,
 			morphTargets: material.morphTargets,
 			maxMorphTargets: this.maxMorphTargets,
@@ -2692,14 +2699,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		// refresh uniforms common to several materials
 
-		if ( fog && (
-			 material instanceof THREE.MeshBasicMaterial ||
-			 material instanceof THREE.MeshLambertMaterial ||
-			 material instanceof THREE.MeshPhongMaterial ||
-			 material instanceof THREE.LineBasicMaterial ||
-			 material instanceof THREE.ParticleBasicMaterial ||
-			 material.fog )
-			) {
+		if ( fog && material.fog ) {
 
 			refreshUniformsFog( m_uniforms, fog );
 
@@ -2762,7 +2762,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		// load material specific uniforms
 		// (shader material also gets them for the sake of genericity)
 
-		if ( material instanceof THREE.MeshShaderMaterial ||
+		if ( material instanceof THREE.ShaderMaterial ||
 			 material instanceof THREE.MeshPhongMaterial ||
 			 material.envMap ) {
 
@@ -2774,7 +2774,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		}
 
-		if ( material instanceof THREE.MeshShaderMaterial ||
+		if ( material instanceof THREE.ShaderMaterial ||
 			 material.envMap ||
 			 material.skinning ||
 			 object.receiveShadow ) {
@@ -2789,7 +2789,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		if ( material instanceof THREE.MeshPhongMaterial ||
 			 material instanceof THREE.MeshLambertMaterial ||
-			 material instanceof THREE.MeshShaderMaterial ||
+			 material instanceof THREE.ShaderMaterial ||
 			 material.skinning ) {
 
 			if( p_uniforms.viewMatrix !== null ) {
@@ -4681,8 +4681,8 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			parameters.alphaTest ? "#define ALPHATEST " + parameters.alphaTest: "",
 
-			parameters.fog ? "#define USE_FOG" : "",
-			parameters.fog instanceof THREE.FogExp2 ? "#define FOG_EXP2" : "",
+			( parameters.useFog && parameters.fog ) ? "#define USE_FOG" : "",
+			( parameters.useFog && parameters.fog instanceof THREE.FogExp2 ) ? "#define FOG_EXP2" : "",
 
 			parameters.map ? "#define USE_MAP" : "",
 			parameters.envMap ? "#define USE_ENVMAP" : "",
@@ -5537,7 +5537,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			m = materials[ i ];
 
-			if ( m.map || m.lightMap || m instanceof THREE.MeshShaderMaterial ) {
+			if ( m.map || m.lightMap || m instanceof THREE.ShaderMaterial ) {
 
 				return true;
 

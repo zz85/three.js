@@ -321,7 +321,7 @@
 				}
 
 
-				var shaderMaterial = new THREE.MeshShaderMaterial( {
+				var shaderMaterial = new THREE.ShaderMaterial( {
 
 					uniforms: 		uniforms,
 					attributes:     attributes,
@@ -460,7 +460,8 @@
 				emitterpos = new THREE.Vector3( 0, 0, 0 );
 
 				sparksEmitter.addInitializer( new SPARKS.Position( new SPARKS.PointZone( emitterpos ) ) );
-				sparksEmitter.addInitializer( new SPARKS.Lifetime( 1, 8 ));
+
+				sparksEmitter.addInitializer( new SPARKS.Lifetime( 1, 15 ));
 				sparksEmitter.addInitializer( new SPARKS.Target( null, setTargetParticle ) );
 
 

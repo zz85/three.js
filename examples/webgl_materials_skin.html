@@ -80,6 +80,8 @@
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
+			var firstPass = true;
+
 			init();
 			animate();
 
@@ -137,8 +139,8 @@
 				var parametersUV = { fragmentShader: shader.fragmentShader, vertexShader: shader.vertexShaderUV, uniforms: uniformsUV, lights: true };
 
 
-				material = new THREE.MeshShaderMaterial( parameters );
-				var materialUV = new THREE.MeshShaderMaterial( parametersUV );
+				material = new THREE.ShaderMaterial( parameters );
+				var materialUV = new THREE.ShaderMaterial( parametersUV );
 
 				// LOADER
 
@@ -303,8 +305,13 @@
 
 				renderer.clear();
 
-				composerBeckmann.render();
 
+				if ( firstPass ) {
+
+					composerBeckmann.render();
+					firstPass = false;
+
+				}
 
 				composerScene.render();
 
