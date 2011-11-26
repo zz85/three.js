@@ -21,7 +21,16 @@
 		<script src="js/Stats.js"></script>
 
 		<script>
-
+		
+			/*
+			 * tHings to do:
+			 *	basic keyboard generation
+			 *	picking
+			 *	materials
+			 *	shadow mapping
+			 * 	audio
+			 */
+			
 			var container, stats;
 
 			var camera, scene, renderer;
@@ -38,6 +47,8 @@
 			var windowHalfY = window.innerHeight / 2;
 			
 			var geometry;
+
+			var whiteKeys = [], blackKeys = [];
 
 			init();
 			animate();
@@ -59,61 +70,69 @@
 
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
 				camera.position.y = 150;
-				camera.position.z = 500;
+				camera.position.z = 300;
+				
 				scene.add( camera );
 
-				keyboard = new THREE.Object3D();
+				
 
-				// Cube
-				
-				// BLACK
-				function generateBlackKey() {
-				 	return new THREE.CubeGeometry( 14, 15, 100 );
-				}
-				// WHITE
-				function generateWhiteKey() {
-					return new THREE.CubeGeometry( 20, 25, 150 );
-				}
-				
-				whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
+				var whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
 				//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } );
-				blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
-				debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
+				var blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+				var debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
 				
 				var keys = 'cdefgab';
 				var blackSharps = 'cdfga';
 				
-				// generate white key geometries
-				var whiteKeys = [], blackKeys = [];
-				var i,il;
-				for (i=0,il=keys.length;i<il;i++) {
-					
-					geometry = generateWhiteKey();
-					keyMesh = new THREE.Mesh( geometry, whiteMaterial );
-					keyMesh.position.x += i * 25;
-					keyboard.add( keyMesh );
-					
-					// reference the mesh
-					whiteKeys.push( keyMesh );
+				function generateOctaveKeys() {
 				
+					var keyboard = new THREE.Object3D();
+					// generate white key geometries
+				
+					var i,il;
+				
+					// White Keys
+					for (i=0,il=keys.length;i<il;i++) {
+					
+						geometry = new THREE.CubeGeometry( 20, 25, 150 );
+						keyMesh = new THREE.Mesh( geometry, whiteMaterial );
+						keyMesh.position.x += i * 25;
+						keyboard.add( keyMesh );
+					
+						// reference the key mesh
+						whiteKeys.push( keyMesh );
+				
+					}
+				
+					// Black Keys
+					for (i=0,il=blackSharps.length;i<il;i++) {
+					
+						var pos = keys.indexOf(blackSharps[i]);
+						geometry = new THREE.CubeGeometry( 14, 15, 100 );
+						keyMesh = new THREE.Mesh( geometry, blackMaterial );
+						keyMesh.position.x += pos * 25 + 10;
+						keyMesh.position.y += 20;
+						keyMesh.position.z += -20;
+					
+						keyboard.add( keyMesh );
+					
+						// reference the key mesh
+						blackKeys.push( keyMesh );
+				
+					}
+					
+					return keyboard;
 				}
 				
-				for (i=0,il=blackSharps.length;i<il;i++) {
-					
-					var pos = keys.indexOf(blackSharps[i]);
-					console.log(pos);
-					geometry = generateBlackKey();
-					keyMesh = new THREE.Mesh( geometry, blackMaterial );
-					keyMesh.position.x += pos * 25 + 10;
-					keyMesh.position.y += 20;
-					keyMesh.position.z += -20;
-					
-					keyboard.add( keyMesh );
-					
-					// reference the mesh
-					blackKeys.push( keyMesh );
+				keyboard = new THREE.Object3D();
 				
+				var keyboardOffset =  25 * 7 * 3 /2;
+				for (var i=0;i<3;i++) {
+					octave = generateOctaveKeys();
+					octave.position.x += i * 25 * 7 - keyboardOffset;
+					keyboard.add( octave );
 				}
+				
 				
 				keyboard.position.y = 40;
 		
@@ -125,6 +144,8 @@
 				plane.rotation.x = - 90 * ( Math.PI / 180 );
 				plane.overdraw = true;
 				scene.add( plane );
+				
+				camera.lookAt( plane.position );
 				
 				// Lights
 				var ambient = new THREE.AmbientLight( 0xffffff );
