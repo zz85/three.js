@@ -16,10 +16,24 @@
 	<body>
 
 		<script src="../build/Three.js"></script>
-
+		<script src="js/Threer46dev.js"></script>
 		<script src="js/RequestAnimationFrame.js"></script>
 		<script src="js/Stats.js"></script>
 
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-7549263-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+		
 		<script>
 		
 			/*
@@ -37,8 +51,26 @@
 			 * visualizations
 			*/
 			// 26 Nov - Done basic key gen
-			// 27 Nov - Basic Picking
+			// 27 Nov - Basic Mouse Picking
 			// 
+			/*
+			 *
+			 * http://www.iquilezles.org/apps/soundtoy/index.html
+			y  = 0.6*sin(1.0*w*t)*exp(-0.0008*w*t);
+			y += 0.3*sin(2.0*w*t)*exp(-0.0010*w*t);
+			y += 0.1*sin(4.0*w*t)*exp(-0.0015*w*t);
+			y += 0.2*y*y*y;
+			y *= 0.9 + 0.1*cos(70.0*t);
+			y = 2.0*y*exp(-22.0*t) + y;
+			
+			- iq coding
+			- 
+			- synthfont / llvm compiler?
+			- individiual mp3s 
+			- wavetable 
+			
+			*/
+			
 			var container, stats;
 
 			var camera, scene, renderer;
@@ -211,6 +243,8 @@
 				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+				document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
 			}
 
 			//
@@ -254,8 +288,8 @@
 						
 						INTERSECTED = intersects[ 0 ].object.parent;
 						if ( INTERSECTED.keyName ) {
-							INTERSECTED.currentMaterial = INTERSECTED.material;
-							//INTERSECTED.material = redMaterial;
+							INTERSECTED.currentMaterial = INTERSECTED.children[0].material;
+							INTERSECTED.children[0].material = redMaterial;
 							INTERSECTED.position.y -= 5;
 							console.log(INTERSECTED.keyName);
 							allowRotate = false;
@@ -287,7 +321,7 @@
 			function onDocumentMouseUp( event ) {
 				
 				if ( INTERSECTED ) {
-					INTERSECTED.material = INTERSECTED.currentMaterial;
+					INTERSECTED.children[0].material = INTERSECTED.currentMaterial;
 					INTERSECTED.position.y += 5;
 				}
 				INTERSECTED = null;
@@ -328,6 +362,129 @@
 				}
 			}
 
+			function pianoKeyPress(key) {
+				if (!keyMeshes[key].pressed) {
+					keyMeshes[key].pressed = true;
+				
+					keyMeshes[key].unpressed = keyMeshes[key].position.y;
+					keyMeshes[key].position.y -= 5;
+					console.log(key, keyMeshes[key]);
+				}
+			}
+			
+			function pianoKeyRelease(key) {
+				keyMeshes[key].pressed = false;
+				keyMeshes[key].position.y = keyMeshes[key].unpressed;
+				console.log(key, keyMeshes[key]);
+			}
+
+		    function onDocumentKeyDown( event ) {
+				console.log('keydown', event.keyCode);
+				switch( event.keyCode ) {
+
+
+					
+					// Q
+					case 81:
+						pianoKeyPress('c0');
+						break;
+					// W
+					case 87:
+						pianoKeyPress('d0');
+						break;
+					// E
+					case 69: 
+						pianoKeyPress('e0');
+						break;
+					// R
+					case 82:
+						pianoKeyPress('f0');
+						break;
+					// T
+					case 84:
+						pianoKeyPress('g0');
+						break;
+					// Y
+					case 89:
+						pianoKeyPress('a0');
+						break;					
+					// U
+					case 85:
+						pianoKeyPress('b0');
+						break;
+					// I
+					case 73:
+						pianoKeyPress('c1');
+						break;
+
+					case 38:camera.position.z -=100;  moveForward = true; break; // up
+					case 40: camera.position.z +=100; moveBackwards = true; break; // down
+					case 37: camera.position.x -=100; moveLeft = true; break; // left
+					case 39: camera.position.x +=100; moveRight = true; break; // right
+					case 65: camera.position.y -=100; yawLeft = true; break; // a
+					case 68: camera.position.y +=100; yawRight = true; break; // d
+					//case 87: camera.rotation.x -= 10; moveUp = true; break; // w
+					//case 83: camera.rotation.x += 10 = true; break; // s
+					//case 90: camera.rotation.y -= 10; rollLeft = true; break; // z
+					//case 67: camera.rotation.y += 10; rollRight = true; break; // c
+				}
+
+
+			}
+
+			function onDocumentKeyUp( event ) {
+				console.log('keyup', event.keyCode);
+				switch( event.keyCode ) {
+
+					// Q
+					case 81:
+						pianoKeyRelease('c0');
+						break;
+					// W
+					case 87:
+						pianoKeyRelease('d0');
+						break;
+					// E
+					case 69: 
+						pianoKeyRelease('e0');
+						break;
+					// R
+					case 82:
+						pianoKeyRelease('f0');
+						break;
+					// T
+					case 84:
+						pianoKeyRelease('g0');
+						break;
+					// Y
+					case 89:
+						pianoKeyRelease('a0');
+						break;					
+					// U
+					case 85:
+						pianoKeyRelease('b0');
+						break;
+					// I
+					case 73:
+						pianoKeyRelease('c1');
+						break;
+
+					case 38: moveForward = false; break; // up
+					case 40: moveBackwards = false; break; // down
+					case 37: moveLeft = false; break; // left
+					case 39: moveRight = false; break; // right
+					case 65: yawLeft = false; break; // a
+					case 68: yawRight = false; break; // d
+					case 87: moveUp/*pitchUp*/ = false; break; // w
+					case 83: moveDown/*pitchDown*/ = false; break; // s
+					case 90: rollLeft = false; break; // z
+					case 67: rollRight = false; break; // c
+
+
+
+				}
+
+			}
 			//
 
 			function animate() {

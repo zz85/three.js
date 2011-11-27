@@ -11,6 +11,7 @@
     var camera, scene, renderer,
     geometry, material, mesh, zmesh;
     var mouseX = 0, mouseY = 0;
+var floor;
  
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -27,7 +28,7 @@
 
         scene = new THREE.Scene();
 
-        geometry = new THREE.CubeGeometry( 200, 200, 100 );
+        geometry = new THREE.PlaneGeometry( 2000, 2000, 10, 10 );
       
         /*  
         var x = document.createElement( "canvas" );
@@ -46,15 +47,20 @@
          material= new THREE.MeshBasicMaterial( { map: new THREE.Texture( x, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping ) } );
         material.map.needsUpdate = true;
       */
-                                        
+
+	floor = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xfff00f, shading: THREE.FlatShading } ) );
+	floor.rotation.x = Math.PI * 3 /2;
+	floor.position.y = -300;
+	//floor.rotation.x = - 90 * ( Math.PI / 180 );
+    scene.add( floor );
+	                                   
        // material = new THREE.MeshLambertMaterial( { color: 0x003300 });
        // material = new THREE.MeshBasicMaterial( { color: 0xf0f0f0, wireframe: false } );
        // material = new THREE.MeshLambertMaterial  ( { color: 0xff00f0, wireframe: false } );
-         material =  new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );     //SmoothShading   
+       //  material =  new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );     //SmoothShading   
        
-       	mesh = new THREE.Mesh( geometry, material );
-        //scene.addObject( mesh );
-
+       	
+        
         sun = new THREE.DirectionalLight( 0xffffff );
         sun.position = camera.position;
         scene.add( sun );
@@ -82,8 +88,14 @@
         	console.log('geometry', geometry);
 			var modifier = new THREE.SubdivisionModifier( 2 );
 			//modifier.modify( geometry );
-
-            zmesh = new THREE.Mesh( geometry, material ); //
+			//geometry.materials[ 1 ] = new THREE.MeshLambertMaterial( { color: 0xffffff } ); //0x050505
+			// 0 - black keys, 1- body, 2- white keys 3 - gold peddle strings,
+			//geometry.materials[ 0 ] = new THREE.MeshLambertMaterial( { color: 0xffffff } ); //0x050505
+			geometry.materials[ 1 ] = 
+				new THREE.MeshPhongMaterial( { color: 0x150505, specular:0xee6600, shininess:10, reflectivity: 0.25 } );
+				
+				
+            zmesh = new THREE.Mesh( geometry, material );
 			zmesh.position.x = 100;
 			zmesh.position.y = -100;
             zmesh.position.z = 100;
@@ -98,14 +110,15 @@
             
         };
         
+//piano3.js mus001.js
         loader.load( { model: "piano3.js", callback: callbackPiano } );
         
 
-                                document.addEventListener( 'keydown', onDocumentKeyDown, false );
-				document.addEventListener( 'keyup', onDocumentKeyUp, false );
-            document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-				document.addEventListener( 'touchmove', onDocumentTouchMove, false );                                			
+			document.addEventListener( 'keydown', onDocumentKeyDown, false );
+			document.addEventListener( 'keyup', onDocumentKeyUp, false );
+			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+			document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+			document.addEventListener( 'touchmove', onDocumentTouchMove, false );                                			
         
     }
     
@@ -191,10 +204,11 @@ function onDocumentMouseMove( event ) {
     function render() {
 
        //	zmesh.rotation.x += 0.01;
-        zmesh.rotation.y += 0.005;
+        zmesh.rotation.y += 0.01;
         camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 		camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-
+		
+		
         renderer.render( scene, camera );
 
     }
