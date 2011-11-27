@@ -76,9 +76,13 @@ jabtunes.Sound.prototype.playNote = function(note, duration, start) {
 	var freq = this.midiToFreq( midi );
 	console.log(freq, ' freq ');
 	
+	
 	var synth = new Synth(audiolet, freq);
 	synth.connect(audiolet.output);
 	
+	// var test = new Audiolet();
+	// var synth = new Synth(test, freq);
+	// synth.connect(test.output);
 };
 
 
