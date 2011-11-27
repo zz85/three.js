@@ -19,6 +19,8 @@
 		<script src="js/Threer46dev.js"></script>
 		<script src="js/RequestAnimationFrame.js"></script>
 		<script src="js/Stats.js"></script>
+		<script src="https://raw.github.com/oampo/Audiolet/master/src/audiolet/Audiolet.js"></script>
+		<script src="Sound.js"></script>
 
 		<script type="text/javascript">
 
@@ -39,8 +41,9 @@
 			/*
 			 * tHings to do:
 			 *	basic keyboard generation (50%)
-			 *	picking
+			 *	picking (50^)
 			 *	
+			 * keyboard - 
 			 *	materials
 			 *	shadow mapping
 			 * 	audio
@@ -51,8 +54,15 @@
 			 * visualizations
 			*/
 			// 26 Nov - Done basic key gen
-			// 27 Nov - Basic Mouse Picking
+			// 27 Nov - Basic Mouse Picking and Keypress
 			// 
+			// BIG BIG ROAD MAPS
+			// 88 Keys for Midi Playback
+			// Organ layout for fun?
+			// Send as a gift tune
+			// Poke a card tune...
+			// Visualizations
+			// Game
 			/*
 			 *
 			 * http://www.iquilezles.org/apps/soundtoy/index.html
@@ -104,6 +114,9 @@
 			init();
 			animate();
 			
+			
+			var sound = new jabtunes.Sound();
+			
 			function init() {
 
 				container = document.createElement( 'div' );
@@ -115,6 +128,8 @@
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
 				info.innerHTML = 'Press the keys to make music!';
+				// Drag to rotate, press your keyboard.
+				
 				container.appendChild( info );
 
 				scene = new THREE.Scene();
@@ -142,12 +157,12 @@
 					for (i=0,il=keys.length;i<il;i++) {
 					
 						geometry = new THREE.CubeGeometry( 20, 25, 150 );
-						//keyMesh = new THREE.Mesh( geometry, whiteMaterial );
+						keyMesh = new THREE.Mesh( geometry, whiteMaterial );
 						
-						keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
-							geometry, [ whiteMaterial , 
-							new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ]
-						);
+						// keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
+						// 	geometry, [ whiteMaterial , 
+						// 	new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ]
+						// );
 						
 						keyMesh.position.x += i * 25;
 						keyboard.add( keyMesh );
@@ -165,13 +180,13 @@
 					
 						var pos = keys.indexOf(blackSharps[i]);
 						geometry = new THREE.CubeGeometry( 14, 15, 100 );
-						//keyMesh = new THREE.Mesh( geometry, blackMaterial );
+						keyMesh = new THREE.Mesh( geometry, blackMaterial );
 						
 						//new THREE.MeshLambertMaterial( { color: color } )
-						keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
-							geometry, [ blackMaterial , 
-							new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ]
-						);
+						// keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
+						// 	geometry, [ blackMaterial , 
+						// 	new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ]
+						// );
 						
 						
 						keyMesh.position.x += pos * 25 + 10;
@@ -192,8 +207,9 @@
 				
 				keyboard = new THREE.Object3D();
 				
-				var keyboardOffset =  25 * 7 * 3 /2;
-				for (var i=0;i<3;i++) {
+				var totalWhiteKeys = 4 * 7 + 1;
+				var keyboardOffset =  25 * totalWhiteKeys /2;
+				for (var i=0;i<4;i++) {
 					octave = generateOctaveKeys( i );
 					octave.position.x += i * 25 * 7 - keyboardOffset;
 					keyboard.add( octave );
@@ -221,14 +237,14 @@
 				light.position.set( - 1, 0.2, - 1 ).normalize();
 				scene.add( light );
 				
-				var spotlight = new THREE.SpotLight();
-				
-				spotlight.position.y = 400;
-				spotlight.lookAt(keyboard.position);
-				scene.add(spotlight);
+				// var spotlight = new THREE.SpotLight();
+				// 
+				// spotlight.position.y = 400;
+				// spotlight.lookAt(keyboard.position);
+				// scene.add(spotlight);
 				
 
-				renderer = new THREE.WebGLRenderer();
+				renderer = new THREE.WebGLRenderer(); //WebGLRenderer CanvasRenderer
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				container.appendChild( renderer.domElement );
@@ -286,12 +302,13 @@
 						if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
 
 						
-						INTERSECTED = intersects[ 0 ].object.parent;
+						INTERSECTED = intersects[ 0 ].object; //.parent
 						if ( INTERSECTED.keyName ) {
-							INTERSECTED.currentMaterial = INTERSECTED.children[0].material;
-							INTERSECTED.children[0].material = redMaterial;
+							INTERSECTED.currentMaterial = INTERSECTED.material; //children[0].
+							INTERSECTED.material = redMaterial;
 							INTERSECTED.position.y -= 5;
 							console.log(INTERSECTED.keyName);
+							sound.playNote (INTERSECTED.keyName);
 							allowRotate = false;
 						} else {
 							INTERSECTED = null;
@@ -321,7 +338,7 @@
 			function onDocumentMouseUp( event ) {
 				
 				if ( INTERSECTED ) {
-					INTERSECTED.children[0].material = INTERSECTED.currentMaterial;
+					INTERSECTED.material = INTERSECTED.currentMaterial; //.children[0]
 					INTERSECTED.position.y += 5;
 				}
 				INTERSECTED = null;
@@ -369,6 +386,8 @@
 					keyMeshes[key].unpressed = keyMeshes[key].position.y;
 					keyMeshes[key].position.y -= 5;
 					console.log(key, keyMeshes[key]);
+					
+					sound.playNote ( key );
 				}
 			}
 			
@@ -466,7 +485,7 @@
 						break;
 					// I
 					case 73:
-						pianoKeyRelease('c1');
+						pianoKeyRelease('c1	');
 						break;
 
 					case 38: moveForward = false; break; // up
