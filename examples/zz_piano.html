@@ -41,7 +41,7 @@
 
 			var camera, scene, renderer;
 
-			var cube, plane, keyboard;
+			var floor, keyboard;
 
 			var targetRotation = 0;
 			var targetRotationOnMouseDown = 0;
@@ -50,6 +50,7 @@
 			var mouseXOnMouseDown = 0;
 			
 			var mouseY = 0;
+			var allowRotate = false;
 			var projector, INTERSECTED;
 
 			var windowHalfX = window.innerWidth / 2;
@@ -61,10 +62,10 @@
 			var keyMeshes = {};
 
 			var whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
-			//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } );
+			//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } ); MeshLambertMaterial
 			var blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
 			var debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
-			var redMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+			var redMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false } );
 
 			init();
 			animate();
@@ -79,7 +80,7 @@
 				info.style.top = '10px';
 				info.style.width = '100%';
 				info.style.textAlign = 'center';
-				info.innerHTML = 'Drag to spin the cube';
+				info.innerHTML = 'Press the keys to make music!';
 				container.appendChild( info );
 
 				scene = new THREE.Scene();
@@ -112,6 +113,7 @@
 						// reference the key mesh
 						whiteKeys.push( keyMesh );
 						keyMeshes[ keys[i] + o ] = keyMesh;
+						keyMesh.keyName = keys[i] + o;
 						
 				
 					}
@@ -131,6 +133,7 @@
 						// reference the key mesh
 						blackKeys.push( keyMesh );
 						keyMeshes[ keys[i] + '#'+ o ] = keyMesh;
+						keyMesh.keyName = keys[i] + '#'+ o;
 				
 					}
 					
@@ -151,14 +154,14 @@
 		
 				scene.add( keyboard );
 
-				// Plane
+				// floor
 
-				plane = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200 ), new THREE.MeshBasicMaterial( { color: 0xe0e0e0 } ) );
-				plane.rotation.x = - 90 * ( Math.PI / 180 );
-				plane.overdraw = true;
-				scene.add( plane );
+				floor = new THREE.Mesh( new THREE.PlaneGeometry( 1000, 1000 ), new THREE.MeshBasicMaterial( { color: 0xe0e0e0 } ) );
+				floor.rotation.x = - 90 * ( Math.PI / 180 );
+				floor.overdraw = true;
+				scene.add( floor );
 				
-				camera.lookAt( plane.position );
+				camera.lookAt( floor.position );
 				
 				// Lights
 				var ambient = new THREE.AmbientLight( 0xffffff );
@@ -168,6 +171,11 @@
 				light.position.set( - 1, 0.2, - 1 ).normalize();
 				scene.add( light );
 				
+				var spotlight = new THREE.SpotLight();
+				
+				spotlight.position.y = 400;
+				spotlight.lookAt(keyboard.position);
+				scene.add(spotlight);
 				
 
 				renderer = new THREE.WebGLRenderer();
@@ -197,8 +205,7 @@
 				document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 				document.addEventListener( 'mouseout', onDocumentMouseOut, false );
 
-				mouseXOnMouseDown = event.clientX - windowHalfX;
-				targetRotationOnMouseDown = targetRotation;
+				
 				// 
 				
 				var vector = new THREE.Vector3();
@@ -215,31 +222,41 @@
 				var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
 
 				var intersects = ray.intersectScene( scene );
+				
+				allowRotate = true;
 
-				console.log('intersects', intersects);
+				//console.log('intersects', intersects);
 				if ( intersects.length > 0 ) {
 					// Intersected
 
 					if ( INTERSECTED != intersects[ 0 ].object ) {
-
-						//if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+						// Revert old color
 						if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
 
+						
 						INTERSECTED = intersects[ 0 ].object;
-						INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-						//INTERSECTED.material.color.setHex( 0xff0000 );
-						INTERSECTED.currentMaterial = INTERSECTED.material;
-						INTERSECTED.material = debugMaterial;
+						if ( INTERSECTED.keyName ) {
+							INTERSECTED.currentMaterial = INTERSECTED.material;
+							INTERSECTED.material = redMaterial;
+						
+							console.log(INTERSECTED.keyName);
+							allowRotate = false;
+						} else {
+							INTERSECTED = null;
+							
+						}
 
 					}
 
 				} else {
 					// Revert old color
-					//if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
 					if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
 					INTERSECTED = null;
 
 				}
+				
+				mouseXOnMouseDown = event.clientX - windowHalfX;
+				targetRotationOnMouseDown = targetRotation;
 			}
 
 			function onDocumentMouseMove( event ) {
@@ -250,7 +267,10 @@
 			}
 
 			function onDocumentMouseUp( event ) {
-
+				
+				if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
+				INTERSECTED = null;
+				
 				document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 				document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
 				document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
@@ -306,8 +326,8 @@
 				// find intersections
 
 				
-				
-				plane.rotation.z = keyboard.rotation.y += ( targetRotation - keyboard.rotation.y ) * 0.05;
+				if (allowRotate)
+				floor.rotation.z = keyboard.rotation.y += ( targetRotation - keyboard.rotation.y ) * 0.05;
 				renderer.render( scene, camera );
 
 				
