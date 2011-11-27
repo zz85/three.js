@@ -24,12 +24,18 @@
 		
 			/*
 			 * tHings to do:
-			 *	basic keyboard generation
+			 *	basic keyboard generation (50%)
 			 *	picking
+			 *	
 			 *	materials
 			 *	shadow mapping
 			 * 	audio
-			 */
+			 *	include environment
+			 *	include piano model
+			 *	recording
+			 *	playback
+			 * visualizations
+			*/
 			
 			var container, stats;
 
@@ -42,6 +48,9 @@
 
 			var mouseX = 0;
 			var mouseXOnMouseDown = 0;
+			
+			var mouseY = 0;
+			var projector, INTERSECTED;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -49,6 +58,7 @@
 			var geometry;
 
 			var whiteKeys = [], blackKeys = [];
+			var keyMeshes = {};
 
 			init();
 			animate();
@@ -84,7 +94,8 @@
 				var keys = 'cdefgab';
 				var blackSharps = 'cdfga';
 				
-				function generateOctaveKeys() {
+				
+				function generateOctaveKeys( o ) {
 				
 					var keyboard = new THREE.Object3D();
 					// generate white key geometries
@@ -101,6 +112,8 @@
 					
 						// reference the key mesh
 						whiteKeys.push( keyMesh );
+						keyMeshes[ keys[i] + o ] = keyMesh;
+						
 				
 					}
 				
@@ -118,6 +131,7 @@
 					
 						// reference the key mesh
 						blackKeys.push( keyMesh );
+						keyMeshes[ keys[i] + '#'+ o ] = keyMesh;
 				
 					}
 					
@@ -128,7 +142,7 @@
 				
 				var keyboardOffset =  25 * 7 * 3 /2;
 				for (var i=0;i<3;i++) {
-					octave = generateOctaveKeys();
+					octave = generateOctaveKeys( i );
 					octave.position.x += i * 25 * 7 - keyboardOffset;
 					keyboard.add( octave );
 				}
@@ -161,6 +175,8 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				container.appendChild( renderer.domElement );
+				
+				projector = new THREE.Projector();
 
 				stats = new Stats();
 				stats.domElement.style.position = 'absolute';
@@ -189,7 +205,7 @@
 			function onDocumentMouseMove( event ) {
 
 				mouseX = event.clientX - windowHalfX;
-
+				mouseY = event.clientY - windowHalfY;
 				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 			}
 
@@ -244,9 +260,43 @@
 
 			function render() {
 
+
+				// highlight hovered objects
+
+				// find intersections
+
+				var vector = new THREE.Vector3( mouseX, mouseY, 1 );
+				projector.unprojectVector( vector, camera );
+
+				var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+
+				var intersects = ray.intersectScene( scene );
+
+				if ( intersects.length > 0 ) {
+					console.log(intersects);
+
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+
+						if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+
+						INTERSECTED = intersects[ 0 ].object;
+						INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+						INTERSECTED.material.color.setHex( 0xff0000 );
+
+					}
+
+				} else {
+
+					if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+
+					INTERSECTED = null;
+
+				}
+				
 				plane.rotation.z = keyboard.rotation.y += ( targetRotation - keyboard.rotation.y ) * 0.05;
 				renderer.render( scene, camera );
 
+				
 			}
 
 		</script>

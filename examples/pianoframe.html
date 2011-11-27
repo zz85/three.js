@@ -1,0 +1,200 @@
+
+<body>
+    <script type="text/javascript" src="../build/Three.js"></script>
+
+    <script type="text/javascript" src="js/Detector.js"></script>
+    <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="js/Stats.js"></script>
+
+<script>
+
+    var camera, scene, renderer,
+    geometry, material, mesh;
+    var mouseX = 0, mouseY = 0;
+ 
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+    init();
+    animate();
+
+    function init() {
+        
+        //fov (inverse lens), aspect
+        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera.position.z = 1000;
+        console.log(camera);
+
+        scene = new THREE.Scene();
+
+        geometry = new THREE.CubeGeometry( 200, 200, 100 );
+      
+        /*  
+        var x = document.createElement( "canvas" );
+				var xc = x.getContext("2d");
+				x.width = x.height = 128;
+				xc.fillStyle = "#fff";
+				xc.fillRect(0, 0, 128, 128);
+				xc.fillStyle = "#000";
+				xc.fillRect(0, 0, 64, 64);
+				xc.fillStyle = "#999";
+				xc.fillRect(32, 32, 32, 32);
+				xc.fillStyle = "#000";
+				xc.fillRect(64, 64, 64, 64);
+				xc.fillStyle = "#555";
+				xc.fillRect(96, 96, 32, 32);
+         material= new THREE.MeshBasicMaterial( { map: new THREE.Texture( x, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping ) } );
+        material.map.needsUpdate = true;
+      */
+                                        
+       // material = new THREE.MeshLambertMaterial( { color: 0x003300 });
+       // material = new THREE.MeshBasicMaterial( { color: 0xf0f0f0, wireframe: false } );
+       // material = new THREE.MeshLambertMaterial  ( { color: 0xff00f0, wireframe: false } );
+         material =  new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );     //SmoothShading   
+       
+       // new THREE.MeshFaceMaterial()
+        mesh = new THREE.Mesh( geometry, material );
+        scene.addObject( mesh );
+
+        sun = new THREE.DirectionalLight( 0xffffff );
+        sun.position = camera.position;
+        scene.add( sun );
+ 
+        var ambient = new THREE.AmbientLight( 0x606060 );
+        scene.add( ambient );
+
+
+        //renderer = new THREE.CanvasRenderer();WebGLRenderer
+        //renderer.setSize( window.innerWidth, window.innerHeight );
+        //document.body.appendChild( renderer.domElement );
+
+
+        renderer = new THREE.WebGLRenderer(); //CanvasRenderer
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        //renderer.domElement.style.position = "relative";
+        
+        
+        document.body.appendChild( renderer.domElement );
+		
+    
+    var loader = new THREE.JSONLoader();
+        callbackPiano = function( geometry ) { 
+        	console.log('geometry', geometry);
+            zmesh = new THREE.Mesh( geometry, material ); //
+			zmesh.position.x = 100;
+			zmesh.position.y = -100;
+            zmesh.position.z = 100;
+			zmesh.scale.x = zmesh.scale.y = zmesh.scale.z = 0.5;
+           	zmesh.rotation.x = Math.PI;
+			zmesh.rotation.y = Math.PI;
+
+			zmesh.overdraw = true;
+			zmesh.updateMatrix();
+
+			scene.add(zmesh); 
+            
+        };
+        
+        loader.load( { model: "piano3.js", callback: callbackPiano } );
+        
+
+                                document.addEventListener( 'keydown', onDocumentKeyDown, false );
+				document.addEventListener( 'keyup', onDocumentKeyUp, false );
+            document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );                                			
+        
+    }
+    
+    function onDocumentKeyDown( event ) {
+            
+				switch( event.keyCode ) {
+ 
+					case 38:camera.position.z -=100;  moveForward = true; break; // up
+					case 40: camera.position.z +=100; moveBackwards = true; break; // down
+					case 37: camera.position.x -=100; moveLeft = true; break; // left
+					case 39: camera.position.x +=100; moveRight = true; break; // right
+					case 65: camera.position.y -=100; yawLeft = true; break; // a
+					case 68: camera.position.y +=100; yawRight = true; break; // d
+					//case 87: camera.rotation.x -= 10; moveUp = true; break; // w
+					//case 83: camera.rotation.x += 10 = true; break; // s
+					//case 90: camera.rotation.y -= 10; rollLeft = true; break; // z
+					//case 67: camera.rotation.y += 10; rollRight = true; break; // c
+ 
+				}
+                console.log(event.keyCode, camera.position);
+ 
+			}
+ 
+			function onDocumentKeyUp( event ) {
+ 
+				switch( event.keyCode ) {
+ 
+					case 38: moveForward = false; break; // up
+					case 40: moveBackwards = false; break; // down
+					case 37: moveLeft = false; break; // left
+					case 39: moveRight = false; break; // right
+					case 65: yawLeft = false; break; // a
+					case 68: yawRight = false; break; // d
+					case 87: moveUp/*pitchUp*/ = false; break; // w
+					case 83: moveDown/*pitchDown*/ = false; break; // s
+					case 90: rollLeft = false; break; // z
+					case 67: rollRight = false; break; // c
+ 
+				}
+ 
+			}
+var mouseX= 0, mouseY=0;
+function onDocumentMouseMove( event ) {
+ 
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+ 
+			}
+ 
+			function onDocumentTouchStart( event ) {
+ 
+				if ( event.touches.length == 1 ) {
+ 
+					event.preventDefault();
+ 
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+ 
+				}
+			}
+ 
+			function onDocumentTouchMove( event ) {
+ 
+				if ( event.touches.length == 1 ) {
+ 
+					event.preventDefault();
+ 
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+ 
+				}
+ 
+			}
+
+    function animate() {
+
+        // Include examples/js/RequestAnimationFrame.js for cross-browser compatibility.
+        requestAnimationFrame( animate );
+        render();
+
+    }
+
+    function render() {
+
+       // mesh.rotation.x += 0.01;
+       // mesh.rotation.y += 0.02;
+        camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+		camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+
+        renderer.render( scene, camera );
+
+    }
+
+</script>
+</body>
