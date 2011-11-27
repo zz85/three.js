@@ -60,9 +60,15 @@
 			var whiteKeys = [], blackKeys = [];
 			var keyMeshes = {};
 
+			var whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
+			//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } );
+			var blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+			var debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
+			var redMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+
 			init();
 			animate();
-
+			
 			function init() {
 
 				container = document.createElement( 'div' );
@@ -83,13 +89,6 @@
 				camera.position.z = 300;
 				
 				scene.add( camera );
-
-				
-
-				var whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
-				//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } );
-				var blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
-				var debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
 				
 				var keys = 'cdefgab';
 				var blackSharps = 'cdfga';
@@ -200,6 +199,47 @@
 
 				mouseXOnMouseDown = event.clientX - windowHalfX;
 				targetRotationOnMouseDown = targetRotation;
+				// 
+				
+				var vector = new THREE.Vector3();
+				// vector.x = (mouseX / windowHalfX);
+				// vector.y = - (mouseY / windowHalfY);
+				vector.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				vector.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				vector.z = 1;
+				console.log('screen coords', vector.x, vector.y);
+				
+				// [-1, 1] [1, -1]
+				projector.unprojectVector( vector, camera );
+
+				var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
+
+				var intersects = ray.intersectScene( scene );
+
+				console.log('intersects', intersects);
+				if ( intersects.length > 0 ) {
+					// Intersected
+
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+
+						//if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+						if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
+
+						INTERSECTED = intersects[ 0 ].object;
+						INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+						//INTERSECTED.material.color.setHex( 0xff0000 );
+						INTERSECTED.currentMaterial = INTERSECTED.material;
+						INTERSECTED.material = debugMaterial;
+
+					}
+
+				} else {
+					// Revert old color
+					//if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
+					if ( INTERSECTED ) INTERSECTED.material = INTERSECTED.currentMaterial;
+					INTERSECTED = null;
+
+				}
 			}
 
 			function onDocumentMouseMove( event ) {
@@ -265,33 +305,7 @@
 
 				// find intersections
 
-				var vector = new THREE.Vector3( mouseX, mouseY, 1 );
-				projector.unprojectVector( vector, camera );
-
-				var ray = new THREE.Ray( camera.position, vector.subSelf( camera.position ).normalize() );
-
-				var intersects = ray.intersectScene( scene );
-
-				if ( intersects.length > 0 ) {
-					console.log(intersects);
-
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-
-						if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
-
-						INTERSECTED = intersects[ 0 ].object;
-						INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-						INTERSECTED.material.color.setHex( 0xff0000 );
-
-					}
-
-				} else {
-
-					if ( INTERSECTED ) INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
-
-					INTERSECTED = null;
-
-				}
+				
 				
 				plane.rotation.z = keyboard.rotation.y += ( targetRotation - keyboard.rotation.y ) * 0.05;
 				renderer.render( scene, camera );

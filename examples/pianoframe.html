@@ -9,7 +9,7 @@
 <script>
 
     var camera, scene, renderer,
-    geometry, material, mesh;
+    geometry, material, mesh, zmesh;
     var mouseX = 0, mouseY = 0;
  
 			var windowHalfX = window.innerWidth / 2;
@@ -21,7 +21,7 @@
     function init() {
         
         //fov (inverse lens), aspect
-        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+        camera = new THREE.PerspectiveCamera( 85, window.innerWidth / window.innerHeight, 1, 10000 );
         camera.position.z = 1000;
         console.log(camera);
 
@@ -52,9 +52,8 @@
        // material = new THREE.MeshLambertMaterial  ( { color: 0xff00f0, wireframe: false } );
          material =  new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );     //SmoothShading   
        
-       // new THREE.MeshFaceMaterial()
-        mesh = new THREE.Mesh( geometry, material );
-        scene.addObject( mesh );
+       	mesh = new THREE.Mesh( geometry, material );
+        //scene.addObject( mesh );
 
         sun = new THREE.DirectionalLight( 0xffffff );
         sun.position = camera.position;
@@ -75,18 +74,22 @@
         
         
         document.body.appendChild( renderer.domElement );
+		material = new THREE.MeshFaceMaterial()
 		
     
     var loader = new THREE.JSONLoader();
         callbackPiano = function( geometry ) { 
         	console.log('geometry', geometry);
+			var modifier = new THREE.SubdivisionModifier( 2 );
+			//modifier.modify( geometry );
+
             zmesh = new THREE.Mesh( geometry, material ); //
 			zmesh.position.x = 100;
 			zmesh.position.y = -100;
             zmesh.position.z = 100;
 			zmesh.scale.x = zmesh.scale.y = zmesh.scale.z = 0.5;
            	zmesh.rotation.x = Math.PI;
-			zmesh.rotation.y = Math.PI;
+			zmesh.rotation.y = Math.PI * 3/2;
 
 			zmesh.overdraw = true;
 			zmesh.updateMatrix();
@@ -187,8 +190,8 @@ function onDocumentMouseMove( event ) {
 
     function render() {
 
-       // mesh.rotation.x += 0.01;
-       // mesh.rotation.y += 0.02;
+       //	zmesh.rotation.x += 0.01;
+        zmesh.rotation.y += 0.005;
         camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 		camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 
