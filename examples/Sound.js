@@ -8,7 +8,6 @@ jabtunes = {};
 var Synth = function(audiolet, frequency) {
 	AudioletGroup.apply(this, [audiolet, 0, 1]);
 
-    this.audiolet = new Audiolet();
 	this.sine = new Sine( this.audiolet, frequency );
 	
 	this.modulator = new Saw(this.audiolet, frequency * 2);
