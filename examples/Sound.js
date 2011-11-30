@@ -55,23 +55,30 @@ jabtunes.Sound = function() {
 	// http://en.wikipedia.org/wiki/Werckmeister_temperament
 	// Werckmeister I (III): "correct temperament" based on 1/4 comma divisions
 	var werckmeister = [
-		1, 256/243, // c 
-		64 / 81 * Math.pow(2, 1/2), 32/27, // d
+		1, // c
+		256/243, // c#
+		64 / 81 * Math.pow(2, 1/2), // d 
+		32/27, // d#
 		256 / 243 * Math.pow(2, 1/4), // e
-		4/3, 1024 / 729, // f
-		8/9 * Math.pow(8, 1/4), 128/81, // g
-		1024 / 729 * Math.pow(2, 1/4), 16/9, // a
-		128/ 81 * Math.pow(2, 1/4) //b
+		4/3, //f
+		1024 / 729, // f#
+		8/9 * Math.pow(8, 1/4), // g
+		128/81, // g#
+		1024 / 729 * Math.pow(2, 1/4), // a
+		16/9, // a#
+		128/ 81 * Math.pow(2, 1/4) // b
 		
 	];
 	
-	// for (i=0;i<werckmeister.length;i++) {
-	// 	console.log(notes[i], werckmeister[i], Math.log(werckmeister[i])/Math.log(2)* 1200 ) ;
-	// }
+	for (i=0;i<werckmeister.length;i++) {
+		console.log(notes[i], werckmeister[i], Math.log(werckmeister[i])/Math.log(2)* 1200 ) ;
+	}
 	
 	var baseFrequency = 261.625565;
-	var baseCFrequency = 415 / Math.pow(2, 9/12);
-	// 246.76047636306464(A415) 231.89538742553063(A390)
+	//var baseCFrequency = 415 / Math.pow(2, 9/12);
+	// 246.76047636306464(A415) 231.89538742553063(A390) | 248.43808299685796
+	var baseCFrequency = 415 / werckmeister[9];
+	
 	
 	console.log ('baseCFrequency', baseCFrequency);
 	// console.log('werckmeister', werckmeister);
@@ -112,7 +119,27 @@ jabtunes.Sound.prototype.playNote = function(note, duration, start) {
 	var octaveOffset = parseInt(note.substring(note.length-1)) - 1;
 	var noteName = note.substring(0, note.length-1);
 	var freq = this.werckmeister [ this.noteNameMap[ noteName ] ] * Math.pow( 2, octaveOffset ) * this.baseCFrequency;
-	//console.log(freq, ' freq ');
+
+	// midi to werckmeister converter 
+	var midi = this.noteToMidiNumber( note );
+	var middle_c_midi = 60;
+	var semitones, noteIndex, ocatve;
+	if (midi < middle_c_midi) {
+		semitones = middle_c_midi - midi;
+		noteIndex = semitones % 12;
+		if (noteIndex>0) noteIndex = 12 - noteIndex;
+		octave = -Math.ceil( semitones/12 );
+	} else {
+		semitones = midi - middle_c_midi;
+		noteIndex = semitones % 12;
+		octave = Math.floor( semitones/12 );
+	}
+	
+	var freq = this.werckmeister [ noteIndex ] * Math.pow( 2, octave ) * this.baseCFrequency;
+	
+	// console.log('noteIndex', noteIndex, 'note', note, this.werckmeister [ noteIndex ], 'midi', midi , freq, ' freq ');
+	
+	
 	
 	var synth = new Synth(audiolet, freq);
 	synth.connect(audiolet.output);
