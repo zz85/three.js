@@ -108,8 +108,11 @@
 			var keyMeshes = {};
 
 			var whiteMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
-			//whiteMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, wireframe: false } ); MeshLambertMaterial
+			var whiteLambertMaterial = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe: false } );;
+			var shinnyMaterial = new THREE.MeshPhongMaterial( { color: 0xfefefe, shininess: 100 } ); //MeshLambertMaterial
 			var blackMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false } );
+			var blackLambertMaterial =  new THREE.MeshLambertMaterial( { color: 0x000000, reflectivity: false } );
+			var blackShinnyMaterial = new THREE.MeshPhongMaterial( { color: 0x000000, shininess: 100 } );
 			var debugMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } );
 			var redMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false } );
 
@@ -146,6 +149,15 @@
 				
 				var keys = 'cdefgab';
 				var blackSharps = 'cdfga';
+				var facemesh = new THREE.MeshFaceMaterial();
+				var materials = [];
+				var blackCubeMaterials = [];
+
+				for ( var i = 0; i < 6; i ++ ) {
+
+					materials.push( blackLambertMaterial ); //blackLambertMaterial blackShinnyMaterial blackMaterial
+					blackCubeMaterials.push( whiteLambertMaterial ); //whiteLambertMaterial  shinnyMaterial whiteMaterial
+				}
 				
 				
 				function generateOctaveKeys( o ) {
@@ -154,12 +166,12 @@
 					// generate white key geometries
 				
 					var i,il;
-				
+					
 					// White Keys
 					for (i=0,il=keys.length;i<il;i++) {
 					
-						geometry = new THREE.CubeGeometry( 20, 25, 150 );
-						keyMesh = new THREE.Mesh( geometry, whiteMaterial );
+						geometry = new THREE.CubeGeometry( 20, 25, 150, 1, 1 ,1, materials  );
+						keyMesh = new THREE.Mesh( geometry, facemesh );
 						
 						// keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
 						// 	geometry, [ whiteMaterial , 
@@ -167,6 +179,10 @@
 						// );
 						
 						keyMesh.position.x += i * 25;
+						
+						keyMesh.castShadow = true;
+						keyMesh.receiveShadow = true;
+						
 						keyboard.add( keyMesh );
 					
 						// reference the key mesh
@@ -181,8 +197,12 @@
 					for (i=0,il=blackSharps.length;i<il;i++) {
 					
 						var pos = keys.indexOf(blackSharps[i]);
-						geometry = new THREE.CubeGeometry( 14, 15, 100 );
-						keyMesh = new THREE.Mesh( geometry, blackMaterial );
+						geometry = new THREE.CubeGeometry( 14, 15, 100, 1, 1 ,1, blackCubeMaterials  );
+						keyMesh = new THREE.Mesh( geometry, facemesh );
+						
+						
+						//geometry = new THREE.CubeGeometry( 14, 15, 100 );
+						//keyMesh = new THREE.Mesh( geometry, blackShinyMaterial ); //blackMaterial
 						
 						//new THREE.MeshLambertMaterial( { color: color } )
 						// keyMesh = THREE.SceneUtils.createMultiMaterialObject( 
@@ -194,6 +214,9 @@
 						keyMesh.position.x += pos * 25 + 10;
 						keyMesh.position.y += 20;
 						keyMesh.position.z += -20;
+						
+						keyMesh.castShadow = true;
+						keyMesh.receiveShadow = true;
 					
 						keyboard.add( keyMesh );
 					
@@ -218,7 +241,7 @@
 				}
 				
 				
-				keyboard.position.y = 40;
+				keyboard.position.y = 140;
 		
 				scene.add( keyboard );
 
@@ -227,6 +250,9 @@
 				floor = new THREE.Mesh( new THREE.PlaneGeometry( 1000, 1000 ), new THREE.MeshBasicMaterial( { color: 0xe0e0e0 } ) );
 				floor.rotation.x = - 90 * ( Math.PI / 180 );
 				floor.overdraw = true;
+					floor.castShadow = false;
+					floor.receiveShadow = true;
+					
 				scene.add( floor );
 				
 				camera.lookAt( floor.position );
@@ -235,15 +261,17 @@
 				var ambient = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient );
 
-				var light = new THREE.DirectionalLight( 0xffffee, 4 );
-				light.position.set( - 1, 0.2, - 1 ).normalize();
-				scene.add( light );
+				//var light = new THREE.DirectionalLight( 0xffffee, 4 );
+				//light.position.set( 30, 10, 20 ).normalize();
+				//scene.add( light );
 				
-				// var spotlight = new THREE.SpotLight();
+				var spotlight = new THREE.SpotLight();
 				// 
-				// spotlight.position.y = 400;
-				// spotlight.lookAt(keyboard.position);
-				// scene.add(spotlight);
+				//spotlight.position.x = 100;
+				 spotlight.position.y = 200;
+				 spotlight.lookAt(keyboard.position);
+				spotlight.castShadow = true;
+				 scene.add(spotlight);
 				
 
 				renderer = new THREE.WebGLRenderer(); //WebGLRenderer CanvasRenderer
