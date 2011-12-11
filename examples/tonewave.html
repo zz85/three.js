@@ -36,6 +36,11 @@
 			// 1. From top
 			// 2. From corner? Top. Corner bottom
 			// 3. Follow Beat
+			// Slight rotator
+			
+			// Features
+			// Save URL.
+			
 			var rows = 12, cols = 12, cells = rows * cols;
 			var rowPadding = 5, colPadding = 5;
 			var rowSize = 20, colSize = 20, height = 20;
@@ -43,6 +48,12 @@
 			var colLength = cols * colSize + (cols-1) * colPadding;
 			var rowLengthHalf = rowLength / 2;
 			var colLengthHalf = colLength / 2;
+			
+			var buttonStates = [];
+			for (var i=0;i<cols;i++) {
+				buttonStates.push([]);
+			}
+			
 			
 			var buffer1 = [], buffer2 = [], temp;
 			var grid = [], plane;
@@ -117,11 +128,12 @@
 
 				geometry = new THREE.CubeGeometry( rowSize, colSize, height );
 				geometry.applyMatrix( new THREE.Matrix4().setTranslation( 0, height / 2, 0 ) );
-				material = new THREE.MeshLambertMaterial( { color: 0xf0f0f0 } );//0xd0d0d0
+				//material = new THREE.MeshLambertMaterial( { color: 0xf0f0f0 } );//0xd0d0d0
 
 				for ( var i = 0; i < cells; i ++ ) {
 					var r = i % rows;
 					var c = Math.floor( i / rows ); 
+					material = new THREE.MeshLambertMaterial( { color: 0xf0f0f0 } );//0xd0d0d0
 					cube = new THREE.Mesh( geometry, material );
 					cube.position.x = c * colSize + (c - 1) * colPadding;
 					cube.position.z = r * rowSize + (r - 1) * rowPadding;
@@ -169,6 +181,32 @@
 				ray = new THREE.Ray( camera.position );
 
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+
+			}
+			
+			function onDocumentMouseDown( event ) {
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+				ray.direction = projector.unprojectVector( mouse.clone(), camera );
+				ray.direction.subSelf( camera.position ).normalize();
+
+				intersects = ray.intersectScene( scene );
+
+					
+				if (intersects[0].object.whoami) {
+					buffer1[ intersects[0].object.whoami ] = 4;
+					var o = intersects[0].object;
+					
+					if (buttonStates[o.c][o.r]) {
+						buttonStates[o.c][o.r] = false;
+					} else {
+						buttonStates[o.c][o.r] = true;
+					}
+					
+				}
 
 			}
 
@@ -197,14 +235,17 @@
 			function render() {
 
 				if ( intersects.length ) {
-					// var point = intersects[ 0 ].point;
-					// var x = Math.floor( point.x / size );
-					// var y = Math.floor( point.z / size );
-					// 
-					// buffer1[ x + y * res ] = 10;
-					
+
 					if (intersects[0].object.whoami) {
 						buffer1[ intersects[0].object.whoami ] = 4;
+						var o = intersects[0].object;
+						
+						// if (buttonStates[o.c][o.r]) {
+						// 	buttonStates[o.c][o.r] = false;
+						// } else {
+						// 	buttonStates[o.c][o.r] = true;
+						// }
+						
 					}
 
 				}
@@ -271,7 +312,10 @@
 				for ( var i = 0; i < cells; i ++ ) {
 
 					grid[ i ].scale.y += ( Math.max( 0.1, 0.1 + buffer2[ i ] ) - grid[ i ].scale.y ) * 0.1;
+					var s = grid[ i ].scale.y / 10 * 20;
+					grid[ i ].material.color.setRGB(s,s,s);
 
+					// HSV
 				}
 				
 				
@@ -282,6 +326,22 @@
 				renderer.render( scene, camera );
 
 			}
+			
+			function play(column) {
+				//console.log('column', column,buttonStates);
+				for (var i=0;i<rows;i++) {
+					if (buttonStates[column][i]) {
+						buffer1[ i + column * cols ] = 50;
+					}
+				}
+			}
+			
+			var currentCol = 0;
+			setInterval(function() {
+				play(currentCol);
+				currentCol++;
+				currentCol %= cols;
+			}, 200);
 
 		</script>
 	</body>
