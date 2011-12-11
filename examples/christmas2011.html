@@ -27,7 +27,7 @@
 	<body>
 
 		<div id="info">
-		A Christmas Experiment 2011 - shadowmap, particles <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a></br>
+		A Christmas Experiment 2011 - shadowmap, particles + text effects + lens flare :) <br/>
 		move camera with WASD / RF + mouse
 		</div>
 
@@ -39,6 +39,14 @@
 		<script src="js/Stats.js"></script>
 
 		<script src="fonts/helvetiker_bold.typeface.js"></script>
+		
+
+		<script src="js/postprocessing/EffectComposer.js"></script>
+		<script src="js/postprocessing/RenderPass.js"></script>
+		<script src="js/postprocessing/ShaderPass.js"></script>
+		<script src="js/postprocessing/MaskPass.js"></script>
+		<script src="js/postprocessing/BloomPass.js"></script>
+		<script src="js/postprocessing/FilmPass.js"></script>
 
 		<script>
 
@@ -59,7 +67,19 @@
 
 			var sceneHUD, cameraOrtho, hudMaterial;
 
-			var morph, morphs = [];
+			var composer;
+			// TODO Cut Scenes
+			// 1. Text
+			// 2. Snowman
+			// 3. Wide + Lens flare
+			
+			// FX. Blurs, (50%)
+			
+			// Features?
+			// Snow
+			// Music
+			// Card.
+			
 
 			var light;
 
@@ -111,6 +131,7 @@
 				createHUD();
 				createScene();
 
+				
 				// RENDERER
 
 				renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, clearAlpha: 1, antialias: false } );
@@ -127,12 +148,62 @@
 				renderer.shadowCameraFov = 50;
 
 				renderer.shadowMapBias = 0.0039;
-				renderer.shadowMapDarkness = 0.5;
+				renderer.shadowMapDarkness = 0.3;
 				renderer.shadowMapWidth = SHADOW_MAP_WIDTH;
 				renderer.shadowMapHeight = SHADOW_MAP_HEIGHT;
 
 				renderer.shadowMapEnabled = true;
 				renderer.shadowMapSoft = true;
+				
+				
+				// POSTPROCESSING
+				
+				// Get examples from post_proces, particles shapes, etc. text, dynamic terrian
+				
+				console.log(renderer);
+				renderer.autoClear = false;
+
+				var renderScene = new THREE.RenderPass( scene, camera );
+				
+				
+				// var effectBloom = new THREE.BloomPass( 0.25 );
+				// var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
+				var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );				
+				effectFXAA.uniforms[ 'resolution' ].value.set( 1 / SCREEN_WIDTH, 1 / SCREEN_HEIGHT );
+				
+				// effectFilm.renderToScreen = true;
+				
+				// var hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalBlur" ] );
+				// var vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalBlur" ] );
+				// 
+				// hblur.uniforms[ 'h' ].value =  1 / SCREEN_WIDTH;
+				// vblur.uniforms[ 'v' ].value =  1 / SCREEN_HEIGHT;
+				
+				hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalTiltShift" ] );
+				vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalTiltShift" ] );
+
+				var bluriness = 6;
+
+				hblur.uniforms[ 'h' ].value = bluriness / SCREEN_WIDTH;
+				vblur.uniforms[ 'v' ].value = bluriness / SCREEN_HEIGHT;
+
+				hblur.uniforms[ 'r' ].value = vblur.uniforms[ 'r' ].value = 0.5;
+				
+				
+				composer = new THREE.EffectComposer( renderer );
+				composer.addPass( renderScene );
+				
+				composer.addPass( hblur );
+				composer.addPass( vblur );
+				//composer.addPass( effectFXAA );
+				//effectFXAA.renderToScreen = true;
+				
+				//composer.addPass( renderModel );
+				//composer.addPass( effectFXAA );
+				//composer.addPass( effectBloom );
+				//composer.addPass( effectFilm );
+				composer.passes[composer.passes.length-1].renderToScreen = true;
+				console.log('ping', composer, scene, camera);
 
 				// STATS
 
@@ -187,6 +258,11 @@
 				scene.add( ground );
 
 				// TEXT
+				
+				faceMaterial = new THREE.MeshFaceMaterial();
+
+				textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
+				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
 				var textGeo = new THREE.TextGeometry( "CHRISTMAS", {
 
@@ -202,15 +278,27 @@
 					bevelSize: 5,
 					bevelEnabled: true
 
+				//});
+				
+					,material: 0,
+					extrudeMaterial: 1
+
 				});
 
+				textGeo.materials = [ textMaterialFront, textMaterialSide ];
+
 				textGeo.computeBoundingBox();
+				
+				//
+				//textGeo.computeVertexNormals();
+
+				
 				var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
 
 				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, ambient: 0xaa0000 } );
 				var snowMaterial = new THREE.MeshPhongMaterial( { color: 0xfefefe, specular: 0xfefefe, ambient: 0xdedede } );
 
-				var textMesh = new THREE.Mesh( textGeo, planeMaterial );
+				var textMesh = new THREE.Mesh( textGeo, planeMaterial ); //planeMaterial
 				textMesh.position.x = centerOffset;
 				//textMesh.position.y = FLOOR + 67;
 				textMesh.position.y = FLOOR + 10;
@@ -265,6 +353,9 @@
 				bodyMesh.castShadow = !false;
 				bodyMesh.receiveShadow = !false;
 				
+				// Create hands for snowman.
+				
+				
 				//snowman.castShadow = false;
 				//snowman.receiveShadow = false;
 				
@@ -275,7 +366,6 @@
 				snowman.add(bodyMesh);
 				
 				scene.add(snowman);
-				
 
 			}
 
@@ -297,11 +387,14 @@
 				controls.update( delta );
 
 				renderer.clear();
-				renderer.render( scene, camera );
-
+				//renderer.render( scene, camera );
+				
+				
+				composer.render( 0.05 );
+				
 				// Render debug HUD with shadow map
-
-				//hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMap[ 0 ];
+				// setInterval(function() {light.position.y += 100 ; }, 200);
+				//hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];
 				//renderer.render( sceneHUD, cameraOrtho );
 
 			}
