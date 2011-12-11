@@ -10,8 +10,8 @@ var Synth = function(audiolet, frequency) {
 
 	this.sine = new Sine( this.audiolet, frequency );
 	
-	this.modulator = new Saw(this.audiolet, frequency * 2);
-	this.modulatorMulAdd = new MulAdd(this.audiolet, frequency / 2, frequency );
+	this.modulator = new Sine(this.audiolet, frequency / 2 );
+	this.modulatorMulAdd = new MulAdd(this.audiolet, frequency / 4, frequency ); //, frequency / 4, frequency
 	
 	this.gain = new Gain(this.audiolet);
 	
@@ -25,6 +25,7 @@ var Synth = function(audiolet, frequency) {
 
 	// Saw modulation
 	this.modulator.connect(this.modulatorMulAdd);
+	
 	this.modulatorMulAdd.connect(this.sine);
 	this.envelope.connect(this.gain, 0, 1);
 	
