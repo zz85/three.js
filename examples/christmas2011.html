@@ -27,7 +27,7 @@
 	<body>
 
 		<div id="info">
-		<a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - shadowmap - models by <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a></br>
+		A Christmas Experiment 2011 - shadowmap, particles <a href="http://mirada.com/">mirada</a> from <a href="http://ro.me">rome</a></br>
 		move camera with WASD / RF + mouse
 		</div>
 
@@ -140,7 +140,7 @@
 				stats.domElement.style.position = 'absolute';
 				stats.domElement.style.top = '0px';
 				stats.domElement.style.zIndex = 100;
-				//container.appendChild( stats.domElement );
+				container.appendChild( stats.domElement );
 
 			}
 
@@ -207,31 +207,22 @@
 				textGeo.computeBoundingBox();
 				var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
 
-				//var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, ambient: 0xaa0000 } );
 				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, ambient: 0xaa0000 } );
+				var snowMaterial = new THREE.MeshPhongMaterial( { color: 0xfefefe, specular: 0xfefefe, ambient: 0xdedede } );
 
-				var mesh = new THREE.Mesh( textGeo, textMaterial );
-				mesh.position.x = centerOffset;
-				mesh.position.y = FLOOR + 67;
+				var textMesh = new THREE.Mesh( textGeo, planeMaterial );
+				textMesh.position.x = centerOffset;
+				//textMesh.position.y = FLOOR + 67;
+				textMesh.position.y = FLOOR + 10;
 
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
+				textMesh.castShadow = true;
+				textMesh.receiveShadow = true;
 
-				scene.add( mesh );
+				scene.add( textMesh );
 
-				// CUBES
+				// Steps Cubes
 
-				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 1500, 220, 150 ), planeMaterial );
-
-				mesh.position.y = FLOOR - 50;
-				mesh.position.z = 20;
-
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-
-				scene.add( mesh );
-
-				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 1600, 170, 250 ), planeMaterial );
+				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 1800, 220, 150 ), planeMaterial );
 
 				mesh.position.y = FLOOR - 50;
 				mesh.position.z = 20;
@@ -239,7 +230,52 @@
 				mesh.castShadow = true;
 				mesh.receiveShadow = true;
 
-				scene.add( mesh );
+				//scene.add( mesh );
+
+				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 2000, 170, 250 ), planeMaterial ); //textMaterial
+
+				mesh.position.y = FLOOR - 50;
+				mesh.position.z = 20;
+
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+
+				//scene.add( mesh );
+				
+				
+				// SNOW MAN
+				
+				var head = new THREE.OctahedronGeometry( 100, 4 ); //SphereGeometry
+				var body = new THREE.OctahedronGeometry( 140, 4 ); // new THREE.SphereGeometry( 140, 20, 20 );
+				body.applyMatrix( new THREE.Matrix4().setScale( 1, 0.8, 1 ) );
+				
+				
+				var headMesh = new THREE.Mesh( head, planeMaterial ); //planeMaterial
+				var bodyMesh = new THREE.Mesh( body, planeMaterial ); //snowMaterial
+				
+				bodyMesh.position.y -= 180;
+				
+				snowman = new THREE.Object3D();
+				//snowman.position.y = -100;
+				snowman.position.set(-800,0, 400);
+				
+				headMesh.castShadow = !false;
+				headMesh.receiveShadow = !false;
+				
+				bodyMesh.castShadow = !false;
+				bodyMesh.receiveShadow = !false;
+				
+				//snowman.castShadow = false;
+				//snowman.receiveShadow = false;
+				
+				//headMesh.position.set(-700,20, 400);
+				//scene.add(headMesh);
+				
+				snowman.add(headMesh);
+				snowman.add(bodyMesh);
+				
+				scene.add(snowman);
+				
 
 			}
 
