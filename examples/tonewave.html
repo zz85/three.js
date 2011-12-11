@@ -41,6 +41,14 @@
 			// Features
 			// Save URL.
 			
+			
+			// OPtions / possibilies
+			// Wave Amp
+			// Shadows
+			// Colors Intensity
+			// Curved Cubes
+			// Bounding Cubes
+			// SSS?
 			var rows = 12, cols = 12, cells = rows * cols;
 			var rowPadding = 5, colPadding = 5;
 			var rowSize = 20, colSize = 20, height = 20;
@@ -311,9 +319,10 @@
 
 				for ( var i = 0; i < cells; i ++ ) {
 
-					grid[ i ].scale.y += ( Math.max( 0.1, 0.1 + buffer2[ i ] ) - grid[ i ].scale.y ) * 0.1;
-					var s = grid[ i ].scale.y / 10 * 20;
-					grid[ i ].material.color.setRGB(s,s,s);
+					//grid[ i ].scale.y += ( Math.max( 0.1, 0.1 + buffer2[ i ] ) - grid[ i ].scale.y ) * 0.1;
+					var t = ( Math.max( 0.1, 0.1 + buffer2[ i ] ) -  buffer1[ i ]  ) * 0.1
+					//var s = grid[ i ].scale.y / 10 * 20;
+					grid[ i ].material.color.setRGB(t,t,t);
 
 					// HSV
 				}
