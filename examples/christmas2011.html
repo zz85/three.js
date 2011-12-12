@@ -120,11 +120,19 @@
 			
 			// FX. Blurs, (50%)
 			
+			// Frost Fog Ground
+			
+			// Bouncing Snowman?
+			
 			// Features?
 			// Snow
 			// Music
 			// Card.
 			
+			// snow on ground?
+			// shadows direction?
+			
+			// Camera Limits?
 
 			var light;
 
@@ -142,8 +150,10 @@
 				// SCENE CAMERA
 
 				camera = new THREE.PerspectiveCamera( 23, SCREEN_WIDTH / SCREEN_HEIGHT, NEAR, FAR );
-				camera.position.set( 700, 50, 1900 );
-
+				camera.position.set( 700, 50, 1800 ); //700, 50, 1900
+				
+				
+				
 				controls = new THREE.FirstPersonControls( camera );
 
 				// controls.lookSpeed = 0.01;
@@ -157,7 +167,9 @@
 				controls.verticalMin = 1.5;
 				controls.verticalMax = 2.0;
 
-				controls.lon = -110;
+				//controls.lon = -110;
+				controls.lat = 64.64555278652584;
+				controls.lon=  246.43799999999848;
 
 				// SCENE
 
@@ -171,9 +183,30 @@
 				scene.add( ambient );
 
 				light = new THREE.SpotLight( 0xffffff );
-				//light.position.set( 0, 1500, 1000 );
-				light.position.set( -800,000, -1000 );
-				//light.position.set( 300,400, -600 );
+				//light.position.set( 0, 1500, 1000 ); // front light
+				light.position.set( -800,000, -1000 ); // morning light
+				
+				//light.position.set( 300,400, -600 ); // backlight
+				
+				tweeny = new TWEEN.Tween(light.position).to({
+					x:300,y:400, z:-600
+					}, 10000).
+					start().chain(new TWEEN.Tween(light.position).to({
+						x:800,y:600, z:1000
+						}, 10000));
+					
+					//.easing(TWEEN.Easing.Elastic.EaseInOut)
+				
+				
+				// var lightpos = {x:-800, y:000, z:-1000};
+				// tweeny = new TWEEN.Tween(lightpos).to({
+				// 	x:300,y:400, z:-600
+				// 	}, 4000).onUpdate(function() {
+				// 		console.log('tet', lightpos);
+				// 		light.position.set(lightpos.x, lightpos.y, lightpos.z);
+				// 	}).start(); //.easing(TWEEN.Easing.Elastic.EaseInOut)
+				
+				
 				light.target.position.set( 0, 0, 0 );
 				light.castShadow = true;
 				scene.add( light );
@@ -190,16 +223,20 @@
 
 				//addLight( 0.55, 0.825, 0.99, -800,0, 800);
 				//addLight( 0.08, 0.825, 0.99,    0, 0, 1000 );
-				addLight( 0.995, 0.025, 0.99, light.position.x, light.position.y, light.position.z );
+				//addLight( 0.995, 0.025, 0.99, light.position.x, light.position.y, light.position.z );
+				addLight( 0.995, 0.025, 0.99, light.position );
 				
 				// addLight( 0.55, 0.825, 0.99, 5000 , 0, 1000 );
 				// addLight( 0.08, 0.825, 0.99,    0, 0, 1000 );
 				// addLight( 0.995, 0.025, 0.99, 5000, 5000, 1000 );
 
-				function addLight( h, s, v, x, y, z ) {
+				function addLight( h, s, v, pos) { //x, y, z 
+
 
 					var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
-					light.position.set( x, y, z );
+					//light.position.set( x, y, z );
+					light.position = pos;
+					
 					scene.add( light );
 
 					light.color.setHSV( h, s, v );
@@ -361,6 +398,9 @@
 
 				particleCloud = new THREE.ParticleSystem( particles, shaderMaterial );
 
+				particleCloud.castShadow = true;
+				particleCloud.receiveShadow = true;
+				
 				particleCloud.dynamic = true;
 				//particleCloud.sortParticles = true;
 
@@ -386,23 +426,30 @@
 
 					var target = ParticlePool.get();
 					
-
 					return target;
 
 				};
 
 				var onParticleCreated = function( p ) {
 					
+					var target = ParticlePool.get();
+					p.target = target;	
+					
+					
 					var position = p.position;
 					p.target.position = position;
 
 					var target = p.target;
+					
+					
+					var shadow = ParticlePool.get();
+					p.shadow = shadow;
 
 					if ( target ) {
 
 						particles.vertices[ target ].position = p.position;
 
-						values_color[ target ].setHSV( 0, 0, 0.5 );
+						values_color[ target ].setHSV( 0, 0, 0.4 + Math.random() * 0.4 );
 						values_size[ target ] = 10 +  Math.random() * 80;
 
 					};
@@ -441,16 +488,16 @@
 
 				sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
 				sparksEmitter.addInitializer(new SPARKS.Lifetime(5,10));
-				sparksEmitter.addInitializer(new SPARKS.Target( null, initializerCallback ) );
+				//sparksEmitter.addInitializer(new SPARKS.Target( null, initializerCallback ) );
 
 
-				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -5, 1 ) ) ) );
+				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -100, 50 ) ) ) );
 
 				sparksEmitter.addAction( new SPARKS.Age() );
 				sparksEmitter.addAction( new SPARKS.Move() );
 				
-				sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-				//sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 5, 10, 500* 5 ) );
+				// sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
+				sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 2, 100, 500* 2 ) );
 
 
 				sparksEmitter.addCallback( "created", onParticleCreated );
@@ -632,13 +679,13 @@
 				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, ambient: 0xaa0000 } );
 				var snowMaterial = new THREE.MeshPhongMaterial( { color: 0xfefefe, specular: 0xfefefe, ambient: 0xdedede } );
 
-				var textMesh = new THREE.Mesh( textGeo, planeMaterial ); //planeMaterial faceMaterial
+				var textMesh = new THREE.Mesh( textGeo, faceMaterial ); //planeMaterial faceMaterial 
 				textMesh.position.x = centerOffset;
 				//textMesh.position.y = FLOOR + 67;
 				textMesh.position.y = FLOOR + 10;
 
 				textMesh.castShadow = true;
-				textMesh.receiveShadow = true;
+				textMesh.receiveShadow = !true;
 
 				scene.add( textMesh );
 
@@ -690,8 +737,8 @@
 				// Create hands for snowman.
 				
 				
-				//snowman.castShadow = false;
-				//snowman.receiveShadow = false;
+				snowman.castShadow = false;
+				snowman.receiveShadow = false;
 				
 				//headMesh.position.set(-700,20, 400);
 				//scene.add(headMesh);
@@ -752,14 +799,12 @@
 				//console.log(delta);
 				controls.update( 0.025 );
 				
-				
-				
 				particleCloud.geometry.__dirtyVertices = true;
 
 				attributes.size.needsUpdate = true;
 				attributes.pcolor.needsUpdate = true;
 				
-				
+				TWEEN.update();
 				
 				
 				renderer.clear();
@@ -768,8 +813,8 @@
 				
 				// Render debug HUD with shadow map
 				// setInterval(function() {light.position.y += 100 ; }, 200);
-				//hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];
-				//renderer.render( sceneHUD, cameraOrtho );
+				// hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];
+				// renderer.render( sceneHUD, cameraOrtho );
 
 			}
 

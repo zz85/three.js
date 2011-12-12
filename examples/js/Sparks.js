@@ -17,6 +17,13 @@ var SPARKS = {};
 *   Creates and Manages Particles
 *********************************/
 
+/*
+ * Events: dispatchEvent
+ * dead
+updated
+loopUpdated
+created
+ */
 
 SPARKS.Emitter = function (counter) {
     
@@ -606,7 +613,7 @@ SPARKS.Target = function(target, callback) {
     this.callback = callback;
 };
 
-SPARKS.Target.prototype.initialize = function( emitter, particle) {
+SPARKS.Target.prototype.initialize = function( emitter, particle ) {
 
     if (this.callback) {
         particle.target = this.callback();
