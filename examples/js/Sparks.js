@@ -66,6 +66,15 @@ SPARKS.Emitter.prototype = {
 		var time = Date.now();
 		var elapsed = time - emitter._lastTime;
 	   	
+		// if elapsed is way higher than time step, (usually after switching tabs, or excution cached in ff)
+		// we will drop cycles. perhaps set to a limit of 10 or something?
+		var maxBlock = emitter._TIMESTEP * 50;
+		if (elapsed >= maxBlock) {
+			//console.log('warning: sparks.js is fast fowarding engine, skipping steps', elapsed / emitter._TIMESTEP);
+			//emitter.update( (elapsed - maxBlock) / 1000);
+			elapsed = maxBlock;
+		}
+		
 		while(elapsed >= emitter._TIMESTEP) {
 			emitter.update(emitter._TIMESTEP / 1000);
 			elapsed -= emitter._TIMESTEP;
@@ -129,6 +138,8 @@ SPARKS.Emitter.prototype = {
             }
         }
         
+		this.dispatchEvent("loopUpdated");
+		
     },
     
     createParticle: function() {
@@ -170,16 +181,28 @@ SPARKS.Emitter.prototype = {
 
 };
 
+/*
+ * Steady Counter attempts to produces a particle rate steadily
+ *
+ */
 
 // Number of particles per seconds
 SPARKS.SteadyCounter = function(rate) {
     this.rate = rate;
     
+	// we use a shortfall counter to make up for slow emitters 
+	this.leftover = 0;
+	
 };
 
 SPARKS.SteadyCounter.prototype.updateEmitter = function(emitter, time) {
-    
-    return Math.floor(time * this.rate);
+
+	var targetRelease = time * this.rate + this.leftover;
+	var actualRelease = Math.floor(targetRelease);
+	
+	this.leftover = targetRelease - actualRelease;
+	
+	return actualRelease;
 };
 
 
@@ -286,7 +309,9 @@ SPARKS.Move.prototype.update = function(emitter, particle, time) {
 
 };
 
-
+/*
+ * Accelerate action affects velocity in specified 3d direction 
+ */
 SPARKS.Accelerate = function(x,y,z) {
 	
 	if (x instanceof THREE.Vector3) {
@@ -308,6 +333,55 @@ SPARKS.Accelerate.prototype.update = function(emitter, particle, time) {
     v.z += acc.z * time; 
 
 };
+
+/*
+ * Accelerate Factor accelerate based on a factor of particle's velocity.
+ */
+SPARKS.AccelerateFactor = function(factor) {
+    this.factor = factor;
+};
+
+SPARKS.AccelerateFactor.prototype.update = function(emitter, particle, time) {
+    var factor = this.factor;
+    
+    var v = particle.velocity;
+	var len = v.length();
+	var adjFactor;
+    if (len>0) {
+
+		adjFactor = factor * time / len;
+		adjFactor += 1;
+		
+		v.multiplyScalar(adjFactor);
+		// v.x *= adjFactor;
+		// 	    v.y *= adjFactor;
+		// 	    v.z *= adjFactor; 
+	}
+
+};
+
+/*
+AccelerateNormal
+ * AccelerateVelocity affects velocity based on its velocity direction
+ */
+SPARKS.AccelerateVelocity = function(factor) {
+
+	this.factor = factor;
+
+};
+
+SPARKS.AccelerateVelocity.prototype.update = function(emitter, particle, time) {
+    var factor = this.factor;
+
+    var v = particle.velocity;
+
+
+    v.z += - v.x * factor;
+    v.y += v.z * factor;
+    v.x +=  v.y * factor;
+
+};
+
 
 /* Set the max ammount of x,y,z drift movements in a second */
 SPARKS.RandomDrift = function(x,y,z) {
@@ -387,6 +461,25 @@ SPARKS.ParallelogramZone.prototype.getLocation = function() {
 	var d2 = this.side2.clone().multiplyScalar( Math.random() );
 	d1.addSelf(d2);
 	return d1.addSelf( this.corner );
+	
+};
+
+SPARKS.CubeZone = function(position, x, y, z) {
+    this.position = position;
+	this.x = x;
+	this.y = y;
+	this.z = z;
+};
+
+SPARKS.CubeZone.prototype.getLocation = function() {
+    //TODO use pool?
+
+	var location = this.position.clone();
+	location.x += Math.random() * this.x;
+	location.y += Math.random() * this.y;
+	location.z += Math.random() * this.z;
+	
+	return location;
 	
 };
 

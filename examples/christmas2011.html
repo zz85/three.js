@@ -34,9 +34,14 @@
 		<script src="../build/Three.js"></script>
 
 		<script src="js/ShaderExtras.js"></script>
+		
+		<script src="js/Tween.js"></script>
+		<script src="js/Sparks.js"></script>
 
 		<script src="js/Detector.js"></script>
 		<script src="js/Stats.js"></script>
+		
+		<script src="js/fps2.js"></script>
 
 		<script src="fonts/helvetiker_bold.typeface.js"></script>
 		
@@ -47,7 +52,43 @@
 		<script src="js/postprocessing/MaskPass.js"></script>
 		<script src="js/postprocessing/BloomPass.js"></script>
 		<script src="js/postprocessing/FilmPass.js"></script>
-		<script src="js/fps2.js"></script>
+		
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+					attribute float size;
+			attribute vec3 pcolor;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vColor = pcolor;
+
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = size * ( 200.0 / length( mvPosition.xyz ) );
+
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform sampler2D texture;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vec4 outColor = texture2D( texture, gl_PointCoord );
+
+				gl_FragColor = outColor * vec4( vColor, 1.0 );
+
+			}
+
+		</script>
 		
 		<script>
 
@@ -69,6 +110,9 @@
 			var sceneHUD, cameraOrtho, hudMaterial;
 
 			var composer;
+			
+			var particleCloud, sparksEmitter, attributes, particleProducer;
+			
 			// TODO Cut Scenes
 			// 1. Text
 			// 2. Snowman
@@ -114,12 +158,6 @@
 				controls.verticalMax = 2.0;
 
 				controls.lon = -110;
-				
-				controls.callback = function() {
-					var delta = clock.getDelta();
-
-					controls.update( delta );
-				}
 
 				// SCENE
 
@@ -188,6 +226,237 @@
 
 				}
 				
+				// PARTICLE SYSTEMS
+				
+				var particlePoolCount = 20000;
+
+				var particles = new THREE.Geometry();
+				
+				function newVertex( x, y, z ) {
+					return new THREE.Vertex( new THREE.Vector3( x, y, z ) );
+				}
+				
+				
+				// This pool is for grabbing a particle used in Three.js
+				var ParticlePool = {
+
+					__pools: [],
+					__forloan: [],
+
+					// Get a new Vector / Borrow
+
+					get: function() {
+
+						if ( this.__forloan.length > 0 ) {
+							
+							return this.__forloan.pop();
+							
+						}
+
+						console.log( "pool ran out!" );
+						
+						var r = this.__pools[Math.floor(Math.random()*this.__pools.length)];
+						if (r.stolen) {
+							r.stolen++;
+						} else {
+							r.stolen = 1;
+						}
+
+						return r;
+
+					},
+
+					// Release a vector back into the pool, Return / add
+
+					add: function( v ) {
+						this.__forloan.push( v );
+						this.__pools.push( v );
+
+					},
+					
+					return: function( v ) {
+						if (!v.stolen) {
+							this.__forloan.push( v );
+						} else {
+							v.stolen--;
+						}
+
+					}
+					
+					
+
+				};
+				
+				for ( i = 0; i < particlePoolCount; i ++ ) {
+
+					particles.vertices.push( newVertex( Math.random() * 200 - 100, Math.random() * 100 + 150, Math.random() * 50 ) );
+					ParticlePool.add( i );
+					
+				}
+				
+				// Create pools of vectors
+
+				var sprite = generateSprite() ;
+
+				texture = new THREE.Texture( sprite );
+				texture.needsUpdate = true;
+
+				function generateSprite() {
+					// Generate a texture
+					var canvas = document.createElement( 'canvas' );
+					canvas.width = 128;
+					canvas.height = 128;
+
+					var context = canvas.getContext( '2d' );
+
+					context.beginPath();
+					context.arc( 64, 64, 60, 0, Math.PI * 2, false) ;
+					context.closePath();
+
+					context.lineWidth = 0.5; //0.05
+					context.stroke();
+					context.restore();
+
+					var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+
+					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( 0.4, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+
+					context.fillStyle = gradient;
+
+					context.fill();
+
+					return canvas;
+
+				}
+				
+				attributes = {
+
+					size:  { type: 'f', value: [] },
+					pcolor: { type: 'c', value: [] }
+
+				};
+
+				var uniforms = {
+
+					texture:   { type: "t", value: 0, texture: texture }
+
+				};
+
+				var shaderMaterial = new THREE.ShaderMaterial( {
+
+					uniforms: 		uniforms,
+					attributes:     attributes,
+
+					vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+
+					blending: 		THREE.AdditiveBlending,
+					depthWrite:		false,
+					transparent:	true
+
+				});
+
+				particleCloud = new THREE.ParticleSystem( particles, shaderMaterial );
+
+				particleCloud.dynamic = true;
+				//particleCloud.sortParticles = true;
+
+				var vertices = particleCloud.geometry.vertices;
+				var values_size = attributes.size.value; // Particle Size
+				var values_color = attributes.pcolor.value; // Particle Color
+
+				for( var v = 0; v < vertices.length; v ++ ) {
+
+					values_size[ v ] = 30;
+					values_color[ v ] = new THREE.Color( 0xffffff );
+					//values_color[ v ].setHSV( 0, 0, 0 );
+					particles.vertices[ v ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
+
+				}
+
+				scene.add( particleCloud );
+				//particleCloud.y = 800;
+				
+				
+				// Emitter Stuff
+				var initializerCallback = function() {
+
+					var target = ParticlePool.get();
+					
+
+					return target;
+
+				};
+
+				var onParticleCreated = function( p ) {
+					
+					var position = p.position;
+					p.target.position = position;
+
+					var target = p.target;
+
+					if ( target ) {
+
+						particles.vertices[ target ].position = p.position;
+
+						values_color[ target ].setHSV( 0, 0, 0.5 );
+						values_size[ target ] = 10 +  Math.random() * 80;
+
+					};
+
+				};
+
+				var onParticleDead = function( particle ) {
+
+					var target = particle.target;
+
+					if ( target ) {
+
+						// Hide the particle
+
+						values_color[ target ].setHSV( 0, 0, 0 );
+						particles.vertices[ target ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
+
+						// Mark particle system as available by returning to pool
+
+						ParticlePool.return( particle.target );
+
+					}
+
+				};
+				
+				particleProducer = new SPARKS.SteadyCounter( 50 );
+
+				sparksEmitter = new SPARKS.Emitter( particleProducer );
+
+				emitterpos = new THREE.Vector3( 0, 0, 0 );
+				
+				var zone = new SPARKS.ParallelogramZone( 
+					new THREE.Vector3(-1000,500,-1000), 
+					new THREE.Vector3(2000,0,0),
+					new THREE.Vector3(0,0,2000)	);
+
+				sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
+				sparksEmitter.addInitializer(new SPARKS.Lifetime(5,10));
+				sparksEmitter.addInitializer(new SPARKS.Target( null, initializerCallback ) );
+
+
+				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -5, 1 ) ) ) );
+
+				sparksEmitter.addAction( new SPARKS.Age() );
+				sparksEmitter.addAction( new SPARKS.Move() );
+				
+				sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
+				//sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 5, 10, 500* 5 ) );
+
+
+				sparksEmitter.addCallback( "created", onParticleCreated );
+				sparksEmitter.addCallback( "dead", onParticleDead );
+				sparksEmitter.start();
+
 				// RENDERER
 
 				renderer = new THREE.WebGLRenderer( { clearColor: 0x000000, clearAlpha: 1, antialias: false } );
@@ -479,11 +748,20 @@
 				maxDelta = Math.max(maxDelta, delta);
 				// 0.015, 0.4
 				
-				controls.update( delta );
+				//controls.update( delta );
 				//console.log(delta);
+				controls.update( 0.025 );
 				
-				//controls.update( 0.05 );
+				
+				
+				particleCloud.geometry.__dirtyVertices = true;
 
+				attributes.size.needsUpdate = true;
+				attributes.pcolor.needsUpdate = true;
+				
+				
+				
+				
 				renderer.clear();
 				//renderer.render( scene, camera );
 				composer.render( 0.05 );
