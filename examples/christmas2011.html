@@ -47,7 +47,8 @@
 		<script src="js/postprocessing/MaskPass.js"></script>
 		<script src="js/postprocessing/BloomPass.js"></script>
 		<script src="js/postprocessing/FilmPass.js"></script>
-
+		<script src="js/fps2.js"></script>
+		
 		<script>
 
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
@@ -101,8 +102,11 @@
 
 				controls = new THREE.FirstPersonControls( camera );
 
+				// controls.lookSpeed = 0.01;
+				// controls.movementSpeed = 100;
 				controls.lookSpeed = 0.02;
 				controls.movementSpeed = 500;
+
 				controls.noFly = false;
 				controls.lookVertical = true;
 				controls.constrainVertical = true;
@@ -110,6 +114,12 @@
 				controls.verticalMax = 2.0;
 
 				controls.lon = -110;
+				
+				controls.callback = function() {
+					var delta = clock.getDelta();
+
+					controls.update( delta );
+				}
 
 				// SCENE
 
@@ -240,8 +250,12 @@
 
 				hblur.uniforms[ 'r' ].value = vblur.uniforms[ 'r' ].value = 0.5;
 				
+				renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBufer: false };
+				renderTarget = new THREE.WebGLRenderTarget( SCREEN_WIDTH, SCREEN_HEIGHT, renderTargetParameters );
 				
-				composer = new THREE.EffectComposer( renderer );
+				
+				composer = new THREE.EffectComposer( renderer, renderTarget );
+				//composer = new THREE.EffectComposer( renderer );
 				composer.addPass( renderScene );
 				
 				composer.addPass( hblur );
@@ -454,12 +468,21 @@
 				stats.update();
 
 			}
+			
+			var minDelta = Number.POSITIVE_INFINITY, maxDelta = Number.NEGATIVE_INFINITY;
+			
 
 			function render() {
 
 				var delta = clock.getDelta();
-
+				minDelta = Math.min(minDelta, delta);
+				maxDelta = Math.max(maxDelta, delta);
+				// 0.015, 0.4
+				
 				controls.update( delta );
+				//console.log(delta);
+				
+				//controls.update( 0.05 );
 
 				renderer.clear();
 				//renderer.render( scene, camera );
