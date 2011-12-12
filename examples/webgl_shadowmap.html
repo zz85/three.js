@@ -369,10 +369,16 @@
 
 			}
 
+			var minDelta = Number.POSITIVE_INFINITY, maxDelta = Number.NEGATIVE_INFINITY;
+			
 			function render() {
 
 				var delta = clock.getDelta();
-
+				minDelta = Math.min(minDelta, delta);
+				maxDelta = Math.max(maxDelta, delta);
+				
+				delta = 0.02;
+				
 				for ( var i = 0; i < morphs.length; i ++ ) {
 
 					morph = morphs[ i ];
@@ -389,9 +395,9 @@
 
 				}
 
-				//controls.update( delta );
-				controls.update( 0.02 );
-
+				
+				controls.update( delta );
+				
 				renderer.clear();
 				renderer.render( scene, camera );
 
