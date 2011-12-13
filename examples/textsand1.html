@@ -14,9 +14,11 @@
 	
 	var text = "Hello Sand! :)";
 	var size = 40;
-	var particleCount = 2000;
+	var particleCount = 10;
 	var particles = [];
 
+
+	var container = document.getElementById('container');
 	
 	// calculate height needed.
 	var div  = document.createElement('div');
@@ -27,23 +29,37 @@
 	
 	// create canvas
 	var canvas = document.createElement("canvas");
-	canvas.width = width;
-	canvas.height = height;
-	
 	
 	var context = canvas.getContext('2d');
 	//context.font = '';
-	//context.measureText(text);
+	//;
 	// textAlign textBaseline
 	context.fillStyle = 'black';
-	context.fillText(text, 20, 20);
+	context.font = "20pt Arial";
 	
-	document.body.appendChild(canvas);
+	width = context.measureText(text).width;
+	width = Math.ceil(width);
+	console.log('width', width);
+
+	
+	canvas.width = width;
+	canvas.height = height;
+	canvas.style.width = width;
+	canvas.style.height = height;
+	
+	console.log('width', width);
+	context.font = "20pt Arial";
+	context.fillText(text, 0, 20);
+	
+	console.log('width, height', width, height);
+	//document.body.appendChild(canvas);
 	
 	var image = context.getImageData( 0, 0, width, height );
 	var data = image.data; //Uint8ClampedArray
 	
-	var x,y, index, hit;
+	console.log('data len', data.length);
+	
+	var x,y, index, hit, testX, testY;
 	
 	for (var i=0; i<particleCount; i++) {
 		x = Math.random() * width;
@@ -52,17 +68,30 @@
 		testX = Math.floor(x);
 		testY = Math.floor(y);
 		
-		index = (testX * width + testY) * 4;
+		index = ((testY * width) + testX ) * 4; //;
 		
-		hit = (data[index] + data[index+1] + data[index+2] + data[index])> (128 * 3);
+		console.log(x, y, testX, testY);
 		
+		console.log(index);
+		hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
+		//console.log((data[index] + data[index+1] + data[index+2]));
 		if (hit) {
 			particles.push({x: x, y: y});
+			var e = createParticleElement();
+			e.move(x*10, y* 10);
 		}
 		
 	}
 	
-	var container = document.getElementById('container');
+	for (i in data) {
+		//console.log(i, data[i]);
+		
+		if (data[i]>0) {
+			
+		}
+	}
+	
+	
 	
 	function createParticleElement() {
 		var elm = document.createElement('canvas');
@@ -87,14 +116,17 @@
 		//document.body.appendChild(elm);
 		container.appendChild(elm);
 
-		return elm;	
+		return {
+			e: elm,
+			move: function(x,y) {
+				this.e.style.left = x;
+				this.e.style.top = y;
+				console.log(x,y);
+			}
+		};
 
 	}
-	
-	var e = createParticleElement();
-	
-	e.style.left = 100;
-	e.style.top = 100;
+
 	
 	//e.style["-webkit-transform"] = "translate3d(" +  5 + "px," + 5 + "px, 0)";
 	//e.style["transform"] = "translateZtranslate3d(" +  5 + "px," + 5 + "px, 0)";
