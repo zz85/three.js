@@ -377,7 +377,11 @@
 				minDelta = Math.min(minDelta, delta);
 				maxDelta = Math.max(maxDelta, delta);
 				
-				//delta = 0.02;
+				
+				if (delta > 0.05) {
+					console.log('a')
+				}
+				delta = Math.min(0.05, delta);
 				
 				for ( var i = 0; i < morphs.length; i ++ ) {
 
