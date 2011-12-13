@@ -73,10 +73,6 @@
 		elm.style.position = 'absolute';
 		elm.style.width = elm.style.height = size+'px';
 		elm.width = elm.height=size;
-
-
-		elm.style.left = '5px';
-		elm.style.top = '5px';
 		
 		var ctx = elm.getContext("2d");
 
@@ -92,26 +88,19 @@
 		container.appendChild(elm);
 
 		return elm;	
-		
-		// look at http://jabtunes.com/labs/particles/particles02c.html
-		/*//this.elm.style.left = Math.floor(this.x) + 'px';
-		//this.elm.style.top = Math.floor(this.y) + 'px';
-		//this.elm.style.MozTransform = "translate(" +  Math.floor(this.x) + "px,  " + Math.floor(this.y) + "px)";
-		//$(this.elm).css("-moz-transform", "translate(" +  Math.floor(this.x) + "px,  " + Math.floor(this.y) + "px)");
-		//this.elm.style.MozTransform = "translate3d(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px, 0px)";
 
-
-		//this.elm.style["-webkit-transform"] = "translate(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px)";
-		this.elm.style["-webkit-transform"] = "translate3d(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px, 0)";
-		*/
 	}
 	
 	var e = createParticleElement();
+	
+	e.style.left = 100;
+	e.style.top = 100;
+	
 	//e.style["-webkit-transform"] = "translate3d(" +  5 + "px," + 5 + "px, 0)";
 	//e.style["transform"] = "translateZtranslate3d(" +  5 + "px," + 5 + "px, 0)";
-
-	//e.style["-moz-transform"] = "translate(" +  5 + "px," + 5 + "px)";
+	//e.style["-moz-transform"] = "translateZtranslate3d(" +  200 + "px," + 50 + "px, 0px)";
 	//e.style["-moz-transform-origin"]  = "0 0;"
+	//e.style["-moz-transform"] =  "translate(" +  100 + "px,  " + Math.floor(200) + "px)";
 	
 	</script>
 	

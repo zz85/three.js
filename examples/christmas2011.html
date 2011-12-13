@@ -400,7 +400,7 @@
 					vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 					fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
 
-					blending: 		THREE.Subtractive, //AdditiveBlending
+					blending: 		THREE.AdditiveBlending, //AdditiveBlending THREE.Subtractive
 					depthWrite:		false,
 					transparent:	true
 
@@ -677,6 +677,7 @@
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
 				var textGeo = new THREE.TextGeometry( "CHRISTMAS", {
+					//ROSE MARIE
 
 					size: 200,
 					height: 50,
