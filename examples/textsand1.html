@@ -14,7 +14,7 @@
 	
 	var text = "Hello Sand! :)";
 	var size = 40;
-	var particleCount = 10;
+	var particleCount = 100000; //100000
 	var particles = [];
 
 
@@ -52,7 +52,7 @@
 	context.fillText(text, 0, 20);
 	
 	console.log('width, height', width, height);
-	//document.body.appendChild(canvas);
+	document.body.appendChild(canvas);
 	
 	var image = context.getImageData( 0, 0, width, height );
 	var data = image.data; //Uint8ClampedArray
@@ -65,16 +65,15 @@
 		x = Math.random() * width;
 		y = Math.random() * height;
 		
-		testX = Math.floor(x);
+		testX = Math.floor(x); // round?
 		testY = Math.floor(y);
 		
-		index = ((testY * width) + testX ) * 4; //;
+		index = (testY * width + testX ) * 4;
+
+		hit = (data[index+3] > 0); //
 		
-		console.log(x, y, testX, testY);
-		
-		console.log(index);
-		hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
-		//console.log((data[index] + data[index+1] + data[index+2]));
+		//hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
+
 		if (hit) {
 			particles.push({x: x, y: y});
 			var e = createParticleElement();
@@ -83,15 +82,7 @@
 		
 	}
 	
-	for (i in data) {
-		//console.log(i, data[i]);
-		
-		if (data[i]>0) {
-			
-		}
-	}
-	
-	
+	console.log('particles hitted', particles.length, particles.length*100/particleCount);
 	
 	function createParticleElement() {
 		var elm = document.createElement('canvas');
@@ -121,7 +112,7 @@
 			move: function(x,y) {
 				this.e.style.left = x;
 				this.e.style.top = y;
-				console.log(x,y);
+				//console.log(x,y);
 			}
 		};
 
