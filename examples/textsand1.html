@@ -3,5 +3,117 @@
 	<title>Text Sand 1</title>
 </head>
 <body>
+	<div id="container" style="display:block; z-index:50;"></div>
+	<p>Description: we are trying to create sand particles to form the shape of text.</p>
+	<p>This approach uses randomness over entire canvas, and eliminating all fall off sand.</p>
+	<p>Randomness - a interesting topic in itself (link intel), but gives possibilities, lots of them really.</p>
+	<p>Using the desired properties of being uniformly distributed...</p>
+	<p id="2">2pm</p>
+		 
+	<script>
+	
+	var text = "Hello Sand! :)";
+	var size = 40;
+	var particleCount = 2000;
+	var particles = [];
+
+	
+	// calculate height needed.
+	var div  = document.createElement('div');
+	div.innerHTML = text;
+	
+	
+	var width = 100, height = 100;
+	
+	// create canvas
+	var canvas = document.createElement("canvas");
+	canvas.width = width;
+	canvas.height = height;
+	
+	
+	var context = canvas.getContext('2d');
+	//context.font = '';
+	//context.measureText(text);
+	// textAlign textBaseline
+	context.fillStyle = 'black';
+	context.fillText(text, 20, 20);
+	
+	document.body.appendChild(canvas);
+	
+	var image = context.getImageData( 0, 0, width, height );
+	var data = image.data; //Uint8ClampedArray
+	
+	var x,y, index, hit;
+	
+	for (var i=0; i<particleCount; i++) {
+		x = Math.random() * width;
+		y = Math.random() * height;
+		
+		testX = Math.floor(x);
+		testY = Math.floor(y);
+		
+		index = (testX * width + testY) * 4;
+		
+		hit = (data[index] + data[index+1] + data[index+2] + data[index])> (128 * 3);
+		
+		if (hit) {
+			particles.push({x: x, y: y});
+		}
+		
+	}
+	
+	var container = document.getElementById('container');
+	
+	function createParticleElement() {
+		var elm = document.createElement('canvas');
+		//elm.style.border = '1px solid rgb('+Math.random()*100+'%,'+Math.random()*100+'%,'+Math.random()*100+'%)';
+
+		var size = 10;
+
+		elm.style.position = 'absolute';
+		elm.style.width = elm.style.height = size+'px';
+		elm.width = elm.height=size;
+
+
+		elm.style.left = '5px';
+		elm.style.top = '5px';
+		
+		var ctx = elm.getContext("2d");
+
+		var alpha = 1;
+		ctx.fillStyle = 'rgba(0, 0, 0,'+alpha+')'; 
+
+		var r = size/3;
+		ctx.arc(size/2,size/2,r,0,Math.PI*2, true);
+
+		ctx.fill();
+
+		//document.body.appendChild(elm);
+		container.appendChild(elm);
+
+		return elm;	
+		
+		// look at http://jabtunes.com/labs/particles/particles02c.html
+		/*//this.elm.style.left = Math.floor(this.x) + 'px';
+		//this.elm.style.top = Math.floor(this.y) + 'px';
+		//this.elm.style.MozTransform = "translate(" +  Math.floor(this.x) + "px,  " + Math.floor(this.y) + "px)";
+		//$(this.elm).css("-moz-transform", "translate(" +  Math.floor(this.x) + "px,  " + Math.floor(this.y) + "px)");
+		//this.elm.style.MozTransform = "translate3d(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px, 0px)";
+
+
+		//this.elm.style["-webkit-transform"] = "translate(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px)";
+		this.elm.style["-webkit-transform"] = "translate3d(" +  Math.floor(this.x) + "px," + Math.floor(this.y) + "px, 0)";
+		*/
+	}
+	
+	var e = createParticleElement();
+	//e.style["-webkit-transform"] = "translate3d(" +  5 + "px," + 5 + "px, 0)";
+	//e.style["transform"] = "translateZtranslate3d(" +  5 + "px," + 5 + "px, 0)";
+
+	//e.style["-moz-transform"] = "translate(" +  5 + "px," + 5 + "px)";
+	//e.style["-moz-transform-origin"]  = "0 0;"
+	
+	</script>
+	
 </body>
 </html>
