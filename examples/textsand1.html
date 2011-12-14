@@ -8,13 +8,15 @@
 	<p>This approach uses randomness over entire canvas, and eliminating all fall off sand.</p>
 	<p>Randomness - a interesting topic in itself (link intel), but gives possibilities, lots of them really.</p>
 	<p>Using the desired properties of being uniformly distributed...</p>
-	<p id="2">2pm</p>
+	<p id="2">2pm -> 10:30am</p>
 		 
 	<script>
 	
 	var text = "Hello Sand! :)";
 	var font = "bold 50pt Arial"; //bold 
-	var particleCount = 20000; //100000
+	var particleCount = 100000; //100000
+	var scale = 5;
+	
 	var particles = [];
 
 	// TODO fine tune stuff.
@@ -91,12 +93,15 @@
 		hit = (data[index+3] > 0); //
 		
 		//hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
+		// Correct for flooring.
+		x += 0.5;
+		y += 0.5;
 		
 		if (hit) {
 			particles.push({x: x, y: y});
 			var e = createParticleElement();
-			//e.move(x*10, y* 10);
-			e.move(x*2, y* 2);
+			//e.move(testX*scale, testY* scale);
+			e.move(x*scale, y* scale);
 		}
 		
 		
