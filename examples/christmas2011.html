@@ -200,10 +200,13 @@
 				tweeny = new TWEEN.Tween(light.position).to({
 					x:300,y:400, z:-600
 					}, 10000).
-					start().chain(new TWEEN.Tween(light.position).to({
-						x:800,y:600, z:1000
-						}, 10000));
+					start();
 					
+					
+					// .chain(new TWEEN.Tween(light.position).to({
+					// 						x:800,y:600, z:1000
+					// 						}, 10000));
+					// 					
 					//.easing(TWEEN.Easing.Elastic.EaseInOut)
 				
 				
@@ -526,8 +529,8 @@
 				sparksEmitter.addAction( new SPARKS.Age() );
 				sparksEmitter.addAction( new SPARKS.Move() );
 				
-				// sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-				sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 2, 100, 500* 2 ) );
+				sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
+				sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 1, 100, 500* 1 ) );
 
 
 				sparksEmitter.addCallback( "created", onParticleCreated );
@@ -676,7 +679,7 @@
 				textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-				var textGeo = new THREE.TextGeometry( "CHRISTMAS", {
+				var textGeo = new THREE.TextGeometry( "MENGLONG", {
 					//ROSE MARIE
 
 					size: 200,

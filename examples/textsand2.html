@@ -12,9 +12,9 @@
 		 
 	<script>
 	
-	var text = "Hello Sand! :)";
+	var text = "你好!"; //"Hello Sand! :)";
 	var font = "bold 50pt Arial"; //bold 
-	var particleCount = 100000; //100000
+	var particleCount = 5000; //100000
 	var scale = 5;
 	
 	var particles = [];
@@ -28,86 +28,87 @@
 	
 	//TODO: Do this correctly!!!
 	// calculate TextBounds needed.
-	var div  = document.createElement('span');
-	div.font = font;
-	div.textContent = text;
-
-	var emHeight = div.offsetHeight;
-	console.log("emHeight", emHeight);
+	// var div  = document.createElement('span');
+	// div.font = font;
+	// div.textContent = text;
+	// 
+	// var emHeight = div.offsetHeight;
+	// console.log("emHeight", emHeight);
 	
-	var width = 100, height = 200;
+	var width, height = 200;
 	
 	// create canvas
 	var canvas = document.createElement("canvas");
 	
 	var context = canvas.getContext('2d');
-	//context.font = '';
-	//;
+
 	// textAlign textBaseline
 	context.fillStyle = 'black';
 	context.font = font;
 	
-	
 	width = context.measureText(text).width;
 	width = Math.ceil(width);
-	console.log('width', width);
 
-	var orginalCanvas = canvasElement();
-	
 	canvas.width = width;
 	canvas.height = height;
 	canvas.style.width = width;
 	canvas.style.height = height;
 	
-	console.log('width', width);
 	context.font = font;
-	
 	
 	//http://www.html5rocks.com/en/tutorials/canvas/texteffects/
 	//!!! http://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
 	context.textBaseline = "top";
-	context.shadowColor = "#eef";
-	context.shadowOffsetX = 5;
-	context.shadowOffsetY = 5;
-	context.shadowBlur = blur;
-	// ctx.fillText(text, -width, 0);
+	// context.shadowColor = "#eef";
+	// context.shadowOffsetX = 5;
+	// context.shadowOffsetY = 5;
+	// context.shadowBlur = blur;
 	
 	context.fillText(text, 0, 0);
 	
 	console.log('width, height', width, height);
 	document.body.appendChild(canvas);
 	
+	
 	var image = context.getImageData( 0, 0, width, height );
 	var data = image.data; //Uint8ClampedArray
 	
-	console.log('data len', data.length);
+	console.log('data length', data.length);
+	
+	
+	var textArea = [];
+	
+	for (i=3, il= data.length;i <il;i+=4) {
+		hit = (data[i] > 0);
+		if (hit) {
+			
+			index = Math.floor(i / 4);
+			x = index % width;
+			y = Math.floor(index / width);
+			
+			textArea.push({x:x, y:y});
+		}
+	}
 	
 	var x,y, index, hit, testX, testY;
 	start = Date.now();
 	
+	//console.log('textarea', textArea);
+	
+	
+	var orginalCanvas = canvasElement();
+	
+	// Take a different approach
 	for (var i=0; i<particleCount; i++) {
-		x = Math.random() * width;
-		y = Math.random() * height;
-		
-		testX = Math.floor(x); // round?
-		testY = Math.floor(y);
-		
-		index = (testY * width + testX ) * 4;
+		index = Math.floor(Math.random() * textArea.length);
+		coods = textArea[index];
+		x = coods.x + Math.random() - 0.5;
+		y = coods.y + Math.random() - 0.5;
 
-		hit = (data[index+3] > 0); //
-		
-		//hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
-		// Correct for flooring.
-		x += 0.5;
-		y += 0.5;
-		
-		if (hit) {
-			particles.push({x: x, y: y});
-			var e = createParticleElement();
-			//e.move(testX*scale, testY* scale);
-			e.move(x*scale, y* scale);
-		}
-		
+			
+		var e = createParticleElement(x*scale, y* scale);
+		//e.move(x*scale, y* scale);
+		particles.push(e);
 		
 	}
 	
@@ -141,7 +142,7 @@
 	
 
 	
-	function createParticleElement() {
+	function createParticleElement(x,y) {
 		// clone element, copy image - chrome 1800 - opera 1300
 		// create element , fill - chrome 2600 opera 2300 
 		// create element , draw image - chrome 2400 opera 2200 
@@ -158,6 +159,7 @@
 		var elm = orginalCanvas.cloneNode(false); //true
 		var ctx = elm.getContext('2d');
 		
+		
 		// var alpha = 1;
 		// ctx.fillStyle = 'rgba(0, 0, 0,'+alpha+')'; 
 		// 
@@ -166,24 +168,72 @@
 		// 
 		// ctx.fill();
 		
+		var _x = x, _y = y;
+		
 		//apply the old canvas to the new one
 	    ctx.drawImage(orginalCanvas, 0, 0, 10, 10);
 
 	    //return the new canvas
 		//document.body.appendChild(elm);
 		container.appendChild(elm);
+		
+		var move = function() {
+			elm.style.left = _x;
+			elm.style.top = _y;
+			
+			//console.log(x,y);
+		}
+		
+		move();
 
 		return {
 			e: elm,
-			move: function(x,y) {
-				this.e.style.left = x;
-				this.e.style.top = y;
+			move: move, 
+			update: function() {
+				_x += (Math.random()-0.5) * 5;
+				_y += (Math.random()-0.5) * 5;
 				
-				//console.log(x,y);
+				move(_x, _y);
+				
 			}
 		};
 
 	}
+	
+	if ( !window.requestAnimationFrame ) {
+
+		window.requestAnimationFrame = ( function() {
+
+			return window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
+
+				window.setTimeout( callback, 1000 / 60 );
+
+			};
+
+		} )();
+
+	}
+	
+	function render() {
+		//console.log('r');
+		particles.forEach(function(a,b) {
+			a.update();
+		});
+		
+	}
+	
+	function rendering() {
+		requestAnimationFrame(rendering);
+		
+		render();
+		
+	}
+	
+	requestAnimationFrame(rendering);
 
 	//this.e.style["-webkit-transform"] = "translate3d(" +  x + "px," + y + "px, 0)";
 	//e.style["-webkit-transform"] = "translate3d(" +  5 + "px," + 5 + "px, 0)";
