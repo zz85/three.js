@@ -13,6 +13,7 @@
 	<script>
 	
 	var text = "Hello Sand! :)";
+	var font = "20pt Arial";
 	var size = 40;
 	var particleCount = 100000; //100000
 	var particles = [];
@@ -20,10 +21,13 @@
 
 	var container = document.getElementById('container');
 	
-	// calculate height needed.
-	var div  = document.createElement('div');
-	div.innerHTML = text;
-	
+	// calculate TextBounds needed.
+	var div  = document.createElement('span');
+	div.font = font;
+	div.textContent = text;
+
+	var emHeight = div.offsetHeight;
+	console.log("emHeight", emHeight);
 	
 	var width = 100, height = 100;
 	
@@ -35,12 +39,14 @@
 	//;
 	// textAlign textBaseline
 	context.fillStyle = 'black';
-	context.font = "20pt Arial";
+	context.font = font;
+	
 	
 	width = context.measureText(text).width;
 	width = Math.ceil(width);
 	console.log('width', width);
 
+	var orginalCanvas = canvasElement();
 	
 	canvas.width = width;
 	canvas.height = height;
@@ -51,6 +57,15 @@
 	context.font = "20pt Arial";
 	context.fillText(text, 0, 20);
 	
+	//http://www.html5rocks.com/en/tutorials/canvas/texteffects/
+	
+	// ctx.textBaseline = “top”
+	// ctx.shadowColor = “#000”
+	// ctx.shadowOffsetX = width;
+	// ctx.shadowOffsetY = 0;
+	// ctx.shadowBlur = blur;
+	// ctx.fillText(text, -width, 0);
+	
 	console.log('width, height', width, height);
 	document.body.appendChild(canvas);
 	
@@ -60,6 +75,7 @@
 	console.log('data len', data.length);
 	
 	var x,y, index, hit, testX, testY;
+	start = Date.now();
 	
 	for (var i=0; i<particleCount; i++) {
 		x = Math.random() * width;
@@ -73,18 +89,21 @@
 		hit = (data[index+3] > 0); //
 		
 		//hit = (data[index] + data[index+1] + data[index+2]) > (128 * 3);
-
+		
 		if (hit) {
 			particles.push({x: x, y: y});
 			var e = createParticleElement();
 			e.move(x*10, y* 10);
 		}
 		
+		
 	}
 	
+	alert('lapse' +( Date.now() - start) );
 	console.log('particles hitted', particles.length, particles.length*100/particleCount);
 	
-	function createParticleElement() {
+	
+	function canvasElement() {
 		var elm = document.createElement('canvas');
 		//elm.style.border = '1px solid rgb('+Math.random()*100+'%,'+Math.random()*100+'%,'+Math.random()*100+'%)';
 
@@ -92,7 +111,7 @@
 
 		elm.style.position = 'absolute';
 		elm.style.width = elm.style.height = size+'px';
-		elm.width = elm.height=size;
+		elm.width = elm.height= size;
 		
 		var ctx = elm.getContext("2d");
 
@@ -103,7 +122,41 @@
 		ctx.arc(size/2,size/2,r,0,Math.PI*2, true);
 
 		ctx.fill();
+		
+		return elm;
+	}
+	
 
+	
+	function createParticleElement() {
+		// clone element, copy image - chrome 1800 - opera 1300
+		// create element , fill - chrome 2600 opera 2300 
+		// create element , draw image - chrome 2400 opera 2200 
+		
+		// 	    var elm = document.createElement('canvas');
+		// 	    var ctx = elm.getContext('2d');
+		// 
+		// var size = 10;
+		// 
+		// elm.style.position = 'absolute';
+		// elm.style.width = elm.style.height = size+'px';
+		// elm.width = elm.height= size;
+	    
+		var elm = orginalCanvas.cloneNode(true)
+		var ctx = elm.getContext('2d');
+		
+		// var alpha = 1;
+		// ctx.fillStyle = 'rgba(0, 0, 0,'+alpha+')'; 
+		// 
+		// var r = size/3;
+		// ctx.arc(size/2,size/2,r,0,Math.PI*2, true);
+		// 
+		// ctx.fill();
+		
+		//apply the old canvas to the new one
+	    ctx.drawImage(orginalCanvas, 0, 0, 10, 10);
+
+	    //return the new canvas
 		//document.body.appendChild(elm);
 		container.appendChild(elm);
 
@@ -112,13 +165,14 @@
 			move: function(x,y) {
 				this.e.style.left = x;
 				this.e.style.top = y;
+				
 				//console.log(x,y);
 			}
 		};
 
 	}
 
-	
+	//this.e.style["-webkit-transform"] = "translate3d(" +  x + "px," + y + "px, 0)";
 	//e.style["-webkit-transform"] = "translate3d(" +  5 + "px," + 5 + "px, 0)";
 	//e.style["transform"] = "translateZtranslate3d(" +  5 + "px," + 5 + "px, 0)";
 	//e.style["-moz-transform"] = "translateZtranslate3d(" +  200 + "px," + 50 + "px, 0px)";
