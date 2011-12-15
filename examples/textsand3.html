@@ -16,7 +16,7 @@
 	
 	var text1 = "你好!"; //
 	var text2 = "Hello! :)";
-	var font = "bold 50pt Arial"; //bold 
+	var font = "bold 100pt Arial"; //bold 
 	var particleCount = 2000; //100000
 	var scale = 2;
 	
@@ -229,8 +229,8 @@
 			
 			var t = Math.sin(delta / 2000) /2 + 0.5;
 			
-			var toX = (_x2 - _x) * t + _x;
-			var toY = (_y2 - _y) * t + _y;
+			var toX = (_x2 - _x) * t * t * t + _x;
+			var toY = (_y2 - _y) * t * t * t + _y;
 			
 			
 			
