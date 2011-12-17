@@ -19,6 +19,8 @@
  *  bevelSize:		<float>, 		// how far from text outline is bevel
  *  bevelSegments:	<int>, 			// number of bevel layers
  *
+ *	useSpacedPoints: <boolean>,		// use spaced points geometry
+ *
  *  extrudePath:	<THREE.CurvePath>	// path to extrude shape along
  *  bendPath:		<THREE.CurvePath> 	// path to bend the geometry around
  *

@@ -55,7 +55,7 @@
 		
 		<script type="x-shader/x-vertex" id="vertexshader">
 
-					attribute float size;
+			attribute float size;
 			attribute vec3 pcolor;
 
 			varying vec3 vColor;
@@ -92,14 +92,46 @@
 		
 		<script>
 
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
+			if ( ! Detector.webgl ) {
+				
+				Detector.addGetWebGLMessage();
+				
+			}
+			
 			var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 
 			var MARGIN = 100;
 
 			var SCREEN_WIDTH = window.innerWidth;
-			var SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
+			var SCREEN_HEIGHT = window.innerHeight;  //
+			
+			var WINDOW_RATIO = SCREEN_WIDTH/SCREEN_HEIGHT;
+			var TARGET_RATIO = 16/9; //16/9, 2.39, 1.85 2.35;
+			
+			console.log('current ratio', WINDOW_RATIO, WINDOW_RATIO  >  TARGET_RATIO, TARGET_RATIO);
+			if (WINDOW_RATIO  < TARGET_RATIO) {
+				// Screen is tall enough
+				var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
+				
+				DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
+				SCREEN_HEIGHT = TARGET_HEIGHT;
+				MARGIN = DIFF / 2;
+				
+				console.log(window.innerHeight - 2 * MARGIN, TARGET_HEIGHT);
+				
+				//console.log('estimate', WINDOW_RATIO/ (window.innerHeight - 2 * MARGIN));
+			} else {
+				//SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
+				console.log('default');
+				var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
+				
+				DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
+				SCREEN_HEIGHT = TARGET_HEIGHT;
+				MARGIN = DIFF / 2;
+			}
+			
+			var OPTIMIZED_WIDTH = 1440;
+			
 			var FLOOR = -250;
 
 			var camera, controls, scene, renderer;
@@ -599,6 +631,7 @@
 				//composer = new THREE.EffectComposer( renderer );
 				composer.addPass( renderScene );
 				
+				composer.addPass(effectFXAA);
 				composer.addPass( hblur );
 				composer.addPass( vblur );
 				//composer.addPass( effectFXAA );
@@ -760,7 +793,9 @@
 				bodyMesh.castShadow = !false;
 				bodyMesh.receiveShadow = !false;
 				
-				// Create hands for snowman.
+
+				
+				// Create Skawf, create Hat, face
 				
 				
 				snowman.castShadow = false;
@@ -771,6 +806,55 @@
 				
 				snowman.add(headMesh);
 				snowman.add(bodyMesh);
+				
+				
+				// Create hands for snowman.
+				
+				// Can use cyclinder / lines
+				var stick = new THREE.CylinderGeometry(5,5, 80);
+				armMesh = new THREE.Mesh( stick, planeMaterial );
+				finger1 = new THREE.Mesh( stick, planeMaterial );
+				finger2 = new THREE.Mesh( stick, planeMaterial );
+				finger3 = new THREE.Mesh( stick, planeMaterial );
+				
+				finger1.rotation.z = Math.PI / 6;
+				finger2.rotation.z = Math.PI / 6 * 2;
+				finger3.rotation.z = Math.PI / 6 * 3;
+				
+				finger2.position.set(-10, -10, 0);
+				finger3.position.set(-20, -30, 0);
+				
+				fingers = new THREE.Object3D();
+				fingers.scale.set(0.5,0.5,0.5);
+				fingers.position.y = 60;
+				fingers.rotation.z = -Math.PI / 6;
+
+				fingers.add(finger1);
+				fingers.add(finger2);
+				fingers.add(finger3);
+				
+				// hands
+				handMesh = new THREE.Object3D();
+				handMesh.add(armMesh);
+				handMesh.add(fingers);
+				handMesh.rotation.z = 1;
+				handMesh.position.y = -100;
+				handMesh.position.x = -150;
+				//handMesh.position.z = 200;
+				// handMesh.castShadow = !false;
+				// handMesh.receiveShadow = !false;
+
+				cloned = THREE.SceneUtils.cloneObject(handMesh);
+				handsRight = new THREE.Object3D();
+				handsRight.add(cloned);
+				handsRight.scale.x = -1
+
+				snowman.add(handsRight);
+				
+				//scene.add(handMesh);
+				snowman.add(handMesh);
+				
+				
 				
 				scene.add(snowman);
 
