@@ -16,7 +16,8 @@
 	<body>
 
 		<script src="../build/Three.js"></script>
-		<script src="Director.js"></script>
+		<script src="http://vorg.github.com/timeline.js/src/timeline.js"></script>
+		<script src="http://vorg.github.com/timeline.js/src/timeline-gui.js"></script>
 
 		<script src="js/Stats.js"></script>
 
@@ -36,9 +37,6 @@
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
-			
-			
-			var director = new THREE.Director();
 			
 			
 			
@@ -105,18 +103,55 @@
 				
 				// Director
 				
-				director.start();
+				// anim("cube",cube.scale)
+				// 	.to({"x":1, y: 1},0)
+				// 	.to({"x":2, y: 1.5},1, Timeline.Easing.Cubic.EaseInOut) //Bounce
+				// 	.to({"x":1, y: 1},1, Timeline.Easing.Cubic.EaseOut);
 				
-				// Generic Event / Action
-				director.addAction(500, function() {
-					cube.scale.x = 2;
-				}).addAction(1000, function() {
-					cube.scale.y = 2;
-				}).addAction(1500, function() {
-					cube.rotation.y += 0.5;
-				});
+				// Can't do nesting
+				// Can't do Actions
+				// No jPaths.
+				// No Expressions
+				
+				// anim("cube",cube)
+				// 		.to({scale:{"x":1, y: 1}},0)
+				// 		.to({scale:{"x":2, y: 1.5}},1, Timeline.Easing.Cubic.EaseInOut) //Bounce
+				// 		.to({scale:{"x":1, y: 1}},1, Timeline.Easing.Cubic.EaseOut);
+
+				// anim("cube scale",cube.scale)
+				// 	.to({"x":1, "y": 1},0)
+				// 	.to({"x":0.8, "y": 2},1, Timeline.Easing.Cubic.EaseOut) //Bounce
+				// 	.to({"x":1, "y": 1},1, Timeline.Easing.Cubic.EaseOut);				
+				
+				anim("cube position",cube.position)
+						.to({"x":0, y: 100},0)
+						.to({"x":0, y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
+						.to({"x":0, y: 100},1, Timeline.Easing.Bounce.EaseOut)
+						.to({"x":0, y: 100},1);
+					
+				anim("cube rotation",cube.rotation)
+					.to({"x":0, y: 0},0)
+					.to({"x":0, y: 1},1, Timeline.Easing.Cubic.EaseOut) //Bounce
+					.to({"x":0, y: 2},1, Timeline.Easing.Cubic.EaseOut);
 				
 				
+				Timeline.getGlobalInstance().loop(-1); //loop forever
+				
+				// ++ Done. GUI.
+	
+	
+				
+				
+				// // Generic Event / Action
+				// director.addAction(500, function() {
+				// 	cube.scale.x = 2;
+				// }).addAction(1000, function() {
+				// 	cube.scale.y = 2;
+				// }).addAction(1500, function() {
+				// 	cube.rotation.y += 0.5;
+				// });
+				// 
+				// cube.rotation.y +=
 				
 				// API tests
 				
@@ -124,42 +159,6 @@
 
 			}
 			
-			function apiTests () {
-				
-				//@ next action
-				
-				director.addNextAction(500, event); // <---
-				
-				director.addAction( director.fromLast(500), event ); // <-- object based?
-				
-				director.addAction( currentTime, event ); // <-- Let user control
-				currentTime += 500;
-				
-				director.addAction( atFrame(23), event ); // <-- Functions Library
-				
-				director.addActionAtFrame( 23, event ); // <--- Thick Library
-				
-				director.addAction( { frame: 23 } ); // <-- JSON Style
-				
-				director.addAction("frame: 23"); // <-- CLI style. Regex 
-				
-
-				//@ Assign Event / Action
-				director.addAction(500, new Assign('cube.scale.x', 5));
-				
-				//or
-				
-				director.addAssign(500, new Assign('cube.scale.x', 5));
-				
-				//@ Call methods
-				
-				director.addAssign(500, new Assign('cube.scale.x', 5));
-				
-				
-				// To meta Data. To JSON?
-				// JSONify Functions? ARGUMENTS?				
-				
-			}
 
 			//
 
@@ -236,8 +235,6 @@
 				//plane.rotation.z = cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
 				renderer.render( scene, camera );
 				
-				director.update();
-
 			}
 
 		</script>

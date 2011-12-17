@@ -142,7 +142,10 @@
 			//http://blog.cjcat.net/2011/02/stardust-touch-ups-for-brilliant-scenary/
 			
 			// http://flintparticles.org/examples/rain collision
-
+			
+			
+			// Music Online.
+			
 			var light;
 
 			var clock = new THREE.Clock();
@@ -433,16 +436,6 @@
 				scene.add( particleCloud );
 				//particleCloud.y = 800;
 				
-				
-				// Emitter Stuff
-				var initializerCallback = function() {
-
-					var target = ParticlePool.get();
-					
-					return target;
-
-				};
-
 				var onParticleCreated = function( p ) {
 					
 					var target = ParticlePool.get();
@@ -521,8 +514,6 @@
 
 				sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
 				sparksEmitter.addInitializer(new SPARKS.Lifetime(5,10));
-				//sparksEmitter.addInitializer(new SPARKS.Target( null, initializerCallback ) );
-
 
 				sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -100, 50 ) ) ) );
 
@@ -679,7 +670,7 @@
 				textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-				var textGeo = new THREE.TextGeometry( "MENGLONG", {
+				var textGeo = new THREE.TextGeometry( "CALEB KOO", {
 					//ROSE MARIE
 
 					size: 200,
