@@ -116,15 +116,53 @@
 					cube.rotation.y += 0.5;
 				});
 				
+				/// Tweens?
+				
+				direction.addTween(100, function() {
+					// before
+					// after?
+				});
 				
 				
-				// API tests
+				
+				
 				
 
 
 			}
 			
+			var Recorder = function() {
+				
+				this._started = false;
+				this._recordings = [];
+				
+				this.start = function() {
+					this._started = true;
+					this._startTime = Date.now();
+				};
+				
+				// records event
+				this.record = function(event) {
+					
+					var time = Date.now();
+					var runningTime = time - this._startTime;
+					
+					this._recording.push({
+						time: runningTime,
+						event: event
+						// todo: copies argument too?
+					});
+					
+				};
+				
+				this.stop = function() {
+					
+				}
+				
+			};
+			
 			function apiTests () {
+				// API tests
 				
 				//@ next action
 				
