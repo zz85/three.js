@@ -35,6 +35,8 @@
 
 		<script src="js/ShaderExtras.js"></script>
 		
+		<script src="js/timeline.js"></script>
+		<script src="js/timeline-gui.js"></script>
 		<script src="js/Tween.js"></script>
 		<script src="js/Sparks.js"></script>
 
@@ -106,28 +108,28 @@
 			var SCREEN_HEIGHT = window.innerHeight;  //
 			
 			var WINDOW_RATIO = SCREEN_WIDTH/SCREEN_HEIGHT;
-			var TARGET_RATIO = 16/9; //16/9, 2.39, 1.85 2.35;
+			var TARGET_RATIO = 2.93; //16/9, 2.39, 1.85 2.35;
 			
 			console.log('current ratio', WINDOW_RATIO, WINDOW_RATIO  >  TARGET_RATIO, TARGET_RATIO);
 			if (WINDOW_RATIO  < TARGET_RATIO) {
 				// Screen is tall enough
-				var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
+				var TARGET_HEIGHT = Math.round(SCREEN_WIDTH / TARGET_RATIO);
 				
 				DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
 				SCREEN_HEIGHT = TARGET_HEIGHT;
 				MARGIN = DIFF / 2;
 				
 				console.log(window.innerHeight - 2 * MARGIN, TARGET_HEIGHT);
-				
+				//http://en.wikipedia.org/wiki/Aspect_ratio_(image)
 				//console.log('estimate', WINDOW_RATIO/ (window.innerHeight - 2 * MARGIN));
 			} else {
-				//SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
+				SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
 				console.log('default');
-				var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
-				
-				DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
-				SCREEN_HEIGHT = TARGET_HEIGHT;
-				MARGIN = DIFF / 2;
+				// var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
+				// 
+				// DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
+				// SCREEN_HEIGHT = TARGET_HEIGHT;
+				// MARGIN = DIFF / 2;
 			}
 			
 			var OPTIMIZED_WIDTH = 1440;
@@ -176,7 +178,13 @@
 			// http://flintparticles.org/examples/rain collision
 			
 			
-			// Music Online.
+			// 
+			
+			// Text Particles
+			// Scarf
+			// Director Tweens
+			// Real Time Audio
+			// SERVER SIDE STORE
 			
 			var light;
 
@@ -235,13 +243,10 @@
 				tweeny = new TWEEN.Tween(light.position).to({
 					x:300,y:400, z:-600
 					}, 10000).
-					start();
-					
-					
-					// .chain(new TWEEN.Tween(light.position).to({
-					// 						x:800,y:600, z:1000
-					// 						}, 10000));
-					// 					
+					start().chain(new TWEEN.Tween(light.position).to({
+											x:800,y:600, z:1000
+											}, 10000));
+										
 					//.easing(TWEEN.Easing.Elastic.EaseInOut)
 				
 				
@@ -703,7 +708,7 @@
 				textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-				var textGeo = new THREE.TextGeometry( "CALEB KOO", {
+				var textGeo = new THREE.TextGeometry( "KENT", {
 					//ROSE MARIE
 
 					size: 200,
@@ -836,13 +841,15 @@
 				// hands
 				handMesh = new THREE.Object3D();
 				handMesh.add(armMesh);
-				handMesh.add(fingers);
+				// handMesh.add(fingers);
 				handMesh.rotation.z = 1;
 				handMesh.position.y = -100;
 				handMesh.position.x = -150;
 				//handMesh.position.z = 200;
 				// handMesh.castShadow = !false;
 				// handMesh.receiveShadow = !false;
+				
+				// SCARF??
 
 				cloned = THREE.SceneUtils.cloneObject(handMesh);
 				handsRight = new THREE.Object3D();
@@ -857,7 +864,14 @@
 				
 				
 				scene.add(snowman);
-
+				
+				// anim("cube position",snowman.position)
+				// 		.to({ y: 100},0)
+				// 		.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
+				// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
+				// 
+				// 		Timeline.getGlobalInstance().loop(-1); //loop forever
+				// 
 			}
 			
 			 function lensFlareUpdateCallback( object ) {
