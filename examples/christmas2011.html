@@ -110,6 +110,9 @@
 			var WINDOW_RATIO = SCREEN_WIDTH/SCREEN_HEIGHT;
 			var TARGET_RATIO = 2.93; //16/9, 2.39, 1.85 2.35;
 			
+			var OPTIMIZED_WIDTH = 1440;
+			var RESIZE_FACTOR = SCREEN_WIDTH / OPTIMIZED_WIDTH;
+			
 			console.log('current ratio', WINDOW_RATIO, WINDOW_RATIO  >  TARGET_RATIO, TARGET_RATIO);
 			if (WINDOW_RATIO  < TARGET_RATIO) {
 				// Screen is tall enough
@@ -186,7 +189,7 @@
 			// Real Time Audio
 			// SERVER SIDE STORE
 			
-			var light;
+			var light, ambient;
 
 			var clock = new THREE.Clock();
 
@@ -201,7 +204,7 @@
 
 				// SCENE CAMERA
 
-				camera = new THREE.PerspectiveCamera( 23, SCREEN_WIDTH / SCREEN_HEIGHT, NEAR, FAR );
+				camera = new THREE.PerspectiveCamera( 23, TARGET_RATIO, NEAR, FAR );
 				camera.position.set( 700, 50, 1800 ); //700, 50, 1900
 				
 				
@@ -231,7 +234,9 @@
 
 				// LIGHTS
 
-				var ambient = new THREE.AmbientLight( 0x444444 );
+				//var ambient = new THREE.AmbientLight( 0x444444 );
+				ambient = new THREE.AmbientLight( 0xffffff );
+				ambient.color.setHSV(0,0,0.4);
 				scene.add( ambient );
 
 				light = new THREE.SpotLight( 0xffffff );
@@ -559,6 +564,12 @@
 				
 				sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
 				sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 1, 100, 500* 1 ) );
+				
+				
+				sparksEmitter.addAction( new SPARKS.DeathZone( new SPARKS.CubeZone(
+						new THREE.Vector3(-5000, FLOOR, -5000),
+						10000, -5000, 10000
+					) ) );
 
 
 				sparksEmitter.addCallback( "created", onParticleCreated );
@@ -590,7 +601,8 @@
 				renderer.shadowMapEnabled = true;
 				renderer.shadowMapSoft = true;
 				
-				// for flare
+				// PHYSICAL SHADING
+				
 				renderer.gammaInput = true;
 				renderer.gammaOutput = true;
 				renderer.physicallyBasedShading = true;
@@ -605,7 +617,7 @@
 				var renderScene = new THREE.RenderPass( scene, camera );
 				
 				
-				// var effectBloom = new THREE.BloomPass( 0.25 );
+				var effectBloom = new THREE.BloomPass( 0.25 );
 				// var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
 				var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );				
 				effectFXAA.uniforms[ 'resolution' ].value.set( 1 / SCREEN_WIDTH, 1 / SCREEN_HEIGHT );
@@ -623,8 +635,8 @@
 
 				var bluriness = 6;
 
-				hblur.uniforms[ 'h' ].value = bluriness / SCREEN_WIDTH;
-				vblur.uniforms[ 'v' ].value = bluriness / SCREEN_HEIGHT;
+				hblur.uniforms[ 'h' ].value = bluriness / SCREEN_WIDTH * RESIZE_FACTOR;
+				vblur.uniforms[ 'v' ].value = bluriness / SCREEN_HEIGHT * RESIZE_FACTOR;
 
 				hblur.uniforms[ 'r' ].value = vblur.uniforms[ 'r' ].value = 0.5;
 				
@@ -636,15 +648,18 @@
 				//composer = new THREE.EffectComposer( renderer );
 				composer.addPass( renderScene );
 				
-				composer.addPass(effectFXAA);
+
+				//composer.addPass(effectFXAA);
+				
+				// composer.addPass( effectBloom );
+				
 				composer.addPass( hblur );
 				composer.addPass( vblur );
+				
 				//composer.addPass( effectFXAA );
 				//effectFXAA.renderToScreen = true;
 				
-				//composer.addPass( renderModel );
-				//composer.addPass( effectFXAA );
-				//composer.addPass( effectBloom );
+	
 				//composer.addPass( effectFilm );
 				composer.passes[composer.passes.length-1].renderToScreen = true;
 
@@ -708,7 +723,7 @@
 				textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-				var textGeo = new THREE.TextGeometry( "KENT", {
+				var textGeo = new THREE.TextGeometry( "JFK", {
 					//ROSE MARIE
 
 					size: 200,
@@ -753,38 +768,30 @@
 
 				scene.add( textMesh );
 
-				// Steps Cubes
-
-				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 1800, 220, 150 ), planeMaterial );
-
-				mesh.position.y = FLOOR - 50;
-				mesh.position.z = 20;
-
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-
-				//scene.add( mesh );
-
-				var mesh = new THREE.Mesh( new THREE.CubeGeometry( 2000, 170, 250 ), planeMaterial ); //textMaterial
-
-				mesh.position.y = FLOOR - 50;
-				mesh.position.z = 20;
-
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-
-				//scene.add( mesh );
-				
-				
 				// SNOW MAN
 				
 				var head = new THREE.OctahedronGeometry( 100, 4 ); //SphereGeometry
 				var body = new THREE.OctahedronGeometry( 140, 4 ); // new THREE.SphereGeometry( 140, 20, 20 );
-				body.applyMatrix( new THREE.Matrix4().setScale( 1, 0.8, 1 ) );
+				var fist = new THREE.OctahedronGeometry( 20, 2 ); //SphereGeometry
+				body.applyMatrix( new THREE.Matrix4().setScale( 1, 1, 1 ) );
 				
 				
 				var headMesh = new THREE.Mesh( head, planeMaterial ); //planeMaterial
 				var bodyMesh = new THREE.Mesh( body, planeMaterial ); //snowMaterial
+				
+				noseMesh = new THREE.Mesh( fist, planeMaterial );
+				noseMesh.scale.set(0.5, 0.5, 0.5);
+				noseMesh.position.z = 100;
+				
+				
+				eyesRight = new THREE.Mesh( fist, planeMaterial );
+				eyesLeft = new THREE.Mesh( fist, planeMaterial );
+				
+				eyesRight.scale.set(0.25, 0.25, 0.25);
+				eyesLeft.scale.set(0.25, 0.25, 0.25);
+				
+				eyesRight.position.set(-50, 50, 70);
+				eyesLeft.position.set(50,50,70);
 				
 				bodyMesh.position.y -= 180;
 				
@@ -798,6 +805,7 @@
 				bodyMesh.castShadow = !false;
 				bodyMesh.receiveShadow = !false;
 				
+				//bodyMesh.scale.y = 1.2;
 
 				
 				// Create Skawf, create Hat, face
@@ -812,6 +820,9 @@
 				snowman.add(headMesh);
 				snowman.add(bodyMesh);
 				
+				snowman.add(noseMesh);
+				snowman.add(eyesLeft);
+				snowman.add(eyesRight);
 				
 				// Create hands for snowman.
 				
@@ -821,6 +832,12 @@
 				finger1 = new THREE.Mesh( stick, planeMaterial );
 				finger2 = new THREE.Mesh( stick, planeMaterial );
 				finger3 = new THREE.Mesh( stick, planeMaterial );
+				fistMesh = new THREE.Mesh( fist, planeMaterial );
+				
+				
+				fistMesh.position.y = 60; // 20 - 60
+				
+				
 				
 				finger1.rotation.z = Math.PI / 6;
 				finger2.rotation.z = Math.PI / 6 * 2;
@@ -841,7 +858,9 @@
 				// hands
 				handMesh = new THREE.Object3D();
 				handMesh.add(armMesh);
+				handMesh.add(fistMesh);
 				// handMesh.add(fingers);
+				
 				handMesh.rotation.z = 1;
 				handMesh.position.y = -100;
 				handMesh.position.x = -150;
