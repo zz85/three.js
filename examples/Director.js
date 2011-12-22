@@ -73,3 +73,39 @@ THREE.Director.prototype.update = function() {
 THREE.Event = function(time, action) {
 	
 };
+
+
+
+var Recorder = function() {
+	
+	this._started = false;
+	this._recordings = [];
+	
+	this.start = function() {
+		this._started = true;
+		this._startTime = Date.now();
+	};
+	
+	// records event
+	this.record = function(event) {
+		
+		var time = Date.now();
+		var runningTime = time - this._startTime;
+		
+		this._recording.push({
+			time: runningTime,
+			event: event
+			// todo: copies argument too?
+		});
+		
+	};
+	
+	this.stop = function() {
+		this._started = false;
+	};
+	
+	this.hasStarted = function() {
+		return this._started;
+	};
+	
+};

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Aurora using Simplex Noise</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+	</head>
+	<body>
+		<style>
+		 body {
+			background-color: lightblue;
+		}
+		</style>
+		<script src="../build/Three.js"></script>
+		<script src="js/SimplexNoise.js"></script>
+
+		<script>
+		var context;
+			/* CPU Based method */
+			function createCloudTexture(width, height) {
+				var canvas = document.createElement("canvas");
+				canvas.width = width;
+				canvas.height = height;
+				
+				//var 
+				context = canvas.getContext('2d');
+				
+				//var image = context.createImageData( width, height );
+				
+				
+				
+				
+				var simplex = new SimplexNoise();
+				
+				
+				
+				
+				document.body.appendChild(canvas);
+				
+				this.redraw = function() {
+					
+					
+					
+					context.clearRect(0, 0, width, height);
+					context.fillStyle = 'blue';
+					context.fillRect(0,0, width, height);
+					
+					var image = context.getImageData( 0, 0, width, height );
+					
+					var imageData = image.data;
+					
+					var now = Date.now();
+					var w,h, n;
+					
+					// settings
+					var octaves = 1;
+					var cloudSharpness = 0.9; // 0 for fuzzy clouds, 1 for abruptly ending clouds (0.6-0.9 recommended)
+					var cloudColor = 0.8; // 0 no clouds, 1 full clouds (0.6-1)
+				
+					var scaleX = 4, scaleY = 0.25;
+				
+					
+					
+				
+					var now = Date.now();
+					var w,h, n;
+					
+					var time = now / 10000;
+					
+					for ( var i = 0, j = 0, l = imageData.length; i < l; i += 4, j ++  ) {
+					
+						h = Math.floor( j/width );
+						w = j % width;
+					
+						n = 0;
+						var frequency = 1;
+						var persistance = 0.5;
+						var amptitude ;
+					
+						for (var oi=0; oi < octaves; oi++) {
+							frequency *= 2;
+							amptitude =  Math.pow(persistance, oi);
+						
+							n += simplex.noise3d(w/width * frequency * scaleX, h/height* frequency * scaleY, time)  * amptitude ;
+						}
+
+					
+						var factor = n* 0.5 + 0.5; // + 1 ) * 0.5
+						n = Math.floor( factor * 255); //Math.floor
+					
+						imageData[ i ] = Math.floor( factor * imageData[ i ]);
+						imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
+						imageData[ i + 2] = Math.floor( factor * imageData[ i + 2 ]);
+						
+						// imageData[ i ] = n;
+						// imageData[ i + 1 ] = n;
+						// imageData[ i + 2 ] = n;
+
+											
+						// imageData[ i + 3 ] = 255;					
+					
+						// imageData[ i ] = 255;
+						// imageData[ i + 1 ] = 255;
+						// imageData[ i + 2 ] = 255;
+						// imageData[ i + 3 ] = n;
+					
+			
+					}
+					context.putImageData( image, 0, 0 );
+					
+					console.log('done', Date.now() - now);
+
+				}
+				
+				this.redraw();
+				
+				return this;
+			}
+			
+			var canvas = createCloudTexture(800, 600)
+			animate();
+
+	
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+
+			}
+
+			function render() {
+				canvas.redraw();
+			}
+
+		</script>
+	</body>
+</html>

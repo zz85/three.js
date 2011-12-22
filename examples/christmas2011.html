@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>A White Christmas Greetings</title>
+		<title>A Little Christmas Greetings</title>
 		<!-- three.js
 			Shadow mapping, particles, 
 			procedural text, snowman, lens flare
-			
+			white christmas
 			 -->
 		
 		<meta charset="utf-8">
@@ -44,6 +44,7 @@
 		<script src="js/timeline.js"></script>
 		<script src="js/timeline-gui.js"></script>
 		<script src="js/Tween.js"></script>
+		<script src="Director.js"></script>
 		<script src="js/Sparks.js"></script>
 
 		<script src="js/Detector.js"></script>
@@ -650,9 +651,9 @@
 				composer.addPass( renderScene );
 				
 				
-				composer.addPass( effectSepia );
+				// composer.addPass( effectSepia );
 				// composer.addPass( effectVignette );
-				//composer.addPass(effectFXAA);
+				// composer.addPass(effectFXAA);
 				// composer.addPass( effectBloom );
 				// composer.addPass( effectFilm );
 				
@@ -843,7 +844,7 @@
 				// Create hands for snowman.
 				
 				// Can use cyclinder / lines
-				var stick = new THREE.CylinderGeometry(5,5, 80);
+				var stick = new THREE.CylinderGeometry(5,5, 70);
 				armMesh = new THREE.Mesh( stick, planeMaterial );
 				finger1 = new THREE.Mesh( stick, planeMaterial );
 				finger2 = new THREE.Mesh( stick, planeMaterial );
@@ -851,7 +852,7 @@
 				fistMesh = new THREE.Mesh( fist, planeMaterial );
 				
 				
-				fistMesh.position.y = 60; // 20 - 60
+				fistMesh.position.y = 55; // 20 - 60 // funny ordering bug in clone 
 				
 				
 				
@@ -887,7 +888,7 @@
 				// SCARF??
 				// using donut and ribbon?
 
-				cloned = THREE.SceneUtils.cloneObject(handMesh);
+				cloned = THREE.SceneUtils.cloneObject(handMesh); //THREE.GeometryUtils.merge
 				handsRight = new THREE.Object3D();
 				handsRight.add(cloned);
 				handsRight.scale.x = -1
