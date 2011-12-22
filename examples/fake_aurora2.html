@@ -40,15 +40,18 @@
 				
 				this.redraw = function() {
 					
-					
-					
 					context.clearRect(0, 0, width, height);
-					context.fillStyle = 'blue';
-					context.fillRect(0,0, width, height);
+					//context.fillStyle = 'white';
+					//context.fillRect(0, 0, width, height);
+					context.fillStyle = 'blue'; //lightblue
+					//context.fillRect(0,0, width, height);
+					context.fillRect(0,height/2, width, height);
 					
 					var image = context.getImageData( 0, 0, width, height );
+					var image2 = context.getImageData( 0, 0, width, height );
 					
 					var imageData = image.data;
+					var imageData2 = image2.data;
 					
 					var now = Date.now();
 					var w,h, n;
@@ -86,13 +89,61 @@
 						}
 
 					
+						var m = n;
 						var factor = n* 0.5 + 0.5; // + 1 ) * 0.5
 						n = Math.floor( factor * 255); //Math.floor
 					
-						imageData[ i ] = Math.floor( factor * imageData[ i ]);
-						imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
-						imageData[ i + 2] = Math.floor( factor * imageData[ i + 2 ]);
+						// Light green / light blue
 						
+						function displace(m, a) {
+							return imageData2[ a + Math.floor(m * height * 0.5) * 4 * width  ];
+						}
+						
+						// Displacement Map?
+						// if (imageData[ i + 3 ]>0) {
+							imageData[ i ] = displace( m, i);
+							imageData[ i + 1 ] = displace( m, i+1 );
+							imageData[ i + 2 ] = displace( m, i+2 );
+							imageData[ i + 3 ] = 255;
+						// }
+
+						
+						// n += 1;
+						// imageData[ i ] = Math.floor( factor * imageData[ i ]);
+						// imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
+						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
+						
+						// Multiply ** (best!!!)
+						// imageData[ i ] = Math.floor( factor * imageData[ i ]);
+						// imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
+						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
+						
+						// Divide
+						// imageData[ i ] = Math.floor( imageData[ i ] / factor);
+						// imageData[ i + 1 ] = Math.floor( imageData[ i + 1] / factor);
+						// imageData[ i + 2 ] = Math.floor( imageData[ i + 2 ] / factor);
+						
+						// Additive
+						// imageData[ i ] += n ;
+						// imageData[ i + 1 ] += n;
+						// imageData[ i + 2 ] += n;
+						
+						// Subtractive
+						// imageData[ i ] -= n ;
+						// imageData[ i + 1 ] -= n;
+						// imageData[ i + 2 ] -= n;
+
+						// Reverse subtractive
+						// imageData[ i ] = n - imageData[ i ] ;
+						// imageData[ i + 1 ] = n - imageData[ i + 1 ];
+						// imageData[ i + 2 ] = n - imageData[ i + 2 ];
+						
+						// Blend
+						// imageData[ i ] = (n + imageData[ i ]) /2 ;
+						// imageData[ i + 1 ] = (n + imageData[ i + 1 ]) /2;
+						// imageData[ i + 2 ] = (n + imageData[ i + 2 ]) /2;
+						
+						// Noise only
 						// imageData[ i ] = n;
 						// imageData[ i + 1 ] = n;
 						// imageData[ i + 2 ] = n;
