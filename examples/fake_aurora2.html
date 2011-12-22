@@ -28,9 +28,6 @@
 				
 				//var image = context.createImageData( width, height );
 				
-				
-				
-				
 				var simplex = new SimplexNoise();
 				
 				
@@ -46,12 +43,20 @@
 					//context.fillStyle = 'white';
 					//context.fillRect(0, 0, width, height);
 					
+					context.save();
+					var gradient = context.createLinearGradient( 0, 0, 0, height );
+					gradient.addColorStop( 0, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+					context.fillRect(0,0, width, height);
 					
-					//var gradient = context.createLinearGradient( 0,0, width, height );
-					var gradient = context.createLinearGradient( 0,0, width, height );
+					context.restore();
+					
+					// var gradient = context.createLinearGradient( 0,0, width, height );
+					var gradient = context.createLinearGradient( 0 ,height, width, height );
+					// var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
 
-					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
-					gradient.addColorStop( (Math.sin(time)+1) * 0.5 *0.2, 'rgba(100,0,0,1)' );
+					gradient.addColorStop( 0, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( (Math.sin(time)+1) * 0.5 * 0.2, 'rgba(100,0,0,1)' );
 					gradient.addColorStop( (Math.cos(time)+1) * 0.5 * 0.2 + 0.4 , 'rgba(0,200,0,1)' ); // 0.6
 					gradient.addColorStop( 1, 'rgba(0,0,200,1)' );
 
@@ -71,11 +76,8 @@
 					var w,h, n;
 					
 					// settings
-					var octaves = 1;
-					var cloudSharpness = 0.9; // 0 for fuzzy clouds, 1 for abruptly ending clouds (0.6-0.9 recommended)
-					var cloudColor = 0.8; // 0 no clouds, 1 full clouds (0.6-1)
-				
-					var scaleX = 4, scaleY = 0.25;
+					var octaves = 1;				
+					var scaleX = 4 /octaves, scaleY = 0.25 /octaves;
 				
 					
 					
@@ -172,7 +174,7 @@
 					}
 					context.putImageData( image, 0, 0 );
 					
-					console.log('done', Date.now() - now);
+					//console.log('done', Date.now() - now);
 
 				}
 				
@@ -182,6 +184,7 @@
 			}
 			
 			var canvas = createCloudTexture(800, 600)
+			// var canvas = createCloudTexture(512, 380)
 			animate();
 
 	
