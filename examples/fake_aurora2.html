@@ -26,11 +26,12 @@
 				//var 
 				context = canvas.getContext('2d');
 				
-				//var image = context.createImageData( width, height );
+				
 				
 				var simplex = new SimplexNoise();
 				
-				
+				// Other techniques
+				// 1. Brush / Artistic Image http://www.industrialassets.co.uk/blog/?p=77
 				
 				
 				document.body.appendChild(canvas);
@@ -43,17 +44,14 @@
 					//context.fillStyle = 'white';
 					//context.fillRect(0, 0, width, height);
 					
-					context.save();
-					var gradient = context.createLinearGradient( 0, 0, 0, height );
-					gradient.addColorStop( 0, 'rgba(200,200,200,1)' );
-					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
-					context.fillRect(0,0, width, height);
-					
-					context.restore();
+
+					// TODO Radial Gradients
+					// http://www.trapcode.com/sharelog/2010/3/17/aurora-borealis.html
+					// Shine Rays map next time!!!!
 					
 					// var gradient = context.createLinearGradient( 0,0, width, height );
-					var gradient = context.createLinearGradient( 0 ,height, width, height );
-					// var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
+					// var gradient = context.createLinearGradient( 0 ,height, width, height );
+					var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
 
 					gradient.addColorStop( 0, 'rgba(200,200,200,1)' );
 					gradient.addColorStop( (Math.sin(time)+1) * 0.5 * 0.2, 'rgba(100,0,0,1)' );
@@ -66,7 +64,19 @@
 					context.fillRect(0,0, width, height);
 					// context.fillRect(0,height/2, width, height);
 					
-					var image = context.getImageData( 0, 0, width, height );
+					context.save();
+					context.globalCompositeOperation = 'lighter';
+					var gradient = context.createLinearGradient( 0, 0, 0, height );
+					gradient.addColorStop( 0, 'rgba(0,0,0,0.5)' );
+					gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+					context.fillStyle = gradient;
+					context.fillRect(0,0, width, height);
+					
+					context.restore();
+					
+					// var image = context.getImageData( 0, 0, width, height );
+					var image = context.createImageData( width, height );
+					
 					var image2 = context.getImageData( 0, 0, width, height );
 					
 					var imageData = image.data;
@@ -128,9 +138,10 @@
 						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
 						
 						// Multiply ** (best!!!)
-						imageData[ i ] = Math.floor( factor * imageData[ i ]);
-						imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
-						imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
+						imageData[ i ] = Math.floor( factor * imageData2[ i ]);
+						imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
+						imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
+						imageData[ i + 3 ] = 255;
 						
 						// Divide
 						// imageData[ i ] = Math.floor( imageData[ i ] / factor);
@@ -183,8 +194,8 @@
 				return this;
 			}
 			
-			var canvas = createCloudTexture(800, 600)
-			// var canvas = createCloudTexture(512, 380)
+			// var canvas = createCloudTexture(800, 600)
+			var canvas = createCloudTexture(512, 380)
 			animate();
 
 	
