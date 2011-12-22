@@ -1,7 +1,13 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - shadow map</title>
+		<title>A White Christmas Greetings</title>
+		<!-- three.js
+			Shadow mapping, particles, 
+			procedural text, snowman, lens flare
+			
+			 -->
+		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -102,42 +108,23 @@
 			
 			var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 
-			var MARGIN = 100;
-
 			var SCREEN_WIDTH = window.innerWidth;
-			var SCREEN_HEIGHT = window.innerHeight;  //
+			var SCREEN_HEIGHT = window.innerHeight;
 			
 			var WINDOW_RATIO = SCREEN_WIDTH/SCREEN_HEIGHT;
-			var TARGET_RATIO = 2.93; //16/9, 2.39, 1.85 2.35;
+			var TARGET_RATIO = 2.93; // Wide screen format
+			
+			var TARGET_HEIGHT = Math.round(SCREEN_WIDTH / TARGET_RATIO);
+			
+			DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
+			SCREEN_HEIGHT = TARGET_HEIGHT;
+			var MARGIN = DIFF / 2;
+			if (MARGIN < 0) MARGIN = 0;
 			
 			var OPTIMIZED_WIDTH = 1440;
 			var RESIZE_FACTOR = SCREEN_WIDTH / OPTIMIZED_WIDTH;
 			
-			console.log('current ratio', WINDOW_RATIO, WINDOW_RATIO  >  TARGET_RATIO, TARGET_RATIO);
-			if (WINDOW_RATIO  < TARGET_RATIO) {
-				// Screen is tall enough
-				var TARGET_HEIGHT = Math.round(SCREEN_WIDTH / TARGET_RATIO);
-				
-				DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
-				SCREEN_HEIGHT = TARGET_HEIGHT;
-				MARGIN = DIFF / 2;
-				
-				console.log(window.innerHeight - 2 * MARGIN, TARGET_HEIGHT);
-				//http://en.wikipedia.org/wiki/Aspect_ratio_(image)
-				//console.log('estimate', WINDOW_RATIO/ (window.innerHeight - 2 * MARGIN));
-			} else {
-				SCREEN_HEIGHT = window.innerHeight - 2 * MARGIN;
-				console.log('default');
-				// var TARGET_HEIGHT = SCREEN_WIDTH / TARGET_RATIO;
-				// 
-				// DIFF = SCREEN_HEIGHT - TARGET_HEIGHT;
-				// SCREEN_HEIGHT = TARGET_HEIGHT;
-				// MARGIN = DIFF / 2;
-			}
-			
-			var OPTIMIZED_WIDTH = 1440;
-			
-			var FLOOR = -250;
+			var FLOOR = 0;
 
 			var camera, controls, scene, renderer;
 			var container, stats;
@@ -171,7 +158,7 @@
 			
 			// Camera Limits?
 			
-			// PARTICLES TODO: Dead box, eg. below floor. Attractors via areas? Particles via Canvas/Extrude?
+			// PARTICLES TODO: Attractors via areas? Particles via Canvas/Extrude?
 			// Turbulence: airtightinteractive.com/demos/js/snowbox/js/SnowBox.js
 			// Shapes
 			// http://airtightinteractive.com/demos/js/hello/
@@ -205,7 +192,7 @@
 				// SCENE CAMERA
 
 				camera = new THREE.PerspectiveCamera( 23, TARGET_RATIO, NEAR, FAR );
-				camera.position.set( 700, 50, 1800 ); //700, 50, 1900
+				camera.position.set( 700, 50, 1900 ); //700, 50, 1900
 				
 				
 				
@@ -237,6 +224,7 @@
 				//var ambient = new THREE.AmbientLight( 0x444444 );
 				ambient = new THREE.AmbientLight( 0xffffff );
 				ambient.color.setHSV(0,0,0.4);
+			
 				scene.add( ambient );
 
 				light = new THREE.SpotLight( 0xffffff );
@@ -290,7 +278,7 @@
 				function addLight( h, s, v, pos) { //x, y, z 
 
 
-					var light = new THREE.PointLight( 0xffffff, 1.5, 4500 );
+					var light = new THREE.PointLight( 0xffffff, 0.5, 4500 );
 					//light.position.set( x, y, z );
 					light.position = pos;
 					
@@ -618,43 +606,62 @@
 				
 				
 				var effectBloom = new THREE.BloomPass( 0.25 );
-				// var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
-				var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );				
+				var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
+				var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );
+				// var effectBokeh = new THREE.ShaderPass( THREE.ShaderExtras[ "bokeh" ] );
+				
+				var effectBleach = new THREE.ShaderPass( THREE.ShaderExtras[ "bleachbypass" ] );
+				var effectSepia = new THREE.ShaderPass( THREE.ShaderExtras[ "sepia" ] );
+				var effectVignette = new THREE.ShaderPass( THREE.ShaderExtras[ "vignette" ] );
+				var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
+
+				effectBleach.uniforms[ "opacity" ].value = 0.95;
+
+				effectSepia.uniforms[ "amount" ].value = 0.9;
+
+				effectVignette.uniforms[ "offset" ].value = 0.95;
+				effectVignette.uniforms[ "darkness" ].value = 1.6;
+						
 				effectFXAA.uniforms[ 'resolution' ].value.set( 1 / SCREEN_WIDTH, 1 / SCREEN_HEIGHT );
 				
 				// effectFilm.renderToScreen = true;
 				
-				// var hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalBlur" ] );
-				// var vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalBlur" ] );
-				// 
-				// hblur.uniforms[ 'h' ].value =  1 / SCREEN_WIDTH;
-				// vblur.uniforms[ 'v' ].value =  1 / SCREEN_HEIGHT;
+				var hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalBlur" ] );
+				var vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalBlur" ] );
 				
-				hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalTiltShift" ] );
-				vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalTiltShift" ] );
+				hblur.uniforms[ 'h' ].value =  1 / SCREEN_WIDTH * RESIZE_FACTOR;
+				vblur.uniforms[ 'v' ].value =  1 / SCREEN_HEIGHT * RESIZE_FACTOR;
+				
+				thblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalTiltShift" ] );
+				tvblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalTiltShift" ] );
 
 				var bluriness = 6;
 
-				hblur.uniforms[ 'h' ].value = bluriness / SCREEN_WIDTH * RESIZE_FACTOR;
-				vblur.uniforms[ 'v' ].value = bluriness / SCREEN_HEIGHT * RESIZE_FACTOR;
+				thblur.uniforms[ 'h' ].value = bluriness / SCREEN_WIDTH * RESIZE_FACTOR;
+				tvblur.uniforms[ 'v' ].value = bluriness / SCREEN_HEIGHT * RESIZE_FACTOR;
 
-				hblur.uniforms[ 'r' ].value = vblur.uniforms[ 'r' ].value = 0.5;
+				thblur.uniforms[ 'r' ].value = tvblur.uniforms[ 'r' ].value = 0.5;
 				
 				renderTargetParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBufer: false };
 				renderTarget = new THREE.WebGLRenderTarget( SCREEN_WIDTH, SCREEN_HEIGHT, renderTargetParameters );
 				
 				
 				composer = new THREE.EffectComposer( renderer, renderTarget );
-				//composer = new THREE.EffectComposer( renderer );
 				composer.addPass( renderScene );
 				
-
+				
+				composer.addPass( effectSepia );
+				// composer.addPass( effectVignette );
 				//composer.addPass(effectFXAA);
-				
 				// composer.addPass( effectBloom );
+				// composer.addPass( effectFilm );
 				
-				composer.addPass( hblur );
-				composer.addPass( vblur );
+				
+				// composer.addPass( hblur );
+				// composer.addPass( vblur );
+				
+				composer.addPass( thblur );
+				composer.addPass( tvblur );
 				
 				//composer.addPass( effectFXAA );
 				//effectFXAA.renderToScreen = true;
@@ -702,6 +709,7 @@
 
 				var geometry = new THREE.PlaneGeometry( 100, 100 );
 				var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xfefefe } ); //0xffdd99
+				var redMaterial = new THREE.MeshLambertMaterial( { color: 0xffdd99 } ); 
 				THREE.ColorUtils.adjustHSV( planeMaterial.color, 0, 0, 0.9 );
 				planeMaterial.ambient = planeMaterial.color;
 
@@ -724,7 +732,7 @@
 				textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
 				var textGeo = new THREE.TextGeometry( "JFK", {
-					//ROSE MARIE
+					
 
 					size: 200,
 					height: 50,
@@ -773,15 +781,23 @@
 				var head = new THREE.OctahedronGeometry( 100, 4 ); //SphereGeometry
 				var body = new THREE.OctahedronGeometry( 140, 4 ); // new THREE.SphereGeometry( 140, 20, 20 );
 				var fist = new THREE.OctahedronGeometry( 20, 2 ); //SphereGeometry
-				body.applyMatrix( new THREE.Matrix4().setScale( 1, 1, 1 ) );
+				
+				var cone = new THREE.CylinderGeometry(0, 30, 100, 10, 10, false);
+		     	
+				
+				//body.applyMatrix( new THREE.Matrix4().setScale( 1, 1, 1 ) );
 				
 				
 				var headMesh = new THREE.Mesh( head, planeMaterial ); //planeMaterial
 				var bodyMesh = new THREE.Mesh( body, planeMaterial ); //snowMaterial
 				
-				noseMesh = new THREE.Mesh( fist, planeMaterial );
+				//noseMesh = new THREE.Mesh( fist, planeMaterial );
+				noseMesh = new THREE.Mesh( cone, redMaterial );
 				noseMesh.scale.set(0.5, 0.5, 0.5);
 				noseMesh.position.z = 100;
+				noseMesh.position.y = 10;
+				noseMesh.rotation.x = Math.PI  * 5 /2;
+				
 				
 				
 				eyesRight = new THREE.Mesh( fist, planeMaterial );
@@ -790,14 +806,14 @@
 				eyesRight.scale.set(0.25, 0.25, 0.25);
 				eyesLeft.scale.set(0.25, 0.25, 0.25);
 				
-				eyesRight.position.set(-50, 50, 70);
+				eyesRight.position.set(-45, 50, 76);
 				eyesLeft.position.set(50,50,70);
 				
 				bodyMesh.position.y -= 180;
 				
 				snowman = new THREE.Object3D();
 				//snowman.position.y = -100;
-				snowman.position.set(-800,0, 400);
+				snowman.position.set(-800, 250, 400);
 				
 				headMesh.castShadow = !false;
 				headMesh.receiveShadow = !false;
@@ -869,6 +885,7 @@
 				// handMesh.receiveShadow = !false;
 				
 				// SCARF??
+				// using donut and ribbon?
 
 				cloned = THREE.SceneUtils.cloneObject(handMesh);
 				handsRight = new THREE.Object3D();
