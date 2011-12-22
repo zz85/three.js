@@ -39,13 +39,27 @@
 				document.body.appendChild(canvas);
 				
 				this.redraw = function() {
+					var now = Date.now();
+					var time = now / 8000;
 					
 					context.clearRect(0, 0, width, height);
 					//context.fillStyle = 'white';
 					//context.fillRect(0, 0, width, height);
-					context.fillStyle = 'blue'; //lightblue
-					//context.fillRect(0,0, width, height);
-					context.fillRect(0,height/2, width, height);
+					
+					
+					//var gradient = context.createLinearGradient( 0,0, width, height );
+					var gradient = context.createLinearGradient( 0,0, width, height );
+
+					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( (Math.sin(time)+1) * 0.5 *0.2, 'rgba(100,0,0,1)' );
+					gradient.addColorStop( (Math.cos(time)+1) * 0.5 * 0.2 + 0.4 , 'rgba(0,200,0,1)' ); // 0.6
+					gradient.addColorStop( 1, 'rgba(0,0,200,1)' );
+
+					context.fillStyle = gradient;
+					
+					//context.fillStyle = 'blue'; //lightblue
+					context.fillRect(0,0, width, height);
+					// context.fillRect(0,height/2, width, height);
 					
 					var image = context.getImageData( 0, 0, width, height );
 					var image2 = context.getImageData( 0, 0, width, height );
@@ -53,7 +67,7 @@
 					var imageData = image.data;
 					var imageData2 = image2.data;
 					
-					var now = Date.now();
+					
 					var w,h, n;
 					
 					// settings
@@ -65,11 +79,9 @@
 				
 					
 					
-				
-					var now = Date.now();
 					var w,h, n;
 					
-					var time = now / 10000;
+					
 					
 					for ( var i = 0, j = 0, l = imageData.length; i < l; i += 4, j ++  ) {
 					
@@ -95,17 +107,17 @@
 					
 						// Light green / light blue
 						
-						function displace(m, a) {
-							return imageData2[ a + Math.floor(m * height * 0.5) * 4 * width  ];
-						}
-						
-						// Displacement Map?
-						// if (imageData[ i + 3 ]>0) {
-							imageData[ i ] = displace( m, i);
-							imageData[ i + 1 ] = displace( m, i+1 );
-							imageData[ i + 2 ] = displace( m, i+2 );
-							imageData[ i + 3 ] = 255;
+						// function displace(m, a) {
+						// 	return imageData2[ a + Math.floor(m * height * 0.25) * 4 * width  ];
 						// }
+						// 
+						// // Displacement Map?
+						// // if (imageData[ i + 3 ]>0) {
+						// 	imageData[ i ] = displace( m, i);
+						// 	imageData[ i + 1 ] = displace( m, i+1 );
+						// 	imageData[ i + 2 ] = displace( m, i+2 );
+						// 	imageData[ i + 3 ] = 255;
+						// // }
 
 						
 						// n += 1;
@@ -114,9 +126,9 @@
 						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
 						
 						// Multiply ** (best!!!)
-						// imageData[ i ] = Math.floor( factor * imageData[ i ]);
-						// imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
-						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
+						imageData[ i ] = Math.floor( factor * imageData[ i ]);
+						imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
+						imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
 						
 						// Divide
 						// imageData[ i ] = Math.floor( imageData[ i ] / factor);
