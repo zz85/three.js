@@ -32,7 +32,9 @@
 				
 				// Other techniques
 				// 1. Brush / Artistic Image http://www.industrialassets.co.uk/blog/?p=77
-				
+				// Spread / Cool Map / Displacement Maps
+				// Keep looping framebuffer / backbuffer.
+				// Particles. Lighten areas left right. eg. http://www.ffiles.com/flash/particle_effects/aurora_effect_2859.html
 				
 				document.body.appendChild(canvas);
 				
@@ -49,6 +51,7 @@
 					// http://www.trapcode.com/sharelog/2010/3/17/aurora-borealis.html
 					// Shine Rays map next time!!!!
 					
+					//createRadialGradient(x1,y1,r1,x2,y2,r2)
 					// var gradient = context.createLinearGradient( 0,0, width, height );
 					// var gradient = context.createLinearGradient( 0 ,height, width, height );
 					var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
@@ -61,14 +64,19 @@
 					context.fillStyle = gradient;
 					
 					//context.fillStyle = 'blue'; //lightblue
-					context.fillRect(0,0, width, height);
+					// ***
+					// context.fillRect(0,0, width, height);
 					// context.fillRect(0,height/2, width, height);
 					
 					context.save();
-					context.globalCompositeOperation = 'lighter';
+					// context.globalCompositeOperation = 'lighter';
 					var gradient = context.createLinearGradient( 0, 0, 0, height );
-					gradient.addColorStop( 0, 'rgba(0,0,0,0.5)' );
-					gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+					// gradient.addColorStop( 0, 'rgba(0,0,0,0.5)' );
+					// gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+					
+					gradient.addColorStop( 0, 'rgba(200,200,200,0.5)' );
+					gradient.addColorStop( 1, 'rgba(0,0,0,0.5)' );
+					
 					context.fillStyle = gradient;
 					context.fillRect(0,0, width, height);
 					
@@ -119,17 +127,20 @@
 					
 						// Light green / light blue
 						
-						// function displace(m, a) {
-						// 	return imageData2[ a + Math.floor(m * height * 0.25) * 4 * width  ];
+						function displace(m, a) {
+							// return imageData2[ a + Math.floor(m * height * 0.25) * 4 * width  ];
+							
+							return  imageData2[ a + Math.floor(Math.sin(m * Math.PI * 2) * height /4) * 4 * width  + Math.floor(Math.cos(m * Math.PI * 2) * width /2 ) * 4];
+							// return imageData2[a] - imageData2[ a + Math.floor(m * height / 2) * 4 * width  ];
+						}
+						
+						// Displacement Map?
+						// if (imageData2[ i  ]<128) {
+							imageData[ i ] = displace( m, i);
+							imageData[ i + 1 ] = displace( m, i+1 );
+							imageData[ i + 2 ] = displace( m, i+2 );
+							imageData[ i + 3 ] = 255;
 						// }
-						// 
-						// // Displacement Map?
-						// // if (imageData[ i + 3 ]>0) {
-						// 	imageData[ i ] = displace( m, i);
-						// 	imageData[ i + 1 ] = displace( m, i+1 );
-						// 	imageData[ i + 2 ] = displace( m, i+2 );
-						// 	imageData[ i + 3 ] = 255;
-						// // }
 
 						
 						// n += 1;
@@ -138,10 +149,10 @@
 						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
 						
 						// Multiply ** (best!!!)
-						imageData[ i ] = Math.floor( factor * imageData2[ i ]);
-						imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
-						imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
-						imageData[ i + 3 ] = 255;
+						// imageData[ i ] = Math.floor( factor * imageData2[ i ]);
+						// imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
+						// imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
+						// imageData[ i + 3 ] = 255;
 						
 						// Divide
 						// imageData[ i ] = Math.floor( imageData[ i ] / factor);
