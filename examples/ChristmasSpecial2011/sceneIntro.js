@@ -7,8 +7,8 @@ function renderIntro() {
 	// Render
 	var time = Date.now() * 0.00005;
 
-	camera.position.x += ( mouseX * 0.15 - camera.position.x ) * 0.04;
-	camera.position.y += ( - mouseY * 0.15	 - camera.position.y ) * 0.04;
+	camera.position.x += ( mouseX * 0.15 - camera.position.x ) * 0.05;
+	camera.position.y += ( - mouseY * 0.15	 - camera.position.y ) * 0.05;
 	
 
 	var position; 
@@ -25,8 +25,7 @@ function renderIntro() {
 	// Vary Brightness
 	for( i = 0; i < starFieldMaterials.length; i ++ ) {
 		
-		starFieldMaterials[i].color.setHSV( 0, 0, Math.sin( time * 100 + i* 50) * 0.5  * 0.2 + 0.6) ;
-		// starFieldMaterials[i].color.setHSV( 0, 0, 0.4 ) ;
+		starFieldMaterials[i].color.setHSV( 0, 0, Math.sin( time * 100 + i * 50) * 0.5  * 0.2 + 0.6) ;
 	
 	}
 	
@@ -37,11 +36,14 @@ function renderIntro() {
 
 
 function unloadSceneIntro() {
-	
 	scene.remove(starFields);
+	render();
+	renderCallback = null;
+
 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.removeEventListener( 'touchstart', onDocumentTouchStart, false );
 	document.removeEventListener( 'touchmove', onDocumentTouchMove, false );
+	
 	
 }
 
