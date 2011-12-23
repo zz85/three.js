@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - equirectangular panorama demo</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family:Monospace;
+				font-size:13px;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color: #ffffff;
+			}
+		</style>
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-7549263-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+	</head>
+	<body>
+
+		<div id="container"></div>
+		<div id="info"><a href="http://github.com/mrdoob/three.js" target="_blank">three.js webgl</a> - <a href="http://www.lab4games.net/zz85/blog"/>zz85</a> procedural clouds experiment. skybox by <a href="http://reije081.home.xs4all.nl/skyboxes/" target="_blank">Roelz'n Boel</a>.</div>
+		<!-- 
+			readings: http://www.shy.am/wp-content/uploads/2009/01/realistic-real-time-skies-shyam-guthikonda.pdf
+			thing to think about: 
+				add lens flare
+				add procedural terrain
+				volumetric rendering?
+		-->
+		<script src="../build/Three.js"></script>
+		<script src="js/RequestAnimationFrame.js"></script>
+		<script src="js/SimplexNoise.js"></script>
+
+
+
+
+
+
+
+		<!-- Vertex shader -->
+		<script id="vertexShader" type="x-shader/x-vertex">
+
+		uniform float time;
+
+		varying vec2  vUv;
+		varying float oGlow;
+
+		void main(void)
+		{
+			vUv = uv;
+
+			vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+			gl_Position = projectionMatrix * mvPosition;
+
+		}
+		</script>
+
+		<!-- Pixel shader -->
+		<script id="pixelShader" type="x-shader/x-fragment">
+
+		uniform float time;
+		varying vec2  vUv;
+
+		//*** start textureless simplex noise
+
+		//
+		// Description : Array and textureless GLSL 2D/3D/4D simplex 
+		//               noise functions.
+		//      Author : Ian McEwan, Ashima Arts.
+		//  Maintainer : ijm
+		//     Lastmod : 20110822 (ijm)
+		//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+		//               Distributed under the MIT License. See LICENSE file.
+		//               https://github.com/ashima/webgl-noise
+		// 
+
+		vec3 mod289(vec3 x) {
+		  return x - floor(x * (1.0 / 289.0)) * 289.0;
+		}
+
+		vec4 mod289(vec4 x) {
+		  return x - floor(x * (1.0 / 289.0)) * 289.0;
+		}
+
+		vec4 permute(vec4 x) {
+		     return mod289(((x*34.0)+1.0)*x);
+		}
+
+		vec4 taylorInvSqrt(vec4 r)
+		{
+		  return 1.79284291400159 - 0.85373472095314 * r;
+		}
+
+		float snoise(vec3 v)
+		  { 
+		  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
+		  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
+
+		// First corner
+		  vec3 i  = floor(v + dot(v, C.yyy) );
+		  vec3 x0 =   v - i + dot(i, C.xxx) ;
+
+		// Other corners
+		  vec3 g = step(x0.yzx, x0.xyz);
+		  vec3 l = 1.0 - g;
+		  vec3 i1 = min( g.xyz, l.zxy );
+		  vec3 i2 = max( g.xyz, l.zxy );
+
+		  vec3 x1 = x0 - i1 + C.xxx;
+		  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
+		  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
+
+		// Permutations
+		  i = mod289(i); 
+		  vec4 p = permute( permute( permute( 
+		             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
+		           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
+		           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
+
+		// Gradients: 7x7 points over a square, mapped onto an octahedron.
+		// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+		  float n_ = 0.142857142857; // 1.0/7.0
+		  vec3  ns = n_ * D.wyz - D.xzx;
+
+		  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)
+
+		  vec4 x_ = floor(j * ns.z);
+		  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+
+		  vec4 x = x_ *ns.x + ns.yyyy;
+		  vec4 y = y_ *ns.x + ns.yyyy;
+		  vec4 h = 1.0 - abs(x) - abs(y);
+
+		  vec4 b0 = vec4( x.xy, y.xy );
+		  vec4 b1 = vec4( x.zw, y.zw );
+
+		  vec4 s0 = floor(b0)*2.0 + 1.0;
+		  vec4 s1 = floor(b1)*2.0 + 1.0;
+		  vec4 sh = -step(h, vec4(0.0));
+
+		  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+		  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+
+		  vec3 p0 = vec3(a0.xy,h.x);
+		  vec3 p1 = vec3(a0.zw,h.y);
+		  vec3 p2 = vec3(a1.xy,h.z);
+		  vec3 p3 = vec3(a1.zw,h.w);
+
+		//Normalise gradients
+		  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+		  p0 *= norm.x;
+		  p1 *= norm.y;
+		  p2 *= norm.z;
+		  p3 *= norm.w;
+
+		// Mix final noise value
+		  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+		  m = m * m;
+		  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
+		                                dot(p2,x2), dot(p3,x3) ) );
+		  }
+
+
+		//*** end textureless noise
+
+
+		void main(void)
+		{
+
+			vec3 pt = vec3(vUv, time);
+
+			// adding octaves
+			float level = snoise(pt) + snoise(pt * 2.) + snoise(pt * 4.)
+			 	+ snoise(pt * 8.);
+
+			level /= 4.0;
+			level = abs(level);
+
+			// parameters you can tweak
+			float cloudCover = 0.7;
+			float cloudSharpness = 0.5;
+
+			// cloud cover function
+			// See http://freespace.virgin.net/hugo.elias/models/m_clouds.htm
+			level = max( level - (1.-cloudCover), 0.0 ) ;	
+			level = 1. - pow( (1.-cloudSharpness), level );
+
+
+			//gl_FragColor = vec4(level,level,level,1.);
+			float colorlevel = max (level  * 2., 1.0);
+			gl_FragColor = vec4(colorlevel,colorlevel,colorlevel, level );
+			//gl_FragColor = vec4(1.0,1.0,1.0, level);
+
+		}
+
+		</script>
+
+
+		<script>
+
+			var camera, scene, renderer;
+			var time = 0;;
+
+			var fov = 70,
+			texture_placeholder,
+			isUserInteracting = false,
+			onMouseDownMouseX = 0, onMouseDownMouseY = 0,
+			lon = 0, onMouseDownLon = 0,
+			lat = 0, onMouseDownLat = 0,
+			phi = 0, theta = 0;
+			var testing;
+			var canvas;
+
+			init();
+			animate();
+
+			function init() {
+
+				var container, mesh;
+
+				container = document.getElementById( 'container' );
+
+				camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, 1, 1100 );
+
+				camera.target = new THREE.Vector3( 0, 0, 0 );
+
+				scene = new THREE.Scene();
+				scene.add(camera);
+
+				time = 0;
+
+				uniforms = 
+				{ 
+					time: { type: "f", value: time }
+				};
+
+				material = new THREE.ShaderMaterial( 
+				{
+					uniforms: uniforms,
+					vertexShader: getShaderText( 'vertexShader' ),
+					fragmentShader: getShaderText( 'pixelShader' )
+
+				} );
+
+				function getShaderText( id ) 
+				{
+					return document.getElementById( id ).textContent;
+				}
+
+
+				/* CPU Based method */
+				function createCloudTexture(width, height) {
+					var canvas = document.createElement("canvas");
+					canvas.width = width;
+					canvas.height = height;
+
+					//var 
+					context = canvas.getContext('2d');
+
+
+
+					var simplex = new SimplexNoise();
+
+					// Other techniques
+					// 1. Brush / Artistic Image http://www.industrialassets.co.uk/blog/?p=77
+					// Spread / Cool Map / Displacement Maps
+					// Keep looping framebuffer / backbuffer.
+					// Particles. Lighten areas left right. eg. http://www.ffiles.com/flash/particle_effects/aurora_effect_2859.html
+
+					//document.body.appendChild(canvas);
+					
+					var me = this;
+					var texture;
+
+					this.redraw = function() {
+						var now = Date.now();
+						var time = now / 8000;
+
+						context.clearRect(0, 0, width, height);
+						//context.fillStyle = 'white';
+						//context.fillRect(0, 0, width, height);
+
+
+						// TODO Radial Gradients
+						// http://www.trapcode.com/sharelog/2010/3/17/aurora-borealis.html
+						// Shine Rays map next time!!!!
+
+						//createRadialGradient(x1,y1,r1,x2,y2,r2)
+						// var gradient = context.createLinearGradient( 0,0, width, height );
+						// var gradient = context.createLinearGradient( 0 ,height, width, height );
+						var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
+
+						gradient.addColorStop( 0, 'rgba(200,200,0,0.9)' );
+						gradient.addColorStop( (Math.sin(time)+1) * 0.5 * 0.2, 'rgba(100,0,0,1)' );
+
+						gradient.addColorStop( (Math.cos(time)+1) * 0.5 * 0.2 + 0.4 , 'rgba(0,200,0,1)' ); // 0.6
+						gradient.addColorStop( 0.8, 'rgba(0,0,200,1)' );
+						gradient.addColorStop( 1, 'rgba(200,200,200,1)' );
+
+						context.fillStyle = gradient;
+
+						//context.fillStyle = 'blue'; //lightblue
+						// ***
+						context.fillRect(0,0, width, height);
+						// context.fillRect(0,height/2, width, height);
+
+						context.save();
+						// context.globalCompositeOperation = 'lighter';
+						var gradient = context.createLinearGradient( 0, 0, 0, height );
+						gradient.addColorStop( 0, 'rgba(0,0,0,0.2)' );
+						gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+
+
+						context.fillStyle = gradient;
+						context.fillRect(0,0, width, height);
+
+						context.restore();
+
+						// var image = context.getImageData( 0, 0, width, height );
+						var image = context.createImageData( width, height );
+
+						var image2 = context.getImageData( 0, 0, width, height );
+
+						var imageData = image.data;
+						var imageData2 = image2.data;
+
+
+						var w,h, n;
+
+						// settings
+						var octaves = 2;				
+						var scaleX = 4 /octaves, scaleY = 0.25 /octaves;
+
+						var w,h, n;
+
+						for ( var i = 0, j = 0, l = imageData.length; i < l; i += 4, j ++  ) {
+
+							h = Math.floor( j/width );
+							w = j % width;
+
+							n = 0;
+							var frequency = 1;
+							var persistance = 0.5;
+							var amptitude ;
+
+							for (var oi=0; oi < octaves; oi++) {
+								frequency *= 2;
+								amptitude =  Math.pow(persistance, oi);
+
+								n += simplex.noise3d(w/width * frequency * scaleX, h/height* frequency * scaleY, time)  * amptitude ;
+							}
+
+
+							var m = n;
+							var factor = n* 0.5 + 0.5; // + 1 ) * 0.5
+							n = Math.floor( factor * 255); //Math.floor
+
+
+							// Multiply ** (best!!!)
+							imageData[ i ] = Math.floor( factor * imageData2[ i ]);
+							imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
+							imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
+							imageData[ i + 3 ] = 255;
+
+
+
+						}
+						context.putImageData( image, 0, 0 );
+
+						//console.log('done', Date.now() - now);
+						
+						texture.needsUpdate = true; 
+
+					}
+
+					texture = new THREE.Texture(  canvas  );
+					this.texture = texture;
+					this.redraw();
+
+
+				
+				
+				
+					return this;
+				}
+
+
+				// canvas = createCloudTexture(512, 512);
+
+ 				// canvas = createCloudTexture(256, 256);
+
+				// canvas = createCloudTexture(128, 128);
+				canvas = createCloudTexture(64, 64);
+
+
+				mesh = new THREE.Mesh( 
+					new THREE.OctahedronGeometry(800, 3),
+					//new THREE.SphereGeometry(800, 40, 40),
+					//material
+					new THREE.MeshBasicMaterial( { 
+								//	wireframe:true,
+								opacity: 0.4, // 0.8 for blue background
+								map: canvas.texture
+						} )
+				);
+				mesh.rotation.x = Math.PI / 2;		
+				mesh.scale.x = -1;
+
+				// mesh = new THREE.Mesh( 
+				// 	new THREE.PlaneGeometry(400, 400, 10 ,10),
+				// 	//new THREE.SphereGeometry(800, 40, 40),
+				// 	//material
+				// 	new THREE.MeshBasicMaterial( { 
+				// 				//	wireframe:true,
+				// 				map: canvas.texture
+				// 		} )
+				// );
+				
+				testing = mesh;
+
+				// mesh.rotation.x = Math.PI / 2;		
+
+				scene.add( mesh );
+
+
+
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				container.appendChild( renderer.domElement );
+
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+				document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+				document.addEventListener( 'DOMMouseScroll', onDocumentMouseWheel, false);
+
+			}
+
+			function onDocumentMouseDown( event ) {
+
+				event.preventDefault();
+
+				isUserInteracting = true;
+
+				onPointerDownPointerX = event.clientX;
+				onPointerDownPointerY = event.clientY;
+
+				onPointerDownLon = lon;
+				onPointerDownLat = lat;
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				if ( isUserInteracting ) {
+
+					lon = ( onPointerDownPointerX - event.clientX ) * 0.1 + onPointerDownLon;
+					lat = ( event.clientY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+
+				}
+			}
+
+			function onDocumentMouseUp( event ) {
+
+				isUserInteracting = false;
+
+			}
+
+			function onDocumentMouseWheel( event ) {
+
+				// WebKit
+
+				if ( event.wheelDeltaY ) {
+
+					fov -= event.wheelDeltaY * 0.05;
+
+				// Opera / Explorer 9
+
+				} else if ( event.wheelDelta ) {
+
+					fov -= event.wheelDelta * 0.05;
+
+				// Firefox
+
+				} else if ( event.detail ) {
+
+					fov += event.detail * 1.0;
+
+				}
+
+				camera.projectionMatrix = THREE.Matrix4.makePerspective( fov, window.innerWidth / window.innerHeight, 1, 1100 );
+				render();
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+
+			}
+
+			function render() {
+
+				lat = Math.max( - 85, Math.min( 85, lat ) );
+				phi = ( 90 - lat ) * Math.PI / 180;
+				theta = lon * Math.PI / 180;
+
+				camera.target.x = 500 * Math.sin( phi ) * Math.cos( theta );
+				camera.target.y = 500 * Math.cos( phi );
+				camera.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
+
+				camera.lookAt( camera.target );
+
+				uniforms.time.value += 0.003;
+
+
+				renderer.render( scene, camera );
+				canvas.redraw();
+
+			}
+
+		</script>
+	</body>
+</html>

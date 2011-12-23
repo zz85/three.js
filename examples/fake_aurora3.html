@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Aurora using Simplex Noise</title>
+		<title>Aurora using Simplex Noise - Only Multiply</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -56,10 +56,12 @@
 					// var gradient = context.createLinearGradient( 0 ,height, width, height );
 					var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
 
-					gradient.addColorStop( 0, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( 0, 'rgba(200,200,0,0.9)' );
 					gradient.addColorStop( (Math.sin(time)+1) * 0.5 * 0.2, 'rgba(100,0,0,1)' );
+					
 					gradient.addColorStop( (Math.cos(time)+1) * 0.5 * 0.2 + 0.4 , 'rgba(0,200,0,1)' ); // 0.6
-					gradient.addColorStop( 1, 'rgba(0,0,200,1)' );
+					gradient.addColorStop( 0.8, 'rgba(0,0,200,1)' );
+					gradient.addColorStop( 1, 'rgba(200,200,200,1)' );
 
 					context.fillStyle = gradient;
 					
@@ -71,11 +73,9 @@
 					context.save();
 					// context.globalCompositeOperation = 'lighter';
 					var gradient = context.createLinearGradient( 0, 0, 0, height );
-					// gradient.addColorStop( 0, 'rgba(0,0,0,0.5)' );
-					// gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+					gradient.addColorStop( 0, 'rgba(0,0,0,0.2)' );
+					gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
 					
-					gradient.addColorStop( 0, 'rgba(200,200,200,0.5)' );
-					gradient.addColorStop( 1, 'rgba(0,0,0,0.5)' );
 					
 					context.fillStyle = gradient;
 					context.fillRect(0,0, width, height);
@@ -94,14 +94,10 @@
 					var w,h, n;
 					
 					// settings
-					var octaves = 1;				
+					var octaves = 2;				
 					var scaleX = 4 /octaves, scaleY = 0.25 /octaves;
 				
-					
-					
 					var w,h, n;
-					
-					
 					
 					for ( var i = 0, j = 0, l = imageData.length; i < l; i += 4, j ++  ) {
 					
@@ -125,90 +121,14 @@
 						var factor = n* 0.5 + 0.5; // + 1 ) * 0.5
 						n = Math.floor( factor * 255); //Math.floor
 					
-						// Light green / light blue
-						
-						function imageIndex(x,y) {
-							return (x + y * width) * 4;
-						}
-						
-						//dstPixel[x, y] = srcPixel[x + ((componentX(x, y) - 128)
-						//  * scaleX) / 256, y + ((componentY(x, y) - 128) *
-						//  scaleY) / 256]
-						
-						var mapPointX = 0;
-						var mapPointy = 0;
-						var displayScaleX = 50;
-						var displaceScaleY = 40;
-						
-						function displace(m, a) {
-							// return imageData2[ a + Math.floor(m * height * 0.25) * 4 * width  ];
-							
-							// return  imageData2[ a + Math.floor(Math.sin(m * Math.PI * 2) * height /4) * 4 * width  + Math.floor(Math.cos(m * Math.PI * 2) * width /2 ) * 4];
-							// return imageData2[a] - imageData2[ a + Math.floor(m * height / 2) * 4 * width  ];
-							
-							// var b = a % 4;
-							return  imageData2[ a + Math.round(m * displaceScaleY) * 4 * width +
-							 Math.round(m * displayScaleX) * 4];
-						}
-						
-						// Displacement Map?
-						// if (imageData2[ i  ]<128) {
-							imageData[ i ] = displace( m, i);
-							imageData[ i + 1 ] = displace( m, i+1 );
-							imageData[ i + 2 ] = displace( m, i+2 );
-							imageData[ i + 3 ] = 255;
-						// }
-
-						
-						// n += 1;
-						// imageData[ i ] = Math.floor( factor * imageData[ i ]);
-						// imageData[ i + 1 ] = Math.floor( factor * imageData[ i + 1]);
-						// imageData[ i + 2 ] = Math.floor( factor * imageData[ i + 2 ]);
-						
+		
 						// Multiply ** (best!!!)
-						// imageData[ i ] = Math.floor( factor * imageData2[ i ]);
-						// imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
-						// imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
-						// imageData[ i + 3 ] = 255;
+						imageData[ i ] = Math.floor( factor * imageData2[ i ]);
+						imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
+						imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
+						imageData[ i + 3 ] = 255;
 						
-						// Divide
-						// imageData[ i ] = Math.floor( imageData[ i ] / factor);
-						// imageData[ i + 1 ] = Math.floor( imageData[ i + 1] / factor);
-						// imageData[ i + 2 ] = Math.floor( imageData[ i + 2 ] / factor);
-						
-						// Additive
-						// imageData[ i ] += n ;
-						// imageData[ i + 1 ] += n;
-						// imageData[ i + 2 ] += n;
-						
-						// Subtractive
-						// imageData[ i ] -= n ;
-						// imageData[ i + 1 ] -= n;
-						// imageData[ i + 2 ] -= n;
 
-						// Reverse subtractive
-						// imageData[ i ] = n - imageData[ i ] ;
-						// imageData[ i + 1 ] = n - imageData[ i + 1 ];
-						// imageData[ i + 2 ] = n - imageData[ i + 2 ];
-						
-						// Blend
-						// imageData[ i ] = (n + imageData[ i ]) /2 ;
-						// imageData[ i + 1 ] = (n + imageData[ i + 1 ]) /2;
-						// imageData[ i + 2 ] = (n + imageData[ i + 2 ]) /2;
-						
-						// Noise only
-						// imageData[ i ] = n;
-						// imageData[ i + 1 ] = n;
-						// imageData[ i + 2 ] = n;
-
-											
-						// imageData[ i + 3 ] = 255;					
-					
-						// imageData[ i ] = 255;
-						// imageData[ i + 1 ] = 255;
-						// imageData[ i + 2 ] = 255;
-						// imageData[ i + 3 ] = n;
-					
 			
 					}
 					context.putImageData( image, 0, 0 );
