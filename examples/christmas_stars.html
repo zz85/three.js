@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - particles</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				/*font-family:Monospace;*/
+				font-family: Helvetica, sans-serif;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index: 100;
+				
+			}
+			
+			#intro {
+				/*
+				vertical-align:middle;
+				width: 400px;
+
+				margin-left: auto;
+				margin-right: auto;
+				text-align:center;
+				margin: auto;
+				vertical-align:middle;
+				*/
+				display:-moz-box;
+				-moz-box-orient:horizontal;
+
+				/* Safari and Chrome */
+				display:-webkit-box;
+				-webkit-box-orient:horizontal;
+
+				-webkit-box-align: stretch;
+				-webkit-box-pack: center;
+				
+
+				/* W3C */
+				display:box;
+				box-orient:horizontal;
+			}
+			
+			/*
+			.wrap {
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-box-align: stretch;
+				-webkit-box-pack: center;
+				
+			}*/
+
+/*
+			.overlay {
+				display: -webkit-box;
+				-webkit-box-orient: horizontal;
+				-webkit-box-align: stretch;
+				-webkit-box-pack: center;
+			}
+			.overlay > .wrap {
+				display: -webkit-box;
+				-webkit-box-orient: vertical;
+				-webkit-box-align: stretch;
+				-webkit-box-pack: center;
+			}
+*/
+
+.overlay {
+
+	
+ 	 display: -moz-box;
+	  -moz-box-orient: horizontal;
+	  -moz-box-pack: center;
+	  -moz-box-align: center;
+
+	  display: box;
+	  box-orient: horizontal;
+	  box-pack: center;
+	  box-align: center;
+	
+	display: -webkit-box;
+	
+	-webkit-box-align: center;
+	-webkit-box-orient: vertical;
+	-webkit-box-pack: center;
+	
+	-webkit-transition: 0.25s opacity;
+	
+	
+	background: -webkit-radial-gradient(rgba(50, 50, 50, 0.2), rgba(50, 50, 50, 0.2) 35%, rgba(0, 0, 0, 0.3));
+	/*
+	background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+	*/
+	overflow: auto;
+	
+	padding: 20px;
+	padding-bottom: 100px;
+	
+	position: fixed;
+
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+
+	z-index: 10;
+	
+	color: #fff;
+
+}
+
+		</style>
+	</head>
+	<body>
+
+<div class="overlay">
+	<div class="wrap" style="box-flex: 1;-moz-box-flex: 1; ">
+		<div style="width:400px;text-shadow:white 0 1px 2px; background:black; opacity:0.8; padding:10px;">
+			<p>Hello!</p>
+			<p>Here's a little interactive presentation in store for you.</p>
+			<p>It may require a little attention on both you and your computer's part, so do try reducing some distractions like background music and other resource intensive applications or browser tabs!</p>
+			<p>Hope you enjoy!</p>
+			<p>(click start when page has completed loading)</p>
+		</div>
+	</div>
+</div>
+
+<!--
+        <div id="info">
+	
+			About: <a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a> - webgl particles example
+			
+			<div id="intro"><div class="wrap">
+			
+			
+			
+			</div></div>
+		</div>
+-->
+
+		<script src="../build/Three.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/Stats.js"></script>
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container, stats;
+			var camera, scene, renderer, particles, geometry, materials = [], parameters, i, h, color;
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			var current = 0;
+			init();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+				camera.position.z = 1000;
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+
+				geometry = new THREE.Geometry();
+
+				for ( i = 0; i < 5000; i ++ ) {
+
+					vector = new THREE.Vector3( Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000 );
+					
+					//vector = new THREE.Vector3( Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000 );
+					
+					
+					geometry.vertices.push( new THREE.Vertex( vector ) );
+
+				}
+
+				parameters = [ [ [1.0, 1.0, 1.0], 5 ], [ [0.95, 1, 1], 4 ], [ [0.90, 1, 1], 3 ], [ [0.85, 1, 1], 2 ], [ [0.80, 1, 1], 1 ] ];
+
+				function generateSprite() {
+
+					var canvas = document.createElement( 'canvas' );
+					
+					canvas.width = 128;
+					canvas.height = 128;
+
+					var context = canvas.getContext( '2d' );
+
+
+					context.beginPath();
+					context.arc( 64, 64, 60, 0, Math.PI * 2, false) ;
+					context.closePath();
+
+					context.lineWidth = 0.5; //0.05
+					context.stroke();
+					context.restore();
+
+
+
+					context.fillStyle = 'grey';
+					context.fill();
+
+
+
+					var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+
+					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
+					gradient.addColorStop( 0.4, 'rgba(200,200,200,1)' );
+					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
+
+					//context.fillStyle = gradient;
+					
+					
+					
+					context.fillStyle = 'white';
+
+					context.fill();
+
+					//var idata = context.getImageData(0, 0, canvas.width, canvas.height);
+					//document.body.appendChild(canvas);
+					return canvas;
+
+				}
+				
+				var canvas = generateSprite();
+				
+				var texture = new THREE.Texture(canvas);
+				texture.needsUpdate = true;
+				
+
+				for ( i = 0; i < parameters.length; i ++ ) {
+
+					size  = parameters[i][1];
+					color = parameters[i][0];
+
+					//materials[i] = new THREE.ParticleBasicMaterial( { color: color, size: size } );
+
+					materials[i] = new THREE.ParticleBasicMaterial( { size: size * 0.5, map: texture} );
+					materials[i].color.setHSV( color[0], color[1], color[2] );
+
+					particles = new THREE.ParticleSystem( geometry, materials[i] );
+					particles.position.z = -i*2000;
+					particles.rotation.x = Math.random() * 6;
+					particles.rotation.y = Math.random() * 6;
+					particles.rotation.z = Math.random() * 6;
+
+					scene.add( particles );
+
+				}
+
+				renderer = new THREE.WebGLRenderer( { preserveDrawingBuffer: true } );
+				//renderer.autoClearColor = false;
+				renderer.autoClearColor = false;
+				
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+
+			}
+
+			function onDocumentTouchStart( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+			}
+
+			function onDocumentTouchMove( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				stats.update();
+
+			}
+
+			
+			function render() {
+
+				var time = Date.now() * 0.00005;
+
+				// camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				// camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+				
+				// camera.position.z -= 0.05;
+				camera.position.z -= 0.5;
+				// camera.position.z -= 15;
+				
+				
+				if (scene.objects[current].position.z>camera.position.z) {
+					console.log('ping!');
+					current = (current + 1 ) % scene.objects.length;
+					scene.objects[current].position.z -= 2000;
+				}
+				
+				// camera.position.z = time % 100;
+
+				//camera.lookAt( scene.position );
+
+				// for( i = 0; i < scene.objects.length; i ++ ) {
+				// 
+				// 	scene.objects[i].rotation.y = time * ( i < 4 ? i+1 : - (i+1) );
+				// 
+				// }
+
+				for( i = 0; i < materials.length; i ++ ) {
+
+					color = parameters[i][0];
+
+					h = ( 360 * ( color[0] + time ) % 360 ) / 360;
+					//materials[i].color.setHSV( h, color[1], color[2] );
+					materials[i].color.setHSV( 0, 0, h );
+
+				}
+				renderer.clear();
+				renderer.render( scene, camera );
+
+			}
+
+
+		</script>
+	</body>
+</html>
