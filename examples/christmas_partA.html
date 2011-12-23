@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - particles</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		
+		<style>
+			
+
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family: Helvetica, sans-serif;
+				font-size:14px;
+				text-align:center;
+			}
+
+			a {
+				/*text-decoration: none;*/
+				color: #eee;
+			}
+			
+			a:hover {
+				font-weight: bold;
+				
+				color: #fff;
+			}
+
+			
+			/*
+				Old Html Table Vertical Align Hack
+				for javascript-less overlay dialog display
+				because I couldn't get CSS3 box models to work
+				nicely across webkit and firefox :(
+			*/
+			
+			html {
+				100%; /* Important to work in Firefox Doctype mode!!! */ 
+			}
+			
+			.overlay {
+				position: fixed;
+				
+				z-index: 10;
+				width: 100%;
+				height: 100%;
+				
+				display:table;
+				
+				/*background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));*/
+				/*
+				-webkit-radial-gradient(rgba(119, 106, 127, 0.15), rgba(156, 127, 178, 0.1) 31%, transparent 66%, rgba(127, 127, 127, 0.2) 88%)
+				-radial-gradient( rgba(119, 106, 127, 0.15), rgba(197, 98, 171, 0.2) 29%, transparent 66%, rgba(127, 146, 127, 0.2) 88% );		
+				
+				*/
+				background: -webkit-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+					
+				background: -moz-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+				bottom: 0;			
+				left: 0;
+				right: 0;
+				top: 0;
+								
+				overflow: auto;
+				padding: 20px;
+				padding-bottom: 80px;
+			
+
+			}
+			
+			.wrap {
+
+				display:table-cell;
+				vertical-align:middle;
+				text-align:center;
+				/*margin: auto;
+				height: auto;
+				*/
+			}
+			
+			.messagebox {
+				margin:auto;
+				width: 450px;
+				color: #fff;
+				background-color: rgba(0,0,0,0.6);
+				padding: 30px;
+				opacity: 0.95;
+				
+				border-radius: 10px;
+				-webkit-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+				-moz-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+			}
+			
+			button {
+				border-radius: 10px;
+				padding:10px;
+
+				border: 0;
+				min-width: 100px;
+				
+				background: -moz-linear-gradient(top, 
+					rgba(130, 130, 130, 0.15) 0%, 
+					rgba(120, 120, 120, 0.15) 50%, 
+					rgba(110, 110, 110, 0.15) 50%, 
+					rgba(20, 20, 20, 0.15) 100%);
+				
+				background: -webkit-gradient(linear, 0 0, 0 100%, 
+					color-stop(0, rgba(130, 130, 130, 0.1)), 
+					color-stop(0.5, rgba(120, 120, 120, 0.1)), 
+					color-stop(0.5, rgba(110, 110, 110, 0.1)), 
+					color-stop(1, rgba(10, 10, 10, 0.1))
+				);
+				
+				color: #fff;
+			}
+			
+			button:hover {
+
+				background: -moz-linear-gradient(top, 
+					rgba(130, 130, 130, 0.3) 0%, 
+					rgba(120, 120, 120, 0.3) 50%, 
+					rgba(120, 120, 120, 0.3) 50%, 
+					rgba(20, 20, 20, 0.3) 100%
+				);
+				
+				background: -webkit-gradient(linear, 0 0, 0 100%, 
+					color-stop(0, rgba(130, 130, 130, 0.25)), 
+					color-stop(0.5, rgba(120, 120, 120, 0.2)), 
+					color-stop(0.5, rgba(110, 110, 110, 0.2)), 
+					color-stop(1, rgba(10, 10, 10, 0.25))
+				);
+			}
+			
+			/*
+			
+			border-radius: 15px;
+			padding-left: 10px ;
+			padding-right: 10px ;
+			border: 1px solid grey;
+			color: black;			
+			*/
+
+</style>
+	</head>
+	<body>
+
+<div class="overlay" id="intro">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>Hello!</h2></p>
+			<p>We have prepared an interactive piece of work for you.</p>
+			<p>It may require just a little more attention on both you and your computer's resources, so you wish to try reduce some distractions like background videos, music or any other resource hungry applications, even unwanted browser windows...</p>
+			<p>Hope you enjoy!</p>
+			<p id="startInfoPass">(click start when page has completed loading)</p>
+			<p id="startInfoFail" style="display:none;">Unfortunately, it seems that your browser or machine does not meet the requirements to playback this interactive experience. Please try running <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.getfirefox.net">Firefox</a> on a desktop with updated drives.</p>
+			<p><button onclick="startChristmas();">Start</button>
+		</div>
+</div>
+</div>
+
+
+		<script src="../build/Three.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/Stats.js"></script>
+
+		<script>
+
+		// Whole Bunch of Variables
+
+		var container, stats;
+		var camera, scene, renderer, particles, geometry;
+		
+		var starFieldMaterials = [], parameters, i, h, color;
+		
+		var mouseX = 0, mouseY = 0;
+
+		var windowHalfX = window.innerWidth / 2;
+		var windowHalfY = window.innerHeight / 2;
+
+		var current = 0;
+		
+
+			function init() {
+				
+				// Setup DOM and Renderers
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				renderer = new THREE.WebGLRenderer( { preserveDrawingBuffer: true } );
+				renderer.autoClearColor = false;
+				
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+				// document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				// document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				// document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+			}
+			
+			var starFieldLength = 2000;
+			var starFieldsCount = 3;
+			var starFields = new THREE.Object3D();
+			
+			function startChristmas() {
+				document.getElementById('intro').style.display = 'none';
+			}
+			
+			function setupSceneIntro() {
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+				camera.setLens(100);
+				// camera.position.z = 1000;
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+
+				geometry = new THREE.Geometry();
+				
+				
+				
+				
+				var halfStarFieldLength = starFieldLength / 2;
+
+				for ( i = 0; i < 30000; i ++ ) {
+
+					vector = new THREE.Vector3( Math.random() * starFieldLength - halfStarFieldLength, Math.random() * starFieldLength - halfStarFieldLength, Math.random() * starFieldLength - halfStarFieldLength );
+					
+					//vector = new THREE.Vector3( Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000 );
+					
+					geometry.vertices.push( new THREE.Vertex( vector ) );
+
+				}
+
+
+				
+				// parameters = [ [ [1.0, 1.0, 1.0], 5 ], [ [0.95, 1, 1], 4 ], [ [0.90, 1, 1], 3 ], [ [0.85, 1, 1], 2 ], [ [0.80, 1, 1], 1 ] ];
+				
+				
+				var starCanvas = generateStarCanvas();			
+				var starTexture = new THREE.Texture(starCanvas);
+				starTexture.needsUpdate = true;
+				
+				
+				
+				var z = -1000;
+
+				for ( i = 0; i < starFieldsCount; i ++ ) {
+
+					size = 50;
+
+
+					starFieldMaterials[i] = new THREE.ParticleBasicMaterial( { size: size, 
+						map: starTexture,
+						color: 0xffffff
+					} );
+					
+					//starFieldMaterials[i].color.setHSV( 0, 0, 0 );
+
+					var particles = new THREE.ParticleSystem( geometry, starFieldMaterials[i] );
+					particles.position.z = z;
+					z -= 500;
+					particles.rotation.x = Math.random() * 6;
+					particles.rotation.y = Math.random() * 6;
+					particles.rotation.z = Math.random() * 6;
+
+					starFields.add( particles );
+					
+
+				}
+				scene.add(starFields);
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+
+			}
+
+			function onDocumentTouchStart( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+			}
+
+			function onDocumentTouchMove( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+
+			}
+
+			//
+
+
+		</script>
+		
+		
+		<script src="ChristmasSpecial2011/sceneIntro.js"></script>
+		<script src="ChristmasSpecial2011/main.js"></script>
+		
+	</body>
+</html>
