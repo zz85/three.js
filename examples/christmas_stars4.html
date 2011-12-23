@@ -5,6 +5,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
+			
+
 			body {
 				background-color: #000000;
 				margin: 0px;
@@ -30,291 +32,126 @@
 				
 			}
 			
-			#intro {
+			/*
+				Old Html Table Vertical Align Hack
+				for javascript-less overlay dialog display
+				because I couldn't get CSS3 box models to work
+				nicely across webkit and firefox :(
+			*/
+			
+			html {
+				100%; /* Important to work in Firefox Doctype mode!!! */ 
+			}
+			
+			.overlay {
+				position: fixed;
+				
+				z-index: 10;
+				width: 100%;
+				height: 100%;
+				
+				display:table;
+				
+				/*background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));*/
 				/*
-				vertical-align:middle;
-				width: 400px;
-
-				margin-left: auto;
-				margin-right: auto;
-				text-align:center;
-				margin: auto;
-				vertical-align:middle;
+				-webkit-radial-gradient(rgba(119, 106, 127, 0.15), rgba(156, 127, 178, 0.1) 31%, transparent 66%, rgba(127, 127, 127, 0.2) 88%)
+				-radial-gradient( rgba(119, 106, 127, 0.15), rgba(197, 98, 171, 0.2) 29%, transparent 66%, rgba(127, 146, 127, 0.2) 88% );		
+				
 				*/
-				display:-moz-box;
-				-moz-box-orient:horizontal;
+				background: -webkit-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+					
+				background: -moz-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+				bottom: 0;			
+				left: 0;
+				right: 0;
+				top: 0;
+								
+				overflow: auto;
+				padding: 20px;
+				padding-bottom: 130px;
+			
 
-				/* Safari and Chrome */
-				display:-webkit-box;
-				-webkit-box-orient:horizontal;
+			}
+			
+			.wrap {
 
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
+				display:table-cell;
+				vertical-align:middle;
+				text-align:center;
+				/*margin: auto;
+				height: auto;
+				*/
+			}
+			
+			.messagebox {
+				margin:auto;
+				width: 450px;
+				color: #fff;
+				background-color: rgba(0,0,0,0.6);
+				padding: 30px;
+				opacity: 0.95;
+				
+				border-radius: 10px;
+				-webkit-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+				-moz-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+			}
+			
+			button {
+				border-radius: 10px;
+				padding:10px;
+
+				border: 0;
+				min-width: 100px;
+				
+				background: -moz-linear-gradient(top, rgba(130, 130, 130, 0.4) 0%, rgba(120, 120, 120, 0.4) 50%, rgba(10, 10, 10, 0.1) 50%, rgba(20, 20, 20, 0.6) 100%);
+				background: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, rgba(130, 130, 130, 0.1)), color-stop(0.5, rgba(120, 120, 120, 0.1)), color-stop(0.5, rgba(110, 110, 110, 0.1)), color-stop(1, rgba(10, 10, 10, 0.1)));
+				
+				color: #fff;
+			}
+			
+			button:hover {
+
+				opacity:0.5;
 				
 
-				/* W3C */
-				display:box;
-				box-orient:horizontal;
 			}
 			
 			/*
-			.wrap {
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
-				
-			}*/
+			text-decoration: none;
+			border-radius: 15px;
+			padding-left: 10px ;
+			padding-right: 10px ;
+			border: 1px solid grey;
+			color: black;			
+			*/
 
-/*
-			.overlay {
-				display: -webkit-box;
-				-webkit-box-orient: horizontal;
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
-			}
-			.overlay > .wrap {
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
-			}
-*/
-
-
-
-
-.overlay2 {
-
-	
- 	 display: -moz-box;
-	  -moz-box-orient: horizontal;
-	  -moz-box-pack: center;
-	  -moz-box-align: center;
-
-	  display: box;
-	  box-orient: horizontal;
-	  box-pack: center;
-	  box-align: center;
-	
-	display: -webkit-box;
-	
-	-webkit-box-align: center;
-	-webkit-box-orient: vertical;
-	-webkit-box-pack: center;
-	
-	-webkit-transition: 0.25s opacity;
-	
-	
-	background: -webkit-radial-gradient(rgba(50, 50, 50, 0.2), rgba(50, 50, 50, 0.2) 35%, rgba(0, 0, 0, 0.3));
-	/*
-	background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-	*/
-	overflow: auto;
-	
-	padding: 20px;
-	padding-bottom: 100px;
-	
-	position: fixed;
-
-	left: 0;
-	bottom: 0;
-	right: 0;
-	top: 0;
-
-	z-index: 10;
-	
-	color: #fff;
-
-}
-
-/*http://james.gameover.com/index.php/2009/vertically-centring-in-css-without-hacks-and-multi-line-enabled/
-hate those css3 hacks
-*/
-
-/*
-.overlay {
-	width:300px; height:300px; position:relative; float:left;
-	z-index:20;
-}
-
-.wrap {
-	position:absolute;
-	display:table;
-	width: 100%;
-	height: 100%;
-	
-	margin:auto;
-	
-	left:93px; top:21px; width:135px; height:284px; 
-	
-}
-.messagebox {
-	display:block;
-	width:400px;
-	text-shadow:white 0 1px 2px;
-	background:black;
-	opacity:0.8;
-	padding:10px;
-	display:table-cell;
-	vertical-align:middle;
-	text-align:center;
-}
-*/
-
-/*http://infrequently.org/2009/08/css-3-progress/*/
-
-
-html {
-	height:100%;
-	/* Important for Firefox!!! */
-}
-
-html, body {
-	height:100%;
-}
-
-* {
-padding: 0;
-margin: 0;
-}
-
-.overlay {
-	z-index:40;
-	position:static;
-
-	height: 100%;
-
-	float:left;
-	background-color: rgba(200, 200, 200, 0.5);
-}	
-.messagebox {
-	width:400px;
-	text-shadow:white 0 1px 2px;
-	background:black;
-	opacity:0.8;
-	padding:10px;
-
-}
-
-/* hbox and vbox classes */
- 
-.hbox {
-	display: -webkit-box;
-	-webkit-box-orient: horizontal;
-	-webkit-box-align: stretch;
- 
-	display: -moz-box;
-	-moz-box-orient: horizontal;
-	-moz-box-align: stretch;
- 
-	display: box;
-	box-orient: horizontal;
-	box-align: stretch;
-}
- 
-.hbox > * {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-	display: block;
-}
- 
-.vbox {
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-box-align: stretch;
- 
-	display: -moz-box;
-	-moz-box-orient: vertical;
-	-moz-box-align: stretch;
- 
-	display: box;
-	box-orient: vertical;
-	box-align: stretch;
-}
- 
-.vbox > * {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-	display: block;
-}
- 
-.spacer {
-	-webkit-box-flex: 1;
-	-moz-box-flex: 1;
-	box-flex: 1;
-}
- 
-.reverse {
-	-webkit-box-direction: reverse;
-	-moz-box-direction: reverse;
-	box-direction: reverse;
-}
- 
-.boxFlex0 {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-}
- 
-.boxFlex1, .boxFlex {
-	-webkit-box-flex: 1;
-	-moz-box-flex: 1;
-	box-flex: 1;
-}
- 
-.boxFlex2 {
-	-webkit-box-flex: 2;
-	-moz-box-flex: 2;
-	box-flex: 2;
-}
- 
-.boxGroup1 {
-	-webkit-box-flex-group: 1;
-	-moz-box-flex-group: 1;
-	box-flex-group: 1;
-}
- 
-.boxGroup2 {
-	-webkit-box-flex-group: 2;
-	-moz-box-flex-group: 2;
-	box-flex-group: 2;
-}
- 
-.start {
-	-webkit-box-pack: start;
-	-moz-box-pack: start;
-	box-pack: start;
-}
- 
-.end {
-	-webkit-box-pack: end;
-	-moz-box-pack: end;
-	box-pack: end;
-}
- 
-.center {
-	-webkit-box-pack: center;
-	-moz-box-pack: center;
-	box-pack: center;
-}
-
-		</style>
+</style>
 	</head>
 	<body>
 
-<div class="overlay hbox center">
-	<div class="wrap vbox center">
+<div class="overlay" id="intro">
+<div class="wrap">
 		<div class="messagebox">
 			<p>Hello!</p>
 			<p>Here's a little interactive presentation in store for you.</p>
 			<p>It may require a little attention on both you and your computer's part, so do try reducing some distractions like background music and other resource intensive applications or browser tabs!</p>
 			<p>Hope you enjoy!</p>
 			<p>(click start when page has completed loading)</p>
+			<p><button>Start</button>
 		</div>
-	</div>
+</div>
 </div>
 
 
@@ -350,10 +187,13 @@ margin: 0;
 				scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
 
 				geometry = new THREE.Geometry();
+				
+				var starFieldLength = 2000;
+				var halfStarFieldLength = starFieldLength / 2;
 
-				for ( i = 0; i < 5000; i ++ ) {
+				for ( i = 0; i < 10000; i ++ ) {
 
-					vector = new THREE.Vector3( Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000 );
+					vector = new THREE.Vector3( Math.random() * starFieldLength - halfStarFieldLength, Math.random() * starFieldLength - halfStarFieldLength, Math.random() * starFieldLength - halfStarFieldLength );
 					
 					//vector = new THREE.Vector3( Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000 );
 					
@@ -368,44 +208,51 @@ margin: 0;
 
 					var canvas = document.createElement( 'canvas' );
 					
-					canvas.width = 128;
-					canvas.height = 128;
+					var width = 128;
+					var height = 128;
+					var halfWidth = width / 2;
+					var halfHeight = height / 2;
+					
+					canvas.width = width;
+					canvas.height = height;
 
 					var context = canvas.getContext( '2d' );
 
-
-					context.beginPath();
-					context.arc( 64, 64, 60, 0, Math.PI * 2, false) ;
-					context.closePath();
-
-					context.lineWidth = 0.5; //0.05
-					context.stroke();
-					context.restore();
-
-
+					context.globalCompositeOperation = 'lighter';
 
 					context.fillStyle = 'grey';
+					
+					context.beginPath();
+					context.moveTo(halfWidth, 0);
+					context.quadraticCurveTo(halfWidth, halfHeight, width, halfHeight);
+					context.quadraticCurveTo(halfWidth, halfHeight, halfWidth, height);
+					context.quadraticCurveTo(halfWidth, halfHeight, 0, halfHeight);
+					context.quadraticCurveTo(halfWidth, halfHeight, halfWidth, 0);
+					context.closePath();
 					context.fill();
 
 
 
-					var gradient = context.createRadialGradient( canvas.width / 2, canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+					var gradient = context.createRadialGradient( halfWidth, halfHeight, 0, halfWidth, halfHeight, halfWidth );
 
 					gradient.addColorStop( 0, 'rgba(255,255,255,1)' );
 					gradient.addColorStop( 0.2, 'rgba(255,255,255,1)' );
 					gradient.addColorStop( 0.4, 'rgba(200,200,200,1)' );
 					gradient.addColorStop( 1, 'rgba(0,0,0,1)' );
 
-					//context.fillStyle = gradient;
+					context.fillStyle = gradient;
 					
-					
-					
-					context.fillStyle = 'white';
+					// context.fillStyle = 'white';
 
+					context.beginPath();
+					context.arc( 64, 64, 40, 0, Math.PI * 2, false) ;
+					context.closePath();
+
+					//context.lineWidth = 0.5; //0.05
 					context.fill();
 
 					//var idata = context.getImageData(0, 0, canvas.width, canvas.height);
-					//document.body.appendChild(canvas);
+					// document.body.appendChild(canvas);
 					return canvas;
 
 				}
@@ -423,7 +270,7 @@ margin: 0;
 
 					//materials[i] = new THREE.ParticleBasicMaterial( { color: color, size: size } );
 
-					materials[i] = new THREE.ParticleBasicMaterial( { size: size * 0.5, map: texture} );
+					materials[i] = new THREE.ParticleBasicMaterial( { size: size , map: texture} );
 					materials[i].color.setHSV( color[0], color[1], color[2] );
 
 					particles = new THREE.ParticleSystem( geometry, materials[i] );
@@ -506,7 +353,7 @@ margin: 0;
 				// camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 				
 				// camera.position.z -= 0.05;
-				camera.position.z -= 0.5;
+				camera.position.z -= 2;
 				// camera.position.z -= 15;
 				
 				
@@ -530,9 +377,9 @@ margin: 0;
 
 					color = parameters[i][0];
 
-					h = ( 360 * ( color[0] + time ) % 360 ) / 360;
+					//h = ( 360 * ( color[0] + time ) % 360 ) / 360;
 					//materials[i].color.setHSV( h, color[1], color[2] );
-					materials[i].color.setHSV( 0, 0, h );
+					materials[i].color.setHSV( 0, 0, Math.sin( (color[0] + time) * 5) * 0.5  * 0.4 + 0.8) ;
 
 				}
 				renderer.clear();

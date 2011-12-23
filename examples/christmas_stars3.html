@@ -5,6 +5,10 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
+			
+			html {
+				100%;
+			}
 			body {
 				background-color: #000000;
 				margin: 0px;
@@ -31,282 +35,75 @@
 			}
 			
 			#intro {
-				/*
-				vertical-align:middle;
-				width: 400px;
-
-				margin-left: auto;
-				margin-right: auto;
-				text-align:center;
-				margin: auto;
-				vertical-align:middle;
-				*/
-				display:-moz-box;
-				-moz-box-orient:horizontal;
-
-				/* Safari and Chrome */
-				display:-webkit-box;
-				-webkit-box-orient:horizontal;
-
-				-webkit-box-align: stretch;
+				display: box;
+				box-align: center;
+				box-orient: vertical;
+				box-pack: center;				
+				
+				display: -webkit-box;
+				-webkit-box-align: center;
+				-webkit-box-orient: vertical;
 				-webkit-box-pack: center;
 				
-
-				/* W3C */
-				display:box;
-				box-orient:horizontal;
+				display: -moz-box;
+				-moz-box-orient: vertical;
+				-moz-box-pack: center;
+				-moz-box-align: center;
+				
+				
+				-webkit-transition: 0.25s opacity;
+				
+				
+				margin:auto;
+				background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
+				
+				bottom: 0;			
+				left: 0;
+				
+				right: 0;
+				top: 0;
+				
+				
+				overflow: auto;
+				padding: 20px;
+				padding-bottom: 130px;
+				position: fixed;
+				z-index: 10;
+				
+				height: 100%;
+				width: 100%;
 			}
 			
-			/*
 			.wrap {
 				display: -webkit-box;
 				-webkit-box-orient: vertical;
 				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
+
+				display: -moz-box;
+				-moz-box-orient: vertical;
+				-moz-box-align: stretch;
+
+				display: box;
+				box-orient: vertical;
+				box-align: stretch;
 				
-			}*/
-
-/*
-			.overlay {
-				display: -webkit-box;
-				-webkit-box-orient: horizontal;
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
+				height:100%;
+				
 			}
-			.overlay > .wrap {
-				display: -webkit-box;
-				-webkit-box-orient: vertical;
-				-webkit-box-align: stretch;
-				-webkit-box-pack: center;
+			.messagebox {
+				display:block;
+				margin:auto;
+				top : aut;
+				width: 400px;
+				color: #fff;
 			}
-*/
 
-
-
-
-.overlay2 {
-
-	
- 	 display: -moz-box;
-	  -moz-box-orient: horizontal;
-	  -moz-box-pack: center;
-	  -moz-box-align: center;
-
-	  display: box;
-	  box-orient: horizontal;
-	  box-pack: center;
-	  box-align: center;
-	
-	display: -webkit-box;
-	
-	-webkit-box-align: center;
-	-webkit-box-orient: vertical;
-	-webkit-box-pack: center;
-	
-	-webkit-transition: 0.25s opacity;
-	
-	
-	background: -webkit-radial-gradient(rgba(50, 50, 50, 0.2), rgba(50, 50, 50, 0.2) 35%, rgba(0, 0, 0, 0.3));
-	/*
-	background: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(127, 127, 127, 0.5) 35%, rgba(0, 0, 0, 0.7));
-	*/
-	overflow: auto;
-	
-	padding: 20px;
-	padding-bottom: 100px;
-	
-	position: fixed;
-
-	left: 0;
-	bottom: 0;
-	right: 0;
-	top: 0;
-
-	z-index: 10;
-	
-	color: #fff;
-
-}
-
-/*http://james.gameover.com/index.php/2009/vertically-centring-in-css-without-hacks-and-multi-line-enabled/
-hate those css3 hacks
-*/
-
-/*
-.overlay {
-	width:300px; height:300px; position:relative; float:left;
-	z-index:20;
-}
-
-.wrap {
-	position:absolute;
-	display:table;
-	width: 100%;
-	height: 100%;
-	
-	margin:auto;
-	
-	left:93px; top:21px; width:135px; height:284px; 
-	
-}
-.messagebox {
-	display:block;
-	width:400px;
-	text-shadow:white 0 1px 2px;
-	background:black;
-	opacity:0.8;
-	padding:10px;
-	display:table-cell;
-	vertical-align:middle;
-	text-align:center;
-}
-*/
-
-/*http://infrequently.org/2009/08/css-3-progress/*/
-
-
-html {
-	height:100%;
-	/* Important for Firefox!!! */
-}
-
-html, body {
-	height:100%;
-}
-
-* {
-padding: 0;
-margin: 0;
-}
-
-.overlay {
-	z-index:40;
-	position:static;
-
-	height: 100%;
-
-	float:left;
-	background-color: rgba(200, 200, 200, 0.5);
-}	
-.messagebox {
-	width:400px;
-	text-shadow:white 0 1px 2px;
-	background:black;
-	opacity:0.8;
-	padding:10px;
-
-}
-
-/* hbox and vbox classes */
- 
-.hbox {
-	display: -webkit-box;
-	-webkit-box-orient: horizontal;
-	-webkit-box-align: stretch;
- 
-	display: -moz-box;
-	-moz-box-orient: horizontal;
-	-moz-box-align: stretch;
- 
-	display: box;
-	box-orient: horizontal;
-	box-align: stretch;
-}
- 
-.hbox > * {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-	display: block;
-}
- 
-.vbox {
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-box-align: stretch;
- 
-	display: -moz-box;
-	-moz-box-orient: vertical;
-	-moz-box-align: stretch;
- 
-	display: box;
-	box-orient: vertical;
-	box-align: stretch;
-}
- 
-.vbox > * {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-	display: block;
-}
- 
-.spacer {
-	-webkit-box-flex: 1;
-	-moz-box-flex: 1;
-	box-flex: 1;
-}
- 
-.reverse {
-	-webkit-box-direction: reverse;
-	-moz-box-direction: reverse;
-	box-direction: reverse;
-}
- 
-.boxFlex0 {
-	-webkit-box-flex: 0;
-	-moz-box-flex: 0;
-	box-flex: 0;
-}
- 
-.boxFlex1, .boxFlex {
-	-webkit-box-flex: 1;
-	-moz-box-flex: 1;
-	box-flex: 1;
-}
- 
-.boxFlex2 {
-	-webkit-box-flex: 2;
-	-moz-box-flex: 2;
-	box-flex: 2;
-}
- 
-.boxGroup1 {
-	-webkit-box-flex-group: 1;
-	-moz-box-flex-group: 1;
-	box-flex-group: 1;
-}
- 
-.boxGroup2 {
-	-webkit-box-flex-group: 2;
-	-moz-box-flex-group: 2;
-	box-flex-group: 2;
-}
- 
-.start {
-	-webkit-box-pack: start;
-	-moz-box-pack: start;
-	box-pack: start;
-}
- 
-.end {
-	-webkit-box-pack: end;
-	-moz-box-pack: end;
-	box-pack: end;
-}
- 
-.center {
-	-webkit-box-pack: center;
-	-moz-box-pack: center;
-	box-pack: center;
-}
-
-		</style>
+</style>
 	</head>
 	<body>
 
-<div class="overlay hbox center">
-	<div class="wrap vbox center">
+<div id="intro">
+<div class="wrap">
 		<div class="messagebox">
 			<p>Hello!</p>
 			<p>Here's a little interactive presentation in store for you.</p>
@@ -314,7 +111,7 @@ margin: 0;
 			<p>Hope you enjoy!</p>
 			<p>(click start when page has completed loading)</p>
 		</div>
-	</div>
+</div>
 </div>
 
 
