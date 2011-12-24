@@ -24,6 +24,8 @@ var NEAR = 5, FAR = 3000;
 var auroraPlane;
 var auroraGenerator;
 
+var nightSceneDirector = new THREE.Director();
+
 function setupNightScene() {
 	initNightScene();
 	resizeNightScene();
@@ -70,6 +72,8 @@ function renderNightScene() {
 	for ( i = 0; i < starTrailLayers; i ++ ) {	
 		starTrailParticles[i].rotation.y -= 0.001;
 	}
+	
+	nightSceneDirector.update();
 
 	// For glittering stars
 	for( i = 0; i < starTrailMaterials.length; i ++ ) {
@@ -147,10 +151,6 @@ function initNightScene() {
 		
 		var particles = new THREE.ParticleSystem( starTrailGeometries[i], starTrailMaterials[i] );
 
-		// particles.rotation.x = Math.random() * 6;
-		// particles.rotation.y = Math.random() * 6;
-		// particles.rotation.z = Math.random() * 6;
-		
 		solarSystem.add(particles);
 		starTrailParticles.push(particles);
 		
@@ -175,10 +175,7 @@ function initNightScene() {
 	// clear = false, opacity -> 0.002
 	// 
 	
-	// auroraPlane.position.set(100, 200, 100);
 	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
-	
-	// auroraPlane.position.set(100, 200, 100);
 	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
 
 	auroraPlane.position.set(100, 200, 100);
@@ -189,39 +186,61 @@ function initNightScene() {
 	
 	scene.add(auroraPlane);
 	
-	// // Generic Event / Action
-	// director.addAction(500, function() {
-	// 	cube.scale.x = 2;
-	// }).addAction(1000, function() {
-	// 	cube.scale.y = 2;
-	// }).addAction(1500, function() {
-	// 	cube.rotation.y += 0.5;
-	// });
-	//
-	
 	anim("Aurora Plane",auroraPlane.material)
 			.to({opacity: 0},0)
 			.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
-			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 6
-			.to({opacity: 0.6},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 10
-			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 14
-			.to({opacity: 0.02},2);
+			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) // 6
+			.to({opacity: 0.6},4, Timeline.Easing.Bounce.EaseInOut)  // 10
+			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut)  // 14
+			.to({opacity: 0.02},2).to({opacity: 2},4);
 		
 	anim("Startrails1",starTrailMaterials[0])
 		.to({opacity: 0}, 0)
 		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut);
+		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
 
 	anim("Startrails2",starTrailMaterials[1])
 		.to({opacity: 0}, 0)
 		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 10, Timeline.Easing.Cubic.EaseOut);	
+		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);	
 	
 	anim("Startrails3",starTrailMaterials[2])
 		.to({opacity: 0}, 0)
 		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 10, Timeline.Easing.Cubic.EaseOut);
-	Timeline.getGlobalInstance().loop(-1); //loop forever
+		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
+	
+	
+	// Generic Event / Action
+	nightSceneDirector.addAction(7000, function() {
+		camera.setLens(40); // 50 35 80
+
+	}).addAction(12000, function() {
+		auroraPlane.material.opacity = 0.02;
+		// renderer.clear();
+		
+	}).addAction(14000, function() {
+		clear = false;
+		camera.setLens(80);
+		auroraPlane.material.opacity = 0.01;
+		renderer.clear();
+	}).addAction(18000, function() {
+		camera.setLens(35);
+		auroraPlane.material.opacity = 0.005;
+		renderer.clear();
+
+	}).addAction(28000, function() {
+		camera.setLens(24);
+		auroraPlane.material.opacity = 0;
+		//renderer.clear();
+		clear = false;
+	}).addAction(34000, function() {
+		auroraPlane.material.opacity = 1;
+		clear = true;
+		
+	}).start();
+	
+
+	//Timeline.getGlobalInstance().loop(-1); //loop forever
 	
 }
 
@@ -230,7 +249,7 @@ function initNightScene() {
 // single plane + fragment shader
 // skydom and repeat.
 
-
+// 
 
 /* CPU + Canvas Based method */
 function createAuroraTexture(width, height) {
@@ -239,8 +258,6 @@ function createAuroraTexture(width, height) {
 	canvas.height = height;
 
 	var context = canvas.getContext('2d');
-
-
 
 	var simplex = new SimplexNoise();
 
