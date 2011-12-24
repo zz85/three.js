@@ -22,6 +22,7 @@ var SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_RATIO, TARGET_RATIO, RESIZE_FACTOR,
 var NEAR = 5, FAR = 3000;
 
 var testPlane;
+var auroraGenerator;
 
 function setupNightScene() {
 	initNightScene();
@@ -78,6 +79,7 @@ function renderNightScene() {
 	
 	}
 	
+	auroraGenerator.redraw();
 	if (clear) renderer.clear();
 	renderer.render( scene, camera );
 }
@@ -160,16 +162,159 @@ function initNightScene() {
 	
 	scene.add( solarSystem );
 	
+	auroraGenerator = createAuroraTexture(128, 128);
+	
 	testPlane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 10, 10),
-		new THREE.MeshBasicMaterial({color: 0xffffff, wireframe:true, map: aurora})
+		new THREE.MeshBasicMaterial({color: 0xffffff, wireframe:false, map:auroraGenerator.texture}) 
 	);
 	
+	
+	// add opacity.
+	// 
+	// testPlane.material.opacity = .8 -> 0.2 | z = 2000, scale 7, 4, 10
+	// clear = false, opacity -> 0.002
+	// 
+	
+	// testPlane.position.set(100, 200, 100);
+	// testPlane.rotation.set(1.9, -0.4, -0.9);
+	
+	// testPlane.position.set(100, 200, 100);
+	// testPlane.rotation.set(1.9, -0.4, -0.9);
+
 	testPlane.position.set(100, 200, 100);
-	testPlane.rotation.set(1.9, -0.4, -0.9);
+	testPlane.scale.set(1.6, 0.8, 1);
+	testPlane.rotation.set(2.1, -0.5, -0.7);
+	
+	testPlane.material.opacity = 0.6;
 	
 	scene.add(testPlane);
 	
 }
+
+// 1st approach. plane + moving canvas.
+// multi planes + static canvas
+// single plane + fragment shader
+// skydom and repeat.
+
+
+
+/* CPU + Canvas Based method */
+function createAuroraTexture(width, height) {
+	var canvas = document.createElement("canvas");
+	canvas.width = width;
+	canvas.height = height;
+
+	var context = canvas.getContext('2d');
+
+
+
+	var simplex = new SimplexNoise();
+
+	var me = this;
+	var texture;
+
+	this.redraw = function() {
+		var now = Date.now();
+		var time = now / 4000;
+
+		context.clearRect(0, 0, width, height);
+		//context.fillStyle = 'white';
+		//context.fillRect(0, 0, width, height);
+
+
+		// Shine Rays map next time!!!!
+
+		//createRadialGradient(x1,y1,r1,x2,y2,r2)
+		// var gradient = context.createLinearGradient( 0,0, width, height );
+		// var gradient = context.createLinearGradient( 0 ,height, width, height );
+		var gradient = context.createLinearGradient( 0,  (Math.sin(time / 2)+1) * 0.5 * height, width, height - (Math.sin(time / 2)+1) * 0.5* height  );
+
+		gradient.addColorStop( 0, 'rgba(200,200,0,0.9)' );
+		gradient.addColorStop( (Math.sin(time)+1) * 0.5 * 0.2, 'rgba(100,0,0,1)' );
+
+		gradient.addColorStop( (Math.cos(time)+1) * 0.5 * 0.2 + 0.4 , 'rgba(0,200,0,1)' ); // 0.6
+		gradient.addColorStop( 0.8, 'rgba(0,0,200,1)' );
+		gradient.addColorStop( 1, 'rgba(200,200,200,1)' );
+
+		context.fillStyle = gradient;
+		context.fillRect(0,0, width, height);
+
+		context.save();
+		context.globalCompositeOperation = 'lighter';
+		var gradient = context.createLinearGradient( 0, 0, 0, height );
+		gradient.addColorStop( 0, 'rgba(0,0,0,0.2)' );
+		gradient.addColorStop( 1, 'rgba(200,200,200,0.5)' );
+
+
+		context.fillStyle = gradient;
+		context.fillRect(0,0, width, height);
+
+		context.restore();
+
+		// var image = context.getImageData( 0, 0, width, height );
+		var image = context.createImageData( width, height );
+
+		var image2 = context.getImageData( 0, 0, width, height );
+
+		var imageData = image.data;
+		var imageData2 = image2.data;
+
+
+		var w,h, n;
+
+		// settings
+		var octaves = 1;				
+		var scaleX = 4 /octaves, scaleY = 0.25 /octaves;
+
+		var w,h, n;
+
+		for ( var i = 0, j = 0, l = imageData.length; i < l; i += 4, j ++  ) {
+
+			h = Math.floor( j/width );
+			w = j % width;
+
+			n = 0;
+			var frequency = 1;
+			var persistance = 0.5;
+			var amptitude ;
+
+			for (var oi=0; oi < octaves; oi++) {
+				frequency *= 2;
+				amptitude =  Math.pow(persistance, oi);
+
+				n += simplex.noise3d(w/width * frequency * scaleX, h/height* frequency * scaleY, time)  * amptitude ;
+			}
+
+
+			var m = n;
+			var factor = n* 0.5 + 0.5; // + 1 ) * 0.5
+			n = Math.floor( factor * 255); //Math.floor
+
+
+			// Multiply ** (best!!!)
+			imageData[ i ] = Math.floor( factor * imageData2[ i ]);
+			imageData[ i + 1 ] = Math.floor( factor * imageData2[ i + 1]);
+			imageData[ i + 2 ] = Math.floor( factor * imageData2[ i + 2 ]);
+			imageData[ i + 3 ] = 255;
+
+
+
+		}
+		context.putImageData( image, 0, 0 );
+
+		//console.log('done', Date.now() - now);
+		
+		texture.needsUpdate = true; 
+
+	}
+
+	texture = new THREE.Texture(  canvas  );
+	this.texture = texture;
+	this.redraw();
+
+	return this;
+}
+
 
 function generateSprite() {
 
