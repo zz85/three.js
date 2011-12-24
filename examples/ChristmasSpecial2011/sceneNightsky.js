@@ -76,7 +76,7 @@ function renderNightScene() {
 		
 		var flux =  Math.sin(time * 50 + i/starTrailLayers * 30 ) * 0.5 + 0.5;
 		starTrailMaterials[i].color.setHSV( 0,  0, flux * 0.6 + 0.4 );
-	
+		starTrailMaterials[i].opacity = 0;
 	}
 	
 	auroraGenerator.redraw();

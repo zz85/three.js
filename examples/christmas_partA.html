@@ -195,7 +195,7 @@
 			<p>We have prepared an interactive piece of work for you in this season.</p>
 			<p>It may require just a little more attention on both you and your computer's resources, so you wish to try reduce some distractions like background videos, music or any other resource hungry applications, even unwanted browser windows...</p>
 			<p>Hope you enjoy!</p>
-			<p id="startInfoPass">(click start when page has completed loading)</p>
+			<p id="startInfoPass">(click start when page has completed loading. <span id="stillLoading">Loading music...</span>)</p>
 			<p id="startInfoFail" style="display:none;">Unfortunately, it seems that your browser or machine does not meet the requirements to playback this interactive experience. Please try running <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.getfirefox.net">Firefox</a> on a desktop with updated drives.</p>
 			<p><button onclick="startChristmas();">Start</button>
 		</div>
@@ -219,6 +219,7 @@
 </div>
 
 
+		<!-- graphics -->
 		<script src="../build/Three.js"></script>
 
 		<script src="js/Detector.js"></script>
@@ -244,6 +245,8 @@
 		var current = 0;
 		
 		var renderCallback;
+		
+		var itemsToLoad = [ 'music' ];
 
 		function init() {
 			
@@ -265,12 +268,33 @@
 
 		}
 		
+		
+		function preloaded(item) {
+			
+			var index = itemsToLoad.indexOf(item);
+			
+			if (index>-1) {
+				itemsToLoad.splice(index, 1);
+			}
+			
+			if (itemsToLoad.length > 0) {
+				document.getElementById('stillLoading').innerHTML = itemsToLoad.join(', ');
+			} else {
+				document.getElementById('stillLoading').innerHTML = 'Load completed';
+			}
+			
+		}
+		
 		// GOTO MAIN
 		function startChristmas() {
 
+			if (itemsToLoad.length > 0) {
+				return;
+			}
+			
 			document.getElementById('intro').style.display = 'none';
 			unloadSceneIntro();
-			
+			playMusic();
 			setupNightScene();
 
 		}
@@ -310,8 +334,19 @@
 	</div>
 	-->
 	
+		<!-- scenes -->
 		<script src="ChristmasSpecial2011/sceneIntro.js"></script>		
 		<script src="ChristmasSpecial2011/sceneNightsky.js"></script>
+		
+		
+		<!-- music -->
+		<script src="ChristmasSpecial2011/stream.js"></script>
+		<script src="ChristmasSpecial2011/midifile.js"></script>
+		<script src="ChristmasSpecial2011/replayer.js"></script>
+		<script src="ChristmasSpecial2011/synth.js"></script>
+		<script src="ChristmasSpecial2011/audio.js"></script>
+		<script src="ChristmasSpecial2011/music.js"></script>
+		
 		
 		<script src="ChristmasSpecial2011/main.js"></script>
 		<script type="text/javascript">
@@ -328,7 +363,25 @@
 
 		</script>
 		<script>
-		startChristmas();
+		// startChristmas();
+		
+		//loadMusic('ChristmasSpecial2011/music/ItCameUponAMidniteClear.mid');
+		loadMusic('ChristmasSpecial2011/music/o_holy_night.mid');
+		//play('christmas/o_come_all.mid');
+		//play('christmas/WhiteXmas[1].mid');
+
+
+		// play('christmas/silent_night_holy_night.mid');
+		// play('christmas/awymngr.mid');
+		// play('christmas/o_little_town_of_bethlehem.mid');
+		// play('christmas/it_came_upon.mid');
+		// play('christmas/o_come_emmanuel.mid');
+
+		// Choir
+		// play('christmas/the_first_noel.mid');
+		// play('christmas/what_child_is_this.mid');
+		
+		
 		</script>
 		
 	</body>
