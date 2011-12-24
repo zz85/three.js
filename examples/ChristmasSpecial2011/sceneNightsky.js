@@ -21,7 +21,7 @@ var SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_RATIO, TARGET_RATIO, RESIZE_FACTOR,
 	
 var NEAR = 5, FAR = 3000;
 
-var testPlane;
+var auroraPlane;
 var auroraGenerator;
 
 function setupNightScene() {
@@ -76,7 +76,7 @@ function renderNightScene() {
 		
 		var flux =  Math.sin(time * 50 + i/starTrailLayers * 30 ) * 0.5 + 0.5;
 		starTrailMaterials[i].color.setHSV( 0,  0, flux * 0.6 + 0.4 );
-		starTrailMaterials[i].opacity = 0;
+		//starTrailMaterials[i].opacity = 0;
 	}
 	
 	auroraGenerator.redraw();
@@ -162,32 +162,66 @@ function initNightScene() {
 	
 	scene.add( solarSystem );
 	
-	auroraGenerator = createAuroraTexture(128, 128);
+	auroraGenerator = createAuroraTexture(64, 64); //128, 128
 	
-	testPlane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 10, 10),
+	auroraPlane = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000, 2, 2),
 		new THREE.MeshBasicMaterial({color: 0xffffff, wireframe:false, map:auroraGenerator.texture}) 
 	);
 	
 	
 	// add opacity.
 	// 
-	// testPlane.material.opacity = .8 -> 0.2 | z = 2000, scale 7, 4, 10
+	// auroraPlane.material.opacity = .8 -> 0.2 | z = 2000, scale 7, 4, 10
 	// clear = false, opacity -> 0.002
 	// 
 	
-	// testPlane.position.set(100, 200, 100);
-	// testPlane.rotation.set(1.9, -0.4, -0.9);
+	// auroraPlane.position.set(100, 200, 100);
+	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
 	
-	// testPlane.position.set(100, 200, 100);
-	// testPlane.rotation.set(1.9, -0.4, -0.9);
+	// auroraPlane.position.set(100, 200, 100);
+	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
 
-	testPlane.position.set(100, 200, 100);
-	testPlane.scale.set(1.6, 0.8, 1);
-	testPlane.rotation.set(2.1, -0.5, -0.7);
+	auroraPlane.position.set(100, 200, 100);
+	auroraPlane.scale.set(1.6, 0.8, 1);
+	auroraPlane.rotation.set(2.1, -0.5, -0.7);
 	
-	testPlane.material.opacity = 0.6;
+	auroraPlane.material.opacity = 0.6;
 	
-	scene.add(testPlane);
+	scene.add(auroraPlane);
+	
+	// // Generic Event / Action
+	// director.addAction(500, function() {
+	// 	cube.scale.x = 2;
+	// }).addAction(1000, function() {
+	// 	cube.scale.y = 2;
+	// }).addAction(1500, function() {
+	// 	cube.rotation.y += 0.5;
+	// });
+	//
+	
+	anim("Aurora Plane",auroraPlane.material)
+			.to({opacity: 0},0)
+			.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
+			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 6
+			.to({opacity: 0.6},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 10
+			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) //Bounce.EaseOut // 14
+			.to({opacity: 0.02},2);
+		
+	anim("Startrails1",starTrailMaterials[0])
+		.to({opacity: 0}, 0)
+		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut);
+
+	anim("Startrails2",starTrailMaterials[1])
+		.to({opacity: 0}, 0)
+		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+		.to({opacity: 1}, 10, Timeline.Easing.Cubic.EaseOut);	
+	
+	anim("Startrails3",starTrailMaterials[2])
+		.to({opacity: 0}, 0)
+		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+		.to({opacity: 1}, 10, Timeline.Easing.Cubic.EaseOut);
+	Timeline.getGlobalInstance().loop(-1); //loop forever
 	
 }
 

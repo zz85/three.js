@@ -2,7 +2,7 @@ var sampleRate = 44100; /* hard-coded in Flash player */
 
 function AudioPlayer(generator, opts) {
 	if (!opts) opts = {};
-	var latency = opts.latency || 1;
+	var latency = opts.latency || 0.1;
 	var checkInterval = latency * 100 /* in ms */
 	
 	var audioElement = new Audio();
