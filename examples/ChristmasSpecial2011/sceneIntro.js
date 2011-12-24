@@ -43,7 +43,7 @@ function unloadSceneIntro() {
 	document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.removeEventListener( 'touchstart', onDocumentTouchStart, false );
 	document.removeEventListener( 'touchmove', onDocumentTouchMove, false );
-	
+	window.removeEventListener('resize', onWindowResize, false);
 	
 }
 
@@ -101,6 +101,15 @@ function setupSceneIntro() {
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 	document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+	window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+	
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	camera.aspect	= window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();	
+	
 }
 
 function onDocumentMouseMove( event ) {

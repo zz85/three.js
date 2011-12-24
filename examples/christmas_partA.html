@@ -224,6 +224,8 @@
 		<script src="js/Detector.js"></script>
 		<script src="js/Stats.js"></script>
 
+		<script src="js/SimplexNoise.js"></script>
+
 		<script>
 
 		// Whole Bunch of Variables
@@ -263,16 +265,20 @@
 
 		}
 		
+		// GOTO MAIN
 		function startChristmas() {
 
 			document.getElementById('intro').style.display = 'none';
 			unloadSceneIntro();
+			
+			setupNightScene();
 
 		}
 		
 		function showAbout() {
 			document.getElementById('about').style.display = 'table';
 		}
+		
 		
 
 			//
@@ -303,8 +309,7 @@
 	<a name="fb_share" style="border-radius:0;border:0; padding:0; margin:0"></a>
 	</div>
 	-->
-		<script src="ChristmasSpecial2011/sceneIntro.js"></script>
-		
+		<script src="ChristmasSpecial2011/sceneIntro.js"></script>		
 		<script src="ChristmasSpecial2011/sceneNightsky.js"></script>
 		<!---->
 		
@@ -321,6 +326,9 @@
 		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		  })();
 
+		</script>
+		<script>
+		startChristmas();
 		</script>
 		
 	</body>

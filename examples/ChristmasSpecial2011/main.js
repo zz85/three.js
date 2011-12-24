@@ -24,4 +24,5 @@ function animate() {
 
 init();
 setupSceneIntro();
+
 animate();
