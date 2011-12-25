@@ -193,19 +193,6 @@ function initNightScene() {
 	
 	scene.add(auroraPlane);
 	
-	// addTween = function(startTime, duration, 
-	// 	property, startValues, endValues, easing, callback)
-	// Set top, SetBottom
-	
-	nightSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
-		.addTween(6, 4, auroraPlane.material, null, {opacity: 0.2}, 'Bounce.EaseInOut')
-		.addTween(10, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
-		.addTween(14, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(18, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(22, 2, auroraPlane.material, null, {opacity: 0.2}, 'Linear.EaseNone');
-		
-	
 	// anim("Aurora Plane",auroraPlane.material)
 	// 		.to({opacity: 0},0)
 	// 		.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
@@ -214,21 +201,35 @@ function initNightScene() {
 	// 		.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut)  // 14
 	// 		.to({opacity: 0.02},2).to({opacity: 2},4); // 18
 	// 	
-	anim("Startrails1",starTrailMaterials[0])
-		.to({opacity: 0}, 0)
-		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
+	// anim("Startrails1",starTrailMaterials[0])
+	// 	.to({opacity: 0}, 0)
+	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
+	// 
+	// anim("Startrails2",starTrailMaterials[1])
+	// 	.to({opacity: 0}, 0)
+	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);	
+	// 
+	// anim("Startrails3",starTrailMaterials[2])
+	// 	.to({opacity: 0}, 0)
+	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
+	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
+	
+	
+	var starTrailsOpacity = [starTrailMaterials[0], starTrailMaterials[1], starTrailMaterials[2]];
+	
+	nightSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+		.addTween(6, 4, auroraPlane.material, null, {opacity: 0.2}, 'Bounce.EaseInOut')
+		.addTween(10, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+		.addTween(14, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(18, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(22, 2, auroraPlane.material, null, {opacity: 0.2}, 'Linear.EaseNone')
 
-	anim("Startrails2",starTrailMaterials[1])
-		.to({opacity: 0}, 0)
-		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);	
-	
-	anim("Startrails3",starTrailMaterials[2])
-		.to({opacity: 0}, 0)
-		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-		.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
-	
+		.addTween(0,	10,	starTrailsOpacity, {opacity: 0},	{opacity: 1}, 'Cubic.EaseIn') //Cubic.EaseOut Linear.EaseNone
+		//.addTween(15,	30,	starTrailsOpacity,	null,	{opacity: 0.5},	'Cubic.EaseOut');
+		
 	
 	// Generic Event / Action
 	nightSceneDirector.addAction(0, function(){
@@ -246,11 +247,12 @@ function initNightScene() {
 		// renderer.clear();
 		
 	}).addAction(14, function() {
-		clear = false;
+		
 		camera.setLens(80);
 		auroraPlane.material.opacity = 0.01;
 		renderer.clear();
 	}).addAction(18, function() {
+		clear = false;
 		camera.setLens(35);
 		auroraPlane.material.opacity = 0.005;
 		renderer.clear();
@@ -261,8 +263,15 @@ function initNightScene() {
 		//renderer.clear();
 		clear = false;
 	}).addAction(34, function() {
-		auroraPlane.material.opacity = 1;
+		
 		clear = true;
+		
+	}).addTween(34, 5, auroraPlane.material, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
+	.addTween(40, 5, starTrailsOpacity, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
+	.addAction(50, function() {
+		
+		releaseNightScene();
+		nightSceneDirector.stop();
 		
 	}).start();
 	

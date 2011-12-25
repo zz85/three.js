@@ -41,24 +41,25 @@ THREE.Director = function() {
  * Schedules a tween to run at a particular time 
  */
 THREE.Director.prototype.addTween = function(startTime, duration, 
-	property, startValues, endValues, easing, callback) {
-		
-		var easingFunction = this.getEasingFunction(easing);
+	object, startValues, endValues, easing, callback) {
 		
 		if (startTime===null) startTime = this.__lastTime;
-		if (property===null) property = this.__lastTarget;
+		if (object===null) object = this.__lastObject;
+		if (easing==null) easing = this.__lastEasing;
+		var easingFunction = this.getEasingFunction(easing);
 		
-		// TODO Support multiple targets
 		
-		this.__lastProperty = property;
+		object = (object instanceof Array) ? object : [object];
+		//Object.prototype.toString.call(o) === '[object Array]'
+		this.__lastObject = object;
 		this.__lastTime = (startTime + duration)  * 1000;
-		this.__lastTarget = property;
+		this.__lastEasing = easing;
 		
 		var tween = {
 			startTime: startTime * 1000,
 			duration: duration * 1000,
 			endTime: this.__lastTime,
-			property: property, 
+			object: object, 
 			startValues: startValues, 
 			endValues: endValues,
 			easing: easingFunction,
@@ -74,6 +75,17 @@ THREE.Director.prototype.addTween = function(startTime, duration,
  * Returns easing function based on its string named
  */
 THREE.Director.prototype.getEasingFunction = function(name) {
+	
+	if (name=="Always.One") {
+		return function() {
+			return 1;
+		}
+	} else if (name=="Always.Zero") {
+		return function() {
+			return 0;
+		}
+	}
+	
 	
 	var pointer = TWEEN.Easing;
 	var paths = name.split('.');
@@ -96,9 +108,11 @@ THREE.Director.prototype.applyTweens = function(currentTime, lastTime) {
 			
 			this.runTween(tween, currentTime);
 			
+		} else if ((currentTime > tween.endTime) && (lastTime < tween.endTime)) {
+			
+			this.runTween(tween, tween.endTime);
+			
 		}
-		// if (tween.startTime <= lastTime && lastTime <= tween.endTime) 
-		// (currentTime > tween.endTime) && (lastTime < tween.endTime)
     }
 
 
@@ -108,38 +122,50 @@ THREE.Director.prototype.runTween = function(tween, currentTime) {
 	var startTime = tween.startTime,
 		duration = tween.duration,
 		endTime = tween.endTime,
-		property = tween.property, 
+		objects = tween.object, 
 		startValues = tween.startValues, 
 		endValues = tween.endValues,
 		easing = tween.easing,
-		callback = callback;
+		callback = tween.callback;
 	
 	
 	var passedTime = currentTime - startTime;
 	
 	var k = easing( passedTime / duration );
 
-	if (!startValues) {
-		// If no start values are specified, use exisiting values
-		startValues = {};
+	var object;
+	for (var i=objects.length;i--;) {
+		object = objects[i];
 		
-		for (var v in endValues) {
-			startValues[v] = property[v];
+		if (!startValues) {
+			// If no start values are specified, use exisiting values
+			startValues = {};
+
+			for (var v in endValues) {
+				startValues[v] = object[v];
+			}
+
+			tween.startValues = startValues;
+		}
+
+		var startValue, endValue;
+		for (var v in startValues) {
+			startValue = startValues[v];
+			endValue = endValues[v];
+			var value = startValue + k * (endValue - startValue);
+
+			object[v] = value;
 		}
 		
-		tween.startValues = startValues;
-	}
-	
-	var startValue, endValue;
-	for (var v in startValues) {
-		startValue = startValues[v];
-		endValue = endValues[v];
-		var value = startValue + k * (endValue - startValue);
+		// TODO nested properties
 		
-		property[v] = value;
 	}
 	
-	// TODO nested properties
+	// Trigger callback
+	if (callback) {
+		callback();
+	}
+
 	
 };
 
