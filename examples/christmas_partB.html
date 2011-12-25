@@ -192,10 +192,10 @@
 <div class="wrap">
 		<div class="messagebox">
 			<p><h2>Hello!</h2></p>
-			<p>We have prepared an interactive piece of work for you in this season.</p>
+			<p>We have prepared an interactive piece of work for you in midst of this festive season.</p>
 			<p>It may require just a little more attention on both you and your computer's resources, so you wish to try reduce some distractions like background videos, music or any other resource hungry applications, even unwanted browser windows...</p>
 			<p>Hope you enjoy!</p>
-			<p id="startInfoPass">(click start when page has completed loading. <span id="stillLoading">Loading music...</span>)</p>
+			<p id="startInfoPass">(<span id="stillLoading">Loading music...</span>)</p>
 			<p id="startInfoFail" style="display:none;">Unfortunately, it seems that your browser or machine does not meet the requirements to playback this interactive experience. Please try running <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.getfirefox.net">Firefox</a> on a desktop with updated drives.</p>
 			<p><button onclick="startChristmas();">Start</button>
 		</div>
@@ -207,15 +207,12 @@
 <div class="wrap">
 		<div class="messagebox">
 			<p><h2>About</h2></p>
-			<p>
-				This demo would not be possible without mrdoob, alteredq, and all other brilliant people behind and around three.js and webgl.</p>
+			<p>This demo would not be possible without mrdoob, alteredq, and all other brilliant people behind and around three.js and webgl.</p>
 			<p></p>
-			GASMID
-			Midi
-http://www.miditrax.com/xmasmidis.htm
-xmas@davel.com
+			Music: <a href="http://www.miditrax.com/xmasmidis.htm">It came upon a midnight clear</a> midi by <a href="mailto:xmas@davel.com">Davel</a>
 
-				This experiment also utilize my javascript particle engine, sparks.js. audio is generate, as well as CSS, glsl etc...
+				particles engine, sparks.js.
+				audio is generate, as well as CSS, glsl etc...
 				<div class="smaller">Created with <a href="https://github.com/mrdoob/three.js/" target="_blank">Three.js</a> + WebGL, <a href="https://github.com/zz85/sparks.js/" target="_blank">Sparks.js</a>HTML5 Goodies</div>
 				<div class="smaller">More write ups and developments on <a href="http://twitter.com/BlurSpline" target="_blank">twitter</a>, <a href="http://www.lab4games.net/zz85/blog" target="_blank">blog</a> and <a href="https://github.com/zz85/" target="_blank">github</a></div>
 			</p>
@@ -223,10 +220,8 @@ xmas@davel.com
 </div>
 </div>
 
-
 		<!-- graphics -->
 		<script src="../build/Three.js"></script>
-
 		
 		<script src="fonts/helvetiker_bold.typeface.js"></script>		
 		
@@ -237,6 +232,7 @@ xmas@davel.com
 		
 		<script src="js/Tween.js"></script>
 		<script src="js/Sparks.js"></script>
+		<script src="ChristmasSpecial2011/WindNoise.js"></script>	
 		
 		
 		<!-- shaders -->
@@ -245,92 +241,6 @@ xmas@davel.com
 		<script src="js/postprocessing/RenderPass.js"></script>
 		<script src="js/postprocessing/ShaderPass.js"></script>
 		<script src="js/postprocessing/MaskPass.js"></script>
-		<script src="js/postprocessing/BloomPass.js"></script>
-		<script src="js/postprocessing/FilmPass.js"></script>
-		
-		
-		<script>
-
-		// Whole Bunch of Variables
-
-		var container, stats;
-		var camera, scene, renderer, particles;
-		
-		var i;
-		var starFieldMaterials = [];
-		
-		var mouseX = 0, mouseY = 0;
-
-		var windowHalfX = window.innerWidth / 2;
-		var windowHalfY = window.innerHeight / 2;
-
-		var current = 0;
-		
-		var renderCallback;
-		
-		var itemsToLoad = [ 'music' ];
-
-		function init() {
-			
-			// Setup DOM and Renderers
-
-			container = document.createElement( 'div' );
-			document.body.appendChild( container );
-
-			renderer = new THREE.WebGLRenderer( { preserveDrawingBuffer: true } );
-			renderer.autoClearColor = false;
-			
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			container.appendChild( renderer.domElement );
-
-			stats = new Stats();
-			stats.domElement.style.position = 'absolute';
-			stats.domElement.style.top = '0px';
-			container.appendChild( stats.domElement );
-
-		}
-		
-		
-		function preloaded(item) {
-			
-			var index = itemsToLoad.indexOf(item);
-			
-			if (index>-1) {
-				itemsToLoad.splice(index, 1);
-			}
-			
-			if (itemsToLoad.length > 0) {
-				document.getElementById('stillLoading').innerHTML = itemsToLoad.join(', ');
-			} else {
-				document.getElementById('stillLoading').innerHTML = 'Load completed';
-			}
-			
-		}
-		
-		// GOTO MAIN
-		function startChristmas() {
-
-			if (itemsToLoad.length > 0) {
-				return;
-			}
-			
-			document.getElementById('intro').style.display = 'none';
-			unloadSceneIntro();
-			playMusic();
-			setupNightScene();
-
-		}
-		
-		function showAbout() {
-			document.getElementById('about').style.display = 'table';
-		}
-		
-		
-
-			//
-
-
-		</script>
 		
 		<script type="x-shader/x-vertex" id="vertexshader">
 
@@ -378,7 +288,7 @@ xmas@davel.com
 	
 	<div>
 
-		<a href='http://twitter.com/share' class='twitter-share-button' data-via='BlurSpline'>Tweet</a><script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
+	<a href='http://twitter.com/share' class='twitter-share-button' data-via='BlurSpline'>Tweet</a><script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
 
 	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 	<g:plusone size="medium"></g:plusone>
@@ -390,6 +300,8 @@ xmas@davel.com
 	<br/>
 	<a name="fb_share" style="border-radius:0;border:0; padding:0; margin:0"></a>
 	</div>
+	
+	
 	-->
 	
 		
@@ -427,24 +339,10 @@ xmas@davel.com
 
 		</script>
 		<script>
-		// startChristmas();
+		startChristmas();
+		
 		
 		loadMusic('ChristmasSpecial2011/music/ItCameUponAMidniteClear.mid');
-		// loadMusic('ChristmasSpecial2011/music/o_holy_night.mid');
-		//play('christmas/o_come_all.mid');
-		//play('christmas/WhiteXmas[1].mid');
-
-
-		// play('christmas/silent_night_holy_night.mid');
-		// play('christmas/awymngr.mid');
-		// play('christmas/o_little_town_of_bethlehem.mid');
-		// play('christmas/it_came_upon.mid');
-		// play('christmas/o_come_emmanuel.mid');
-
-		// Choir
-		// play('christmas/the_first_noel.mid');
-		// play('christmas/what_child_is_this.mid');
-		
 		
 		</script>
 		

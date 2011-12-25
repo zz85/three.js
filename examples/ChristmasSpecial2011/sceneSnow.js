@@ -11,10 +11,11 @@ var composer;
 var particleCloud, sparksEmitter, attributes, particleProducer;
 
 
-var light, ambient;
+var light, ambient, backlight;
 
 var clock = new THREE.Clock();
 
+var textParticlesEmitter, textParticlesProducer;
 
 function setupSnowScene() {
 	initSnowScene();
@@ -40,11 +41,11 @@ function initSnowScene() {
 	controls.lookVertical = true;
 	controls.constrainVertical = true;
 	controls.verticalMin = 1.5;
-	controls.verticalMax = 2.0;
+	controls.verticalMax = 3.0;
 
-	//controls.lon = -110;
+	controls.lon = -110;
 	controls.lat = 64.64555278652584;
-	controls.lon=  246.43799999999848;
+	//controls.lon = 246.43799999999848;
 
 	// SCENE
 
@@ -54,17 +55,20 @@ function initSnowScene() {
 
 	// LIGHTS
 
-	//var ambient = new THREE.AmbientLight( 0x444444 );
 	ambient = new THREE.AmbientLight( 0xffffff );
-	ambient.color.setHSV(0,0,0.4);
-
+	ambient.color.setHSV(0,0,0.5);
 	scene.add( ambient );
+	
+	backlight = new THREE.PointLight( 0xffffff );
+	backlight.position.set(0, FLOOR + 30, -100);
+	scene.add(backlight);
+	
+
 
 	light = new THREE.SpotLight( 0xffffff );
-	//light.position.set( 0, 1500, 1000 ); // front light
-	light.position.set( -800,000, -1000 ); // morning light
-	
-	//light.position.set( 300,400, -600 ); // backlight
+	// light.position.set( 0, 1500, 1000 ); // front light
+	// light.position.set( -800,000, -1000 ); // morning light
+	light.position.set( 300,400, -600 ); // backlight
 	
 
 	light.target.position.set( 0, 0, 0 );
@@ -273,7 +277,6 @@ function initSnowScene() {
 
 		values_size[ v ] = 30;
 		values_color[ v ] = new THREE.Color( 0xffffff );
-		//values_color[ v ].setHSV( 0, 0, 0 );
 		particles.vertices[ v ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
 
 	}
@@ -302,9 +305,9 @@ function initSnowScene() {
 			values_color[ target ].setHSV( 0, 0, 0.4 + Math.random() * 0.4 );
 			values_size[ target ] = 10 +  Math.random() * 80;
 
-			values_color[ shadow ].setHSV( 0.4, 0, 1 );
+			values_color[ shadow ].setHSV( 0.5, 0, 0.5 );
 			//values_color[ shadow ].setRGB( 10, 10, 100 );
-			values_size[ shadow ] = 50; //values_size[ target ];
+			values_size[ shadow ] = 15; //values_size[ target ];
 
 		};
 
@@ -340,20 +343,34 @@ function initSnowScene() {
 
 		particles.vertices[ particle.shadow ].position.set(
 			particle.position.x,
-			FLOOR + 10,
+			FLOOR + 5,
 			particle.position.z);
-		// SHould do some projection from Light to particles to floor.
+			// SHould do some projection from light to particles to floor.
 
 	}
+	
+	
+	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
+	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
+	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,5));
+	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, 500, 50 ) ) ) );
+	textParticlesEmitter.addAction( new SPARKS.Age() );
+	textParticlesEmitter.addAction( new SPARKS.Move() );
+	textParticlesEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
+	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
+	textParticlesEmitter.addCallback( "created", onParticleCreated );
+	textParticlesEmitter.addCallback( "dead", onParticleDead );
+	textParticlesEmitter.addCallback( "updated", onParticleUpdate );
+	
+	
 
 	particleProducer = new SPARKS.SteadyCounter( 50 );
 
 	sparksEmitter = new SPARKS.Emitter( particleProducer );
 
-	emitterpos = new THREE.Vector3( 0, 0, 0 );
 
 	var zone = new SPARKS.ParallelogramZone( 
-		new THREE.Vector3(-1000,500,-1000), 
+		new THREE.Vector3(-1000,800,-1000), 
 		new THREE.Vector3(2000,0,0),
 		new THREE.Vector3(0,0,2000)	);
 
@@ -366,7 +383,7 @@ function initSnowScene() {
 	sparksEmitter.addAction( new SPARKS.Move() );
 
 	sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-	sparksEmitter.addAction( new SPARKS.RandomDrift( 500 * 1, 100, 500* 1 ) );
+	sparksEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
 
 
 	sparksEmitter.addAction( new SPARKS.DeathZone( new SPARKS.CubeZone(
@@ -393,9 +410,9 @@ function initSnowScene() {
 	renderer.setClearColor( scene.fog.color, 1 );
 	renderer.autoClear = false;
 
-	renderer.shadowCameraNear = 3;
+	renderer.shadowCameraNear = 1;
 	renderer.shadowCameraFar = camera.far;
-	renderer.shadowCameraFov = 50;
+	renderer.shadowCameraFov = 70;
 
 	//renderer.shadowMapBias = 0.0039;
 	renderer.shadowMapDarkness = 0.3;
@@ -414,39 +431,9 @@ function initSnowScene() {
 
 	// POSTPROCESSING
 
-	// Get examples from post_proces, particles shapes, etc. text, dynamic terrian
-
 	renderer.autoClear = false;
 
 	var renderScene = new THREE.RenderPass( scene, camera );
-
-
-	var effectBloom = new THREE.BloomPass( 0.25 );
-	var effectFilm = new THREE.FilmPass( 0.5, 0.125, 2048, false );
-	var effectFXAA = new THREE.ShaderPass( THREE.ShaderExtras[ "fxaa" ] );
-	// var effectBokeh = new THREE.ShaderPass( THREE.ShaderExtras[ "bokeh" ] );
-
-	var effectBleach = new THREE.ShaderPass( THREE.ShaderExtras[ "bleachbypass" ] );
-	var effectSepia = new THREE.ShaderPass( THREE.ShaderExtras[ "sepia" ] );
-	var effectVignette = new THREE.ShaderPass( THREE.ShaderExtras[ "vignette" ] );
-	var effectScreen = new THREE.ShaderPass( THREE.ShaderExtras[ "screen" ] );
-
-	effectBleach.uniforms[ "opacity" ].value = 0.95;
-
-	effectSepia.uniforms[ "amount" ].value = 0.9;
-
-	effectVignette.uniforms[ "offset" ].value = 0.95;
-	effectVignette.uniforms[ "darkness" ].value = 1.6;
-
-	effectFXAA.uniforms[ 'resolution' ].value.set( 1 / SCREEN_WIDTH, 1 / SCREEN_HEIGHT );
-
-	// effectFilm.renderToScreen = true;
-
-	var hblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalBlur" ] );
-	var vblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalBlur" ] );
-
-	hblur.uniforms[ 'h' ].value =  1 / SCREEN_WIDTH * RESIZE_FACTOR;
-	vblur.uniforms[ 'v' ].value =  1 / SCREEN_HEIGHT * RESIZE_FACTOR;
 
 	thblur = new THREE.ShaderPass( THREE.ShaderExtras[ "horizontalTiltShift" ] );
 	tvblur = new THREE.ShaderPass( THREE.ShaderExtras[ "verticalTiltShift" ] );
@@ -523,8 +510,7 @@ function createScene( ) {
 	textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
 	textMaterialSide = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } );
 
-	var textGeo = new THREE.TextGeometry( "Christmas", {
-		
+	var textGeo = new THREE.TextGeometry( "CHRISTMAS", {
 
 		size: 200,
 		height: 50,
@@ -538,9 +524,8 @@ function createScene( ) {
 		bevelSize: 5,
 		bevelEnabled: true
 
-	//});
-	
-		,material: 0,
+		,
+		material: 0,
 		extrudeMaterial: 1
 
 	});
@@ -560,7 +545,6 @@ function createScene( ) {
 
 	var textMesh = new THREE.Mesh( textGeo, faceMaterial ); //planeMaterial faceMaterial 
 	textMesh.position.x = centerOffset;
-	//textMesh.position.y = FLOOR + 67;
 	textMesh.position.y = FLOOR + 10;
 
 	textMesh.castShadow = true;
@@ -604,8 +588,8 @@ function createScene( ) {
 	bodyMesh.position.y -= 180;
 	
 	snowman = new THREE.Object3D();
-	//snowman.position.y = -100;
-	snowman.position.set(-800, 250, 400);
+	//snowman.position.set(-1000, 250, 400);
+	snowman.position.set(-1100, 250, 0);
 	
 	headMesh.castShadow = !false;
 	headMesh.receiveShadow = !false;
@@ -616,14 +600,9 @@ function createScene( ) {
 	//bodyMesh.scale.y = 1.2;
 
 	
-	// Create Skawf, create Hat, face
-	
-	
+	// TODO Create Scarf, Hat & face
 	snowman.castShadow = false;
 	snowman.receiveShadow = false;
-	
-	//headMesh.position.set(-700,20, 400);
-	//scene.add(headMesh);
 	
 	snowman.add(headMesh);
 	snowman.add(bodyMesh);
@@ -637,31 +616,33 @@ function createScene( ) {
 	// Can use cyclinder / lines
 	var stick = new THREE.CylinderGeometry(5,5, 70);
 	armMesh = new THREE.Mesh( stick, planeMaterial );
-	finger1 = new THREE.Mesh( stick, planeMaterial );
-	finger2 = new THREE.Mesh( stick, planeMaterial );
-	finger3 = new THREE.Mesh( stick, planeMaterial );
-	fistMesh = new THREE.Mesh( fist, planeMaterial );
-	
-	
-	fistMesh.position.y = 55; // 20 - 60 // funny ordering bug in clone 
-	
-	
-	
-	finger1.rotation.z = Math.PI / 6;
-	finger2.rotation.z = Math.PI / 6 * 2;
-	finger3.rotation.z = Math.PI / 6 * 3;
-	
-	finger2.position.set(-10, -10, 0);
-	finger3.position.set(-20, -30, 0);
-	
-	fingers = new THREE.Object3D();
-	fingers.scale.set(0.5,0.5,0.5);
-	fingers.position.y = 60;
-	fingers.rotation.z = -Math.PI / 6;
+	armMesh.castShadow = true;
+	armMesh.receiveShadow = true;
 
-	fingers.add(finger1);
-	fingers.add(finger2);
-	fingers.add(finger3);
+	fistMesh = new THREE.Mesh( fist, planeMaterial );
+	fistMesh.position.y = 55; // 20 - 60 // funny ordering bug in clone 
+	fistMesh.castShadow = true;
+	fistMesh.receiveShadow = true;
+
+	// finger1 = new THREE.Mesh( stick, planeMaterial );
+	// finger2 = new THREE.Mesh( stick, planeMaterial );
+	// finger3 = new THREE.Mesh( stick, planeMaterial );
+	// 
+	// finger1.rotation.z = Math.PI / 6;
+	// finger2.rotation.z = Math.PI / 6 * 2;
+	// finger3.rotation.z = Math.PI / 6 * 3;
+	// 
+	// finger2.position.set(-10, -10, 0);
+	// finger3.position.set(-20, -30, 0);
+	// 
+	// fingers = new THREE.Object3D();
+	// fingers.scale.set(0.5,0.5,0.5);
+	// fingers.position.y = 60;
+	// fingers.rotation.z = -Math.PI / 6;
+	// 
+	// fingers.add(finger1);
+	// fingers.add(finger2);
+	// fingers.add(finger3);
 	
 	// hands
 	handMesh = new THREE.Object3D();
@@ -672,21 +653,19 @@ function createScene( ) {
 	handMesh.rotation.z = 1;
 	handMesh.position.y = -100;
 	handMesh.position.x = -150;
-	//handMesh.position.z = 200;
-	// handMesh.castShadow = !false;
-	// handMesh.receiveShadow = !false;
+	// handMesh.position.z = 200;
+	handMesh.castShadow = true;
+	handMesh.receiveShadow = true;
 	
 	// SCARF??
 	// using donut and ribbon?
-
+	
 	cloned = THREE.SceneUtils.cloneObject(handMesh); //THREE.GeometryUtils.merge
 	handsRight = new THREE.Object3D();
 	handsRight.add(cloned);
 	handsRight.scale.x = -1
-
-	snowman.add(handsRight);
 	
-	//scene.add(handMesh);
+	snowman.add(handsRight);
 	snowman.add(handMesh);
 	
 	
@@ -729,10 +708,8 @@ function lensFlareUpdateCallback( object ) {
 function renderSnowScene() {
 
 	var delta = clock.getDelta();
-	// 0.015, 0.4
 	
 	//controls.update( delta );
-	//console.log(delta);
 	controls.update( 0.025 );
 	
 	particleCloud.geometry.__dirtyVertices = true;
@@ -745,7 +722,7 @@ function renderSnowScene() {
 	
 	renderer.clear();
 	//renderer.render( scene, camera );
-	composer.render( );
+	composer.render();
 	
 	// Render debug HUD with shadow map
 	// setInterval(function() {light.position.y += 100 ; }, 200);
