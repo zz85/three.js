@@ -227,11 +227,28 @@ xmas@davel.com
 		<!-- graphics -->
 		<script src="../build/Three.js"></script>
 
+		
+		<script src="fonts/helvetiker_bold.typeface.js"></script>		
+		
 		<script src="js/Detector.js"></script>
 		<script src="js/Stats.js"></script>
-
+		
 		<script src="js/SimplexNoise.js"></script>
-
+		
+		<script src="js/Tween.js"></script>
+		<script src="js/Sparks.js"></script>
+		
+		
+		<!-- shaders -->
+		<script src="js/ShaderExtras.js"></script>
+		<script src="js/postprocessing/EffectComposer.js"></script>
+		<script src="js/postprocessing/RenderPass.js"></script>
+		<script src="js/postprocessing/ShaderPass.js"></script>
+		<script src="js/postprocessing/MaskPass.js"></script>
+		<script src="js/postprocessing/BloomPass.js"></script>
+		<script src="js/postprocessing/FilmPass.js"></script>
+		
+		
 		<script>
 
 		// Whole Bunch of Variables
@@ -315,6 +332,42 @@ xmas@davel.com
 
 		</script>
 		
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+			attribute float size;
+			attribute vec3 pcolor;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vColor = pcolor;
+
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = size * ( 200.0 / length( mvPosition.xyz ) );
+
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform sampler2D texture;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vec4 outColor = texture2D( texture, gl_PointCoord );
+
+				gl_FragColor = outColor * vec4( vColor, 1.0 );
+
+			}
+
+		</script>
 		
 		<div id="links">
 			<a href="#" onclick="showAbout(); return false;">Hello.</a>

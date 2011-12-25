@@ -35,6 +35,13 @@ function setupNightScene() {
 	
 }
 
+function releaseNightScene() {
+	
+	renderCallback = null;
+	setupSnowScene();
+	
+}
+
 function resizeNightScene() {
 	// Stage Properties
 	SCREEN_WIDTH = window.innerWidth;
@@ -239,6 +246,8 @@ function initNightScene() {
 		
 	}).start();
 	
+	// Fade out // Unload Scene
+	// Next Scene.
 
 	//Timeline.getGlobalInstance().loop(-1); //loop forever
 	
