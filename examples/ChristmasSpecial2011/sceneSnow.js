@@ -386,6 +386,9 @@ function initSnowScene() {
 	sparksEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
 
 
+	// var wind = new SPARKS.WindNoise();
+	// sparksEmitter.addAction(wind);
+
 	sparksEmitter.addAction( new SPARKS.DeathZone( new SPARKS.CubeZone(
 			new THREE.Vector3(-5000, FLOOR, -5000),
 			10000, -5000, 10000

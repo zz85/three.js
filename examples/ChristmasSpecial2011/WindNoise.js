@@ -1,24 +1,22 @@
 SPARKS.WindNoise = function() {
-	this.id = 0;
-	this.noiseScale = 100;
+	this.noiseAmptitude = 10; 
 	this.perlin = new SimplexNoise();
-	this.direction = 0;
+
 	this.speed = 1;
+	this.timeScale = 0.01;
+	this.noiseScaleX = 1/ 1230;
+	this.noiseScaleY = 1 /1230;
+	
 }
 
 SPARKS.WindNoise.prototype.update = function(emitter, particle, time) {
     var v = particle.velocity;
 	var pos = particle.position;
 	
-	this.direction = this.perlin.noise(time/10, pos.x / this.noiseScale, pos.y / this.noiseScale);
-	//this.direction = this.perlin.noise(this.id++, pos.x / this.noiseScale, pos.y / this.noiseScale);
-	
-	//this.direction += windDir;
+	var direction = this.perlin.noise3d(time * this.timeScale, pos.x * this.noiseScaleX, pos.y * this.noiseScaleY) * Math.PI * 2;
 
-	// pos.x += Math.cos(this.direction) * this.speed;
-	// pos.y += Math.sin(this.direction) * this.speed;
 
-	v.x += Math.cos(this.direction) * this.speed;
-	v.y += Math.sin(this.direction) * this.speed;
+	v.x += Math.cos(direction) * this.speed;
+	v.z += Math.sin(direction) * this.speed;
 
 };

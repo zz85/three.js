@@ -189,18 +189,31 @@ function initNightScene() {
 	auroraPlane.scale.set(1.6, 0.8, 1);
 	auroraPlane.rotation.set(2.1, -0.5, -0.7);
 	
-	auroraPlane.material.opacity = 0.6;
+	auroraPlane.material.opacity = 0; //0.6
 	
 	scene.add(auroraPlane);
 	
-	anim("Aurora Plane",auroraPlane.material)
-			.to({opacity: 0},0)
-			.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
-			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) // 6
-			.to({opacity: 0.6},4, Timeline.Easing.Bounce.EaseInOut)  // 10
-			.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut)  // 14
-			.to({opacity: 0.02},2).to({opacity: 2},4);
+	// addTween = function(startTime, duration, 
+	// 	property, startValues, endValues, easing, callback)
+	// Set top, SetBottom
+	
+	nightSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+		.addTween(6, 4, auroraPlane.material, null, {opacity: 0.2}, 'Bounce.EaseInOut')
+		.addTween(10, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+		.addTween(14, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(18, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(22, 2, auroraPlane.material, null, {opacity: 0.2}, 'Linear.EaseNone');
 		
+	
+	// anim("Aurora Plane",auroraPlane.material)
+	// 		.to({opacity: 0},0)
+	// 		.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
+	// 		.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) // 6
+	// 		.to({opacity: 0.6},4, Timeline.Easing.Bounce.EaseInOut)  // 10
+	// 		.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut)  // 14
+	// 		.to({opacity: 0.02},2).to({opacity: 2},4); // 18
+	// 	
 	anim("Startrails1",starTrailMaterials[0])
 		.to({opacity: 0}, 0)
 		.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
@@ -218,29 +231,36 @@ function initNightScene() {
 	
 	
 	// Generic Event / Action
-	nightSceneDirector.addAction(7000, function() {
+	nightSceneDirector.addAction(0, function(){
+		var i= 0;
+		setInterval(function(){
+			i++;
+			console.log(i);
+			
+		}, 1000);
+	}).addAction(7, function() {
 		camera.setLens(40); // 50 35 80
 
-	}).addAction(12000, function() {
+	}).addAction(12, function() {
 		auroraPlane.material.opacity = 0.02;
 		// renderer.clear();
 		
-	}).addAction(14000, function() {
+	}).addAction(14, function() {
 		clear = false;
 		camera.setLens(80);
 		auroraPlane.material.opacity = 0.01;
 		renderer.clear();
-	}).addAction(18000, function() {
+	}).addAction(18, function() {
 		camera.setLens(35);
 		auroraPlane.material.opacity = 0.005;
 		renderer.clear();
 
-	}).addAction(28000, function() {
+	}).addAction(28, function() {
 		camera.setLens(24);
 		auroraPlane.material.opacity = 0;
 		//renderer.clear();
 		clear = false;
-	}).addAction(34000, function() {
+	}).addAction(34, function() {
 		auroraPlane.material.opacity = 1;
 		clear = true;
 		
