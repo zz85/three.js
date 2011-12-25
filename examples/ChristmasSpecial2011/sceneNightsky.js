@@ -204,7 +204,7 @@ function initNightScene() {
 			console.log(i);
 			
 		}, 1000);
-	}).addAction(18, function() {
+	}).addAction(19, function() {
 		
 		camera.setLens(80);
 		//clear = true;
@@ -212,19 +212,17 @@ function initNightScene() {
 		// renderer.clear();
 		
 	})
-	// .addTween(7,7, camera, {lens:40}, {lens:80}, 'Linear.EaseNone', function() {
-	// 		camera.setLens(camera.lens);
-	// 	})
+
 	
 	.addAction(24, function() {
 		
-		camera.setLens(35);
-		// auroraPlane.material.opacity = 0.005;
-		// clear = false;
-		// renderer.clear();
+		// camera.setLens(35);
+		auroraPlane.material.opacity = 0.005;
+		clear = false;
+		renderer.clear();
 
-	}).addAction(28, function() {
-		camera.setLens(24);
+	}).addAction(29, function() {
+		camera.setLens(35);
 		// auroraPlane.material.opacity = 0;
 		clear = false;
 		renderer.clear();
@@ -238,8 +236,11 @@ function initNightScene() {
 		// renderer.clear();
 
 	}).addTween(34, 5, auroraPlane.material, {opacity: 0.8}, {opacity: 0}, 'Cubic.EaseOut')
-	.addTween(40, 5, starTrailsOpacity, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
-	.addAction(43, function() {
+	.addTween(40, 5, starTrailsOpacity, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')	
+	.addTween(38,4, camera, {lens:35}, {lens:28}, 'Linear.EaseNone', function() { //Quadratic.EaseOut Linear.EaseNone
+		camera.setLens(camera.lens);
+	})
+	.addAction(44, function() {
 
 		// Fade out // Unload Scene		
 		releaseNightScene();
