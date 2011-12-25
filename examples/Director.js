@@ -215,11 +215,21 @@ THREE.Director.prototype.applyActions = function(currentTime, lastTime) {
 
 THREE.Director.prototype.start = function() {
 	var time = Date.now();
+	this._started = true;
 	this._startTime = time;
 	this._lastTime = time - 1;
 };
 
+THREE.Director.prototype.stop = function() {
+	this._started = false;
+	
+	//TODO pause
+};
+
 THREE.Director.prototype.update = function() {
+	
+	if (!this._started) return;
+	
 	var time = Date.now();
 	var elapsed = time - this._lastTime;
 	var totalElapsed = time - this._startTime;

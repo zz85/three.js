@@ -175,16 +175,6 @@ function initNightScene() {
 		new THREE.MeshBasicMaterial({color: 0xffffff, wireframe:false, map:auroraGenerator.texture}) 
 	);
 	
-	
-	// add opacity.
-	// 
-	// auroraPlane.material.opacity = .8 -> 0.2 | z = 2000, scale 7, 4, 10
-	// clear = false, opacity -> 0.002
-	// 
-	
-	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
-	// auroraPlane.rotation.set(1.9, -0.4, -0.9);
-
 	auroraPlane.position.set(100, 200, 100);
 	auroraPlane.scale.set(1.6, 0.8, 1);
 	auroraPlane.rotation.set(2.1, -0.5, -0.7);
@@ -193,6 +183,72 @@ function initNightScene() {
 	
 	scene.add(auroraPlane);
 	
+	
+	
+	var starTrailsOpacity = [starTrailMaterials[0], starTrailMaterials[1], starTrailMaterials[2]];
+	
+	nightSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
+		.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+		.addTween(6, 4, auroraPlane.material, null, {opacity: 0.4}, 'Bounce.EaseInOut')
+		.addTween(10, 4, auroraPlane.material, null, {opacity: 0.6}, 'Cubic.EaseInOut')
+		.addTween(14, 4, auroraPlane.material, null, {opacity: 0.01}, 'Cubic.EaseIn')
+		.addTween(18, 1, auroraPlane.material, {opacity : 0.1}, {opacity : 0.2}, 'Quadratic.EaseOut')
+		.addTween(19, 6, auroraPlane.material, {opacity : 0.4}, {opacity : 0.05}, 'Linear.EaseNone')
+
+		.addTween(0,	10,	starTrailsOpacity, {opacity: 0},	{opacity: 1}, 'Cubic.EaseIn') //Cubic.EaseOut Linear.EaseNone
+	
+	.addAction(0, function(){
+		var i= 0;
+		setInterval(function(){
+			i++;
+			console.log(i);
+			
+		}, 1000);
+	}).addAction(18, function() {
+		
+		camera.setLens(80);
+		//clear = true;
+		// auroraPlane.material.opacity = 0.01;
+		// renderer.clear();
+		
+	})
+	// .addTween(7,7, camera, {lens:40}, {lens:80}, 'Linear.EaseNone', function() {
+	// 		camera.setLens(camera.lens);
+	// 	})
+	
+	.addAction(24, function() {
+		
+		camera.setLens(35);
+		// auroraPlane.material.opacity = 0.005;
+		// clear = false;
+		// renderer.clear();
+
+	}).addAction(28, function() {
+		camera.setLens(24);
+		// auroraPlane.material.opacity = 0;
+		clear = false;
+		renderer.clear();
+		starTrailMaterials[0].opacity =
+		starTrailMaterials[1].opacity =
+		starTrailMaterials[2].opacity = 0.5;
+		
+	}).addAction(34, function() {
+		
+		clear = true;
+		// renderer.clear();
+
+	}).addTween(34, 5, auroraPlane.material, {opacity: 0.8}, {opacity: 0}, 'Cubic.EaseOut')
+	.addTween(40, 5, starTrailsOpacity, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
+	.addAction(43, function() {
+
+		// Fade out // Unload Scene		
+		releaseNightScene();
+		nightSceneDirector.stop();
+		
+	}).start();
+	
+
+	// Next Scene.
 	// anim("Aurora Plane",auroraPlane.material)
 	// 		.to({opacity: 0},0)
 	// 		.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
@@ -215,77 +271,16 @@ function initNightScene() {
 	// 	.to({opacity: 0}, 0)
 	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
 	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
-	
-	
-	var starTrailsOpacity = [starTrailMaterials[0], starTrailMaterials[1], starTrailMaterials[2]];
-	
-	nightSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
-		.addTween(6, 4, auroraPlane.material, null, {opacity: 0.2}, 'Bounce.EaseInOut')
-		.addTween(10, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
-		.addTween(14, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(18, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseIn')
-		.addTween(22, 2, auroraPlane.material, null, {opacity: 0.2}, 'Linear.EaseNone')
-
-		.addTween(0,	10,	starTrailsOpacity, {opacity: 0},	{opacity: 1}, 'Cubic.EaseIn') //Cubic.EaseOut Linear.EaseNone
-		//.addTween(15,	30,	starTrailsOpacity,	null,	{opacity: 0.5},	'Cubic.EaseOut');
-		
-	
-	// Generic Event / Action
-	nightSceneDirector.addAction(0, function(){
-		var i= 0;
-		setInterval(function(){
-			i++;
-			console.log(i);
-			
-		}, 1000);
-	}).addAction(7, function() {
-		camera.setLens(40); // 50 35 80
-
-	}).addAction(12, function() {
-		auroraPlane.material.opacity = 0.02;
-		// renderer.clear();
-		
-	}).addAction(14, function() {
-		
-		camera.setLens(80);
-		auroraPlane.material.opacity = 0.01;
-		renderer.clear();
-	}).addAction(18, function() {
-		clear = false;
-		camera.setLens(35);
-		auroraPlane.material.opacity = 0.005;
-		renderer.clear();
-
-	}).addAction(28, function() {
-		camera.setLens(24);
-		auroraPlane.material.opacity = 0;
-		//renderer.clear();
-		clear = false;
-	}).addAction(34, function() {
-		
-		clear = true;
-		
-	}).addTween(34, 5, auroraPlane.material, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
-	.addTween(40, 5, starTrailsOpacity, {opacity: 1}, {opacity: 0}, 'Cubic.EaseOut')
-	.addAction(50, function() {
-		
-		releaseNightScene();
-		nightSceneDirector.stop();
-		
-	}).start();
-	
-	// Fade out // Unload Scene
-	// Next Scene.
 
 	//Timeline.getGlobalInstance().loop(-1); //loop forever
 	
 }
 
-// 1st approach. plane + moving canvas.
-// multi planes + static canvas
-// single plane + fragment shader
-// skydom and repeat.
+// Approaches. 
+// plane + regenerating canvas.
+// multi planes + static canvas.
+// single plane + fragment shader.
+// swap plane with skydom and repeat.
 
 // 
 
