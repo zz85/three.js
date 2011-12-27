@@ -10,7 +10,7 @@ function bindTextRecording() {
 	
 	recording = new Recorder();
 	lastTextMesh = new THREE.Object3D();
-	chars = [], xpos = 0;
+	newTextLine();
 	scene.add(lastTextMesh);
 	
 	document.addEventListener( 'keypress', onDocumentKeyPress, false );
@@ -24,6 +24,9 @@ function unbindTextRecording() {
 }
 
 
+function newTextLine() {
+	chars = [], xpos = 0;
+}
 
 function refreshText() {
 
@@ -45,17 +48,18 @@ function refreshText() {
 function initTextParticles() {
 	var onParticleCreated = function( p ) {
 
-		// p.target = ParticlePool.get();
-		// var target = p.target;
-		
-		
-
-		if (allParticlePoints.length>0) {
-			// var position = allParticlePoints.pop();			
-			// p.position = position;
+		if (allParticleTargets.length>0) {
+			//var target = allParticleTargets.shift();
+			
+			var random = Math.floor(Math.random() * allParticleTargets.length);
+			var target = allParticleTargets.splice(random, 1);
+			
+			p.target = target;
+			
+			p.position = particles.vertices[ target ].position;
 			
 			
-			if (allParticlePoints.length==0) {
+			if (allParticleTargets.length==0) {
 				textParticlesProducer.rate = 0;
 				console.log('stop');
 			}
@@ -64,12 +68,12 @@ function initTextParticles() {
 			p.isDead = true;
 		}
 
-		if ( target ) {
-			// particles.vertices[ target ].position = p.position;
-			// 
-			// values_color[ target ].setHSV( 0, 0, 0.4 + Math.random() * 0.4 );
-			// values_size[ target ] = 10 +  Math.random() * 80;
-		};
+		// if ( target ) {
+		// 	// particles.vertices[ target ].position = p.position;
+		// 	// 
+		// 	// values_color[ target ].setHSV( 0, 0, 0.4 + Math.random() * 0.4 );
+		// 	// values_size[ target ] = 10 +  Math.random() * 80;
+		// };
 
 	};
 
@@ -92,12 +96,12 @@ function initTextParticles() {
 	
 	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
 	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
-	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,5));
-	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, 500, 50 ) ) ) );
+	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,3));
+	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 50 ) ) ) );
 	textParticlesEmitter.addAction( new SPARKS.Age() );
 	textParticlesEmitter.addAction( new SPARKS.Move() );
-	textParticlesEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
+	textParticlesEmitter.addAction( new SPARKS.Accelerate( 400, 100, 50  ) );				
+	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 2000 , 500, 1000 ) );
 	textParticlesEmitter.addCallback( "created", onParticleCreated );
 	textParticlesEmitter.addCallback( "dead", onParticleDead );
 	// textParticlesEmitter.addCallback( "updated", onParticleUpdate );
@@ -146,11 +150,11 @@ function onDocumentKeyPress( event ) {
 	} else if ( keyCode == 13 ) {
 		// enter;
 		event.preventDefault();
-		chars = [];
+		
 		refreshText();
 		
 		// Turn to particles.
-		particleCount = 400; // 20 fps 20k
+		particleCount = 800; // 20 fps 20k
 		
 		
 		var matrix = new THREE.Matrix4();
@@ -188,9 +192,9 @@ function onDocumentKeyPress( event ) {
 			lastTextMesh.remove(lastTextMesh.children[i]);
 		}
 		
+		textParticlesProducer.rate = 4000;
 		
-		// console.log(allPoints);
-		
+		newTextLine();
 		
 	} else {
 
