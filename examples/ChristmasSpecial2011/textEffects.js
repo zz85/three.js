@@ -1,5 +1,5 @@
 var chars = [], xpos;
-var recording;
+var recorder;
 var textGeometries = {};
 var lastTextMesh;
 
@@ -8,7 +8,8 @@ var allParticleTargets = [];
 
 function bindTextRecording() {
 	
-	recording = new Recorder();
+	recorder = new Recorder();
+	recorder.start();
 	lastTextMesh = new THREE.Object3D();
 	newTextLine();
 	scene.add(lastTextMesh);
@@ -18,6 +19,9 @@ function bindTextRecording() {
 }
 
 function unbindTextRecording() {
+	recorder.stop();
+	scene.remove(lastTextMesh);
+	
 	document.removeEventListener( 'keypress', onDocumentKeyPress, false );
 	document.removeEventListener( 'keydown', onDocumentKeyDown, false );
 	
@@ -96,7 +100,7 @@ function initTextParticles() {
 	
 	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
 	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
-	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,3));
+	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,2));
 	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 50 ) ) ) );
 	textParticlesEmitter.addAction( new SPARKS.Age() );
 	textParticlesEmitter.addAction( new SPARKS.Move() );
@@ -112,6 +116,122 @@ function initTextParticles() {
 }
 
 
+function typeBackspace() {
+	// text = text.substring( 0, text.length - 1 );
+	if (chars.length>0) {
+		chars.pop();
+	}
+	
+	// TYPE BACKSPACE
+	if (lastTextMesh.children.length>0) {
+		
+		var last = lastTextMesh.children[lastTextMesh.children.length-1];
+		
+		xpos = last.position.x;
+		lastTextMesh.remove(last);
+	}
+	
+	refreshText();
+}
+
+
+function typeEnter() {
+	refreshText();
+	
+	// Turn to particles.
+	particleCount = 500; // 20 fps 20k
+	
+	
+	var matrix = new THREE.Matrix4();
+	
+	var i,m, j;
+	
+	
+		
+		randomH = function() {
+			return 0.24;
+		}
+		
+		randomS = function() {
+			return Math.random() * 0.5;
+		}
+		
+		randomV = function() {
+			return Math.random() * 0.5 + 0.5;
+		}
+		
+		
+	for (i=0, il=lastTextMesh.children.length; i<il; i++) {
+		m = lastTextMesh.children[i];
+		if (m.geometry.faces.length==0) continue;
+		particlePoints = THREE.GeometryUtils.randomPointsInGeometry( m.geometry, particleCount );
+		// console.log(m, m.matrix.getPosition(), m.matrixWorld.getPosition(), m.matrixRotationWorld.getPosition());
+		// 
+		// matrix.compose(m.position, m.rotation, m.scale); 
+		// console.log(matrix.getPosition());
+		
+		//setPosition(particlePoints[j]).
+
+		
+		for (j=0; j<particleCount; j++) {
+			
+			particlePoints[j].addSelf(m.position);
+			
+		 	var target = ParticlePool.get();
+		
+			particles.vertices[ target ].position = particlePoints[j];
+
+			values_color[ target ].setHSV( randomH(), randomS(), randomV() );
+			values_size[ target ] = 20 + Math.random() * 80;
+			allParticleTargets.push(target);
+			
+		}
+		
+		allParticlePoints = allParticlePoints.concat(particlePoints);
+	}
+	
+	
+	for (i=lastTextMesh.children.length;i--;) {
+		lastTextMesh.remove(lastTextMesh.children[i]);
+	}
+	
+	textParticlesProducer.rate = 4000;
+	
+	newTextLine();
+}
+
+function typeCharacter(ch) {
+	chars.push(ch);
+	//text += ch;
+
+	var charMesh = getTextMesh(ch);
+	
+	charMesh.castShadow = true;
+	charMesh.receiveShadow = true;
+	
+	lastTextMesh.add(charMesh);
+	
+	refreshText();
+}
+
+function recordEventHandler(event) {
+	
+	console.log('recordEventHandler', event);
+	
+	switch (event.action) {
+		case 'backspace':
+			typeBackspace();
+			break;
+		case 'enter':
+			typeEnter();
+			break;
+		case 'type':
+			typeCharacter(event.character);
+			break;
+
+	}
+	
+}
 
 
 function onDocumentKeyDown( event ) {
@@ -126,12 +246,11 @@ function onDocumentKeyDown( event ) {
 	if ( keyCode == 8 ) {
 
 		event.preventDefault();
+		recorder.record({
+			action: 'backspace'
+		});
 
-		// text = text.substring( 0, text.length - 1 );
-		if (chars.length>0) {
-			chars.pop();
-		}
-		refreshText();
+		typeBackspace();
 
 		return false;
 
@@ -151,79 +270,22 @@ function onDocumentKeyPress( event ) {
 		// enter;
 		event.preventDefault();
 		
-		refreshText();
-		
-		// Turn to particles.
-		particleCount = 500; // 20 fps 20k
-		
-		
-		var matrix = new THREE.Matrix4();
-		
-		var i,m, j;
-		
-		
-			
-			randomH = function() {
-				return 0.24;
-			}
-			
-			randomS = function() {
-				return Math.random() * 0.5;
-			}
-			
-			randomV = function() {
-				return Math.random() * 0.5 + 0.5;
-			}
-			
-			
-		for (i=0, il=lastTextMesh.children.length; i<il; i++) {
-			m = lastTextMesh.children[i];
-			if (m.geometry.faces.length==0) continue;
-			particlePoints = THREE.GeometryUtils.randomPointsInGeometry( m.geometry, particleCount );
-			// console.log(m, m.matrix.getPosition(), m.matrixWorld.getPosition(), m.matrixRotationWorld.getPosition());
-			// 
-			// matrix.compose(m.position, m.rotation, m.scale); 
-			// console.log(matrix.getPosition());
-			
-			//setPosition(particlePoints[j]).
-
-			
-			for (j=0; j<particleCount; j++) {
-				
-				particlePoints[j].addSelf(m.position);
-				
-			 	var target = ParticlePool.get();
-			
-				particles.vertices[ target ].position = particlePoints[j];
-
-				values_color[ target ].setHSV( randomH(), randomS(), randomV() );
-				values_size[ target ] = 20 + Math.random() * 80;
-				allParticleTargets.push(target);
-				
-			}
-			
-			allParticlePoints = allParticlePoints.concat(particlePoints);
-		}
-		
-		
-		for (i=lastTextMesh.children.length;i--;) {
-			lastTextMesh.remove(lastTextMesh.children[i]);
-		}
-		
-		textParticlesProducer.rate = 4000;
-		
-		newTextLine();
+		// TYPE ENTER
+		typeEnter();
+		recorder.record({
+			action: 'enter'
+		});
 		
 	} else {
 
-		var ch = String.fromCharCode( keyCode );
-		chars.push(ch);
-		//text += ch;
-
-		var charMesh = getTextMesh(ch);
-		lastTextMesh.add(charMesh);
+		// TYPE CHARACTER
 		
-		refreshText();
+		var ch = String.fromCharCode( keyCode );
+		recorder.record({
+			action: 'type',
+			character: ch
+		});
+		typeCharacter(ch);
 
 	}
 
@@ -239,7 +301,7 @@ function getTextMesh(text) {
 	var textMesh = new THREE.Mesh( textGeo, faceMaterial );
 
 	textMesh.position.x = xpos;
-	xpos += ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+	xpos += ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x ) + 10;
 	
 	textMesh.position.y = FLOOR + 10;
 	textMesh.position.z = 200;
@@ -313,8 +375,10 @@ function generateTextGeometry(text) {
 
 var Recorder = function() {
 	
-	this._started = false;
-	this._recordings = [];
+	this.reset = function() {
+		this._started = false;
+		this._recordings = [];
+	}
 	
 	this.start = function() {
 		this._started = true;
@@ -324,16 +388,42 @@ var Recorder = function() {
 	// records event
 	this.record = function(event) {
 		
+		if (!this._started) return;
+		
 		var time = Date.now();
 		var runningTime = time - this._startTime;
 		
-		this._recording.push({
+		this._recordings.push({
 			time: runningTime,
 			event: event
 			// todo: copies argument too?
 		});
 		
 	};
+	
+	this.getDirector = function(callback) {
+		
+		var recordings = this._recordings;
+		var director = new THREE.Director();
+		
+		function callBackEvent(event) {
+			return function() {
+				callback(event)
+			};
+		}
+		
+		for (var i=0,il=recordings.length;i<il;i++) {
+			
+			var event = recordings[i].event;
+			
+			var closure = callBackEvent(event);
+			
+			director.addAction(recordings[i].time / 1000, closure);
+		}
+		
+		return director;
+		
+	}
 	
 	this.stop = function() {
 		this._started = false;
@@ -342,5 +432,15 @@ var Recorder = function() {
 	this.hasStarted = function() {
 		return this._started;
 	};
+	
+	this.toJSON = function() {
+		return JSON.stringify(this._recordings);
+	}
+	
+	this.fromJSON = function(json) {
+		this._recordings = JSON.parse(json);
+	}
+	
+	this.reset();
 	
 };
