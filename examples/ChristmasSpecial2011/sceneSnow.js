@@ -10,12 +10,21 @@ var composer;
 
 var particleCloud, sparksEmitter, attributes, particleProducer;
 
-
 var light, ambient, backlight;
 
 var clock = new THREE.Clock();
 
+var snowman;
+
 var textParticlesEmitter, textParticlesProducer;
+
+var ParticlePool;
+var particlePoolCount = 20000;
+var particles;
+
+var values_size; // Particle Size
+var values_color; // Particle Color
+
 
 function setupSnowScene() {
 	initSnowScene();
@@ -66,9 +75,9 @@ function initSnowScene() {
 
 
 	light = new THREE.SpotLight( 0xffffff );
-	// light.position.set( 0, 1500, 1000 ); // front light
+	light.position.set( 0, 1500, 1000 ); // front light
 	// light.position.set( -800,000, -1000 ); // morning light
-	light.position.set( 300,400, -600 ); // backlight
+	// light.position.set( 300,400, -600 ); // backlight
 	
 
 	light.target.position.set( 0, 0, 0 );
@@ -129,9 +138,7 @@ function initSnowScene() {
 
 	// PARTICLE SYSTEMS
 
-	var particlePoolCount = 20000;
-
-	var particles = new THREE.Geometry();
+	particles = new THREE.Geometry();
 
 	function newVertex( x, y, z ) {
 		return new THREE.Vertex( new THREE.Vector3( x, y, z ) );
@@ -140,7 +147,7 @@ function initSnowScene() {
 
 	// This pool is for grabbing a particle used in Three.js
 	// It doesn't store any stuff, just indinces 
-	var ParticlePool = {
+	ParticlePool = {
 
 		__pools: [],
 		__forloan: [],
@@ -270,8 +277,8 @@ function initSnowScene() {
 	//particleCloud.sortParticles = true;
 
 	var vertices = particleCloud.geometry.vertices;
-	var values_size = attributes.size.value; // Particle Size
-	var values_color = attributes.pcolor.value; // Particle Color
+	values_size = attributes.size.value; // Particle Size
+	values_color = attributes.pcolor.value; // Particle Color
 
 	for( var v = 0; v < vertices.length; v ++ ) {
 
@@ -290,11 +297,9 @@ function initSnowScene() {
 
 		p.target = target;	
 
-
 		var position = p.position;
-		p.target.position = position;
 
-		var target = p.target;
+		//p.target.position = position;
 
 		var shadow = ParticlePool.get();
 		p.shadow = shadow;
@@ -350,18 +355,7 @@ function initSnowScene() {
 	}
 	
 	
-	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
-	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
-	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,5));
-	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, 500, 50 ) ) ) );
-	textParticlesEmitter.addAction( new SPARKS.Age() );
-	textParticlesEmitter.addAction( new SPARKS.Move() );
-	textParticlesEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
-	textParticlesEmitter.addCallback( "created", onParticleCreated );
-	textParticlesEmitter.addCallback( "dead", onParticleDead );
-	textParticlesEmitter.addCallback( "updated", onParticleUpdate );
-	
+	initTextParticles();
 	
 
 	particleProducer = new SPARKS.SteadyCounter( 50 );
@@ -462,13 +456,23 @@ function initSnowScene() {
 	
 	
 	//Cubic.EaseInOut Bounce.EaseInOut
-	anim("Camera Position",camera.position)
-			.to({x: 700, y:50, z:2900},0)
-			.to({x: 700, y:50, z:-1900},5, Timeline.Easing.Cubic.EaseIn);
+	// anim("Camera Position",camera.position)
+	// 		.to({x: 700, y:50, z:2900},0)
+	// 		.to({x: 700, y:50, z:-1900},5, Timeline.Easing.Cubic.EaseIn);
 
+	// anim("snowman position",camera.position.y).to({"y":100},0).to({"y":1000},1, Timeline.Easing.Cubic.EaseOut).to({"y":100},1, Timeline.Easing.Bounce.EaseOut);
+	// anim("Camera Position",camera.position.x).to({"x":700},0).to({"x":697.8725114754761},2.87, Timeline.Easing.Cubic.EaseIn).to({"x":-200},3.415, Timeline.Easing.Cubic.EaseIn);
+	// anim("Camera Position",camera.position.y).to({"y":100},0).to({"y":150},2.88, Timeline.Easing.Cubic.EaseIn);
+	// anim("Camera Position",camera.position.z).to({"z":2900},0).to({"z":1900},2.88, Timeline.Easing.Cubic.EaseIn);
+	// 
+	// Timeline.getGlobalInstance().loop(-1); //loop forever
 
-	Timeline.getGlobalInstance().loop(-1); //loop forever
-
+	// anim("snowman position",snowman.position)
+	// 		.to({ y: 100},0)
+	// 		.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
+	// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
+	// 
+	
 
 }
 
@@ -682,14 +686,7 @@ function createScene( ) {
 	snowman.add(handsRight);
 	snowman.add(handMesh);
 	
-	
-	
 	scene.add(snowman);
-	
-	anim("snowman position",snowman.position)
-			.to({ y: 100},0)
-			.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
-			.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
 	
 
 }
@@ -723,7 +720,7 @@ function renderSnowScene() {
 	var delta = clock.getDelta();
 	
 	//controls.update( delta );
-	// controls.update( 0.025 );
+	controls.update( 0.025 );
 	
 	particleCloud.geometry.__dirtyVertices = true;
 

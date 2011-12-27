@@ -61,6 +61,7 @@ function init() {
 
 }
 
+// actually, do we need to preload? Largest files are three.js ~300kb, font~60kb, and shaders~40kb.
 
 function preloaded(item) {
 	

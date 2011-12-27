@@ -281,6 +281,18 @@
 		
 		<div id="links">
 			<a href="#" onclick="showAbout(); return false;">Hello.</a>
+			
+			|
+			<a href="#" onclick="bindTextRecording(); return false;">Start Recording.</a>
+			<a href="#" onclick="unbindTextRecording(); return false;">Stop Recording.</a>
+
+			<a href="#" onclick="particleProducer.rate = 0; return false;">No Snow.</a>
+			<a href="#" onclick="particleProducer.rate = 10; return false;">Wishing for Snow.</a>
+			<a href="#" onclick="particleProducer.rate = 100; return false;">A little Snow.</a>
+			<a href="#" onclick="particleProducer.rate = 250; return false;">More Snow.</a>
+			<a href="#" onclick="particleProducer.rate = 500; return false;">Plentiful Snow.</a>
+			<a href="#" onclick="particleProducer.rate = 1000; return false;">Snow Blizzard.</a>
+			
 		</div>
 		
 		<!-- LINKS
@@ -314,6 +326,7 @@
 		<script src="ChristmasSpecial2011/sceneIntro.js"></script>		
 		<script src="ChristmasSpecial2011/sceneNightsky.js"></script>
 		<script src="ChristmasSpecial2011/sceneSnow.js"></script>
+		<script src="ChristmasSpecial2011/textEffects.js"></script>
 		
 		<!-- music -->
 		<script src="ChristmasSpecial2011/stream.js"></script>
