@@ -458,6 +458,17 @@ function initSnowScene() {
 	composer.addPass( tvblur );
 
 	composer.passes[composer.passes.length-1].renderToScreen = true;
+	
+	
+	
+	//Cubic.EaseInOut Bounce.EaseInOut
+	anim("Camera Position",camera.position)
+			.to({x: 700, y:50, z:2900},0)
+			.to({x: 700, y:50, z:-1900},5, Timeline.Easing.Cubic.EaseIn);
+
+
+	Timeline.getGlobalInstance().loop(-1); //loop forever
+
 
 }
 
@@ -675,13 +686,12 @@ function createScene( ) {
 	
 	scene.add(snowman);
 	
-	// anim("cube position",snowman.position)
-	// 		.to({ y: 100},0)
-	// 		.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
-	// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
-	// 
-	// 		Timeline.getGlobalInstance().loop(-1); //loop forever
-	// 
+	anim("snowman position",snowman.position)
+			.to({ y: 100},0)
+			.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
+			.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
+	
+
 }
 
 function lensFlareUpdateCallback( object ) {
@@ -713,7 +723,7 @@ function renderSnowScene() {
 	var delta = clock.getDelta();
 	
 	//controls.update( delta );
-	controls.update( 0.025 );
+	// controls.update( 0.025 );
 	
 	particleCloud.geometry.__dirtyVertices = true;
 

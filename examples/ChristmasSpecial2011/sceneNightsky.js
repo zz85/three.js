@@ -197,14 +197,15 @@ function initNightScene() {
 
 		.addTween(0,	10,	starTrailsOpacity, {opacity: 0},	{opacity: 1}, 'Cubic.EaseIn') //Cubic.EaseOut Linear.EaseNone
 	
-	.addAction(0, function(){
-		var i= 0;
-		setInterval(function(){
-			i++;
-			console.log(i);
-			
-		}, 1000);
-	}).addAction(19, function() {
+	// .addAction(0, function(){
+	// 	var i= 0;
+	// 	setInterval(function(){
+	// 		i++;
+	// 		console.log(i);
+	// 		
+	// 	}, 1000);
+	// })
+	.addAction(19, function() {
 		
 		camera.setLens(80);
 		//clear = true;
@@ -249,32 +250,6 @@ function initNightScene() {
 	}).start();
 	
 
-	// Next Scene.
-	// anim("Aurora Plane",auroraPlane.material)
-	// 		.to({opacity: 0},0)
-	// 		.to({opacity: 0.2},2, Timeline.Easing.Cubic.EaseIn) // 2
-	// 		.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut) // 6
-	// 		.to({opacity: 0.6},4, Timeline.Easing.Bounce.EaseInOut)  // 10
-	// 		.to({opacity: 0.4},4, Timeline.Easing.Cubic.EaseInOut)  // 14
-	// 		.to({opacity: 0.02},2).to({opacity: 2},4); // 18
-	// 	
-	// anim("Startrails1",starTrailMaterials[0])
-	// 	.to({opacity: 0}, 0)
-	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
-	// 
-	// anim("Startrails2",starTrailMaterials[1])
-	// 	.to({opacity: 0}, 0)
-	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);	
-	// 
-	// anim("Startrails3",starTrailMaterials[2])
-	// 	.to({opacity: 0}, 0)
-	// 	.to({opacity: 1}, 15, Timeline.Easing.Cubic.EaseOut) //Bounce
-	// 	.to({opacity: 1}, 30, Timeline.Easing.Cubic.EaseOut);
-
-	//Timeline.getGlobalInstance().loop(-1); //loop forever
-	
 }
 
 // Approaches. 
