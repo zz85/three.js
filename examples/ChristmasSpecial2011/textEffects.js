@@ -51,7 +51,7 @@ function initTextParticles() {
 		if (allParticleTargets.length>0) {
 			//var target = allParticleTargets.shift();
 			
-			var random = Math.floor(Math.random() * allParticleTargets.length);
+			var random = (Math.random() * allParticleTargets.length) << 0; //Math.floor
 			var target = allParticleTargets.splice(random, 1);
 			
 			p.target = target;
@@ -100,7 +100,7 @@ function initTextParticles() {
 	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 50 ) ) ) );
 	textParticlesEmitter.addAction( new SPARKS.Age() );
 	textParticlesEmitter.addAction( new SPARKS.Move() );
-	textParticlesEmitter.addAction( new SPARKS.Accelerate( 400, 100, 50  ) );				
+	textParticlesEmitter.addAction( new SPARKS.Accelerate( 100, 100, 50  ) );				
 	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 2000 , 500, 1000 ) );
 	textParticlesEmitter.addCallback( "created", onParticleCreated );
 	textParticlesEmitter.addCallback( "dead", onParticleDead );
@@ -154,14 +154,31 @@ function onDocumentKeyPress( event ) {
 		refreshText();
 		
 		// Turn to particles.
-		particleCount = 800; // 20 fps 20k
+		particleCount = 500; // 20 fps 20k
 		
 		
 		var matrix = new THREE.Matrix4();
 		
 		var i,m, j;
+		
+		
+			
+			randomH = function() {
+				return 0.24;
+			}
+			
+			randomS = function() {
+				return Math.random() * 0.5;
+			}
+			
+			randomV = function() {
+				return Math.random() * 0.5 + 0.5;
+			}
+			
+			
 		for (i=0, il=lastTextMesh.children.length; i<il; i++) {
 			m = lastTextMesh.children[i];
+			if (m.geometry.faces.length==0) continue;
 			particlePoints = THREE.GeometryUtils.randomPointsInGeometry( m.geometry, particleCount );
 			// console.log(m, m.matrix.getPosition(), m.matrixWorld.getPosition(), m.matrixRotationWorld.getPosition());
 			// 
@@ -169,6 +186,7 @@ function onDocumentKeyPress( event ) {
 			// console.log(matrix.getPosition());
 			
 			//setPosition(particlePoints[j]).
+
 			
 			for (j=0; j<particleCount; j++) {
 				
@@ -178,8 +196,8 @@ function onDocumentKeyPress( event ) {
 			
 				particles.vertices[ target ].position = particlePoints[j];
 
-				values_color[ target ].setHSV( 0, 0, 1 );
-				values_size[ target ] = 40;
+				values_color[ target ].setHSV( randomH(), randomS(), randomV() );
+				values_size[ target ] = 20 + Math.random() * 80;
 				allParticleTargets.push(target);
 				
 			}
@@ -226,8 +244,8 @@ function getTextMesh(text) {
 	textMesh.position.y = FLOOR + 10;
 	textMesh.position.z = 200;
 
-	textMesh.rotation.x = 0;
-	textMesh.rotation.y = Math.PI * 2;
+	// textMesh.rotation.x = 0;
+	//textMesh.rotation.y = Math.PI / 3 * (Math.random() - 0.5);
 
 	//scene.add( textMesh );
 	
@@ -239,6 +257,14 @@ function generateTextGeometry(text) {
 	
 	if (textGeometries[text]) {
 		return textGeometries[text];
+	}
+	
+	if (text == " ") {
+		var blank = new THREE.Geometry();;
+		blank.boundingBox = { min: new THREE.Vector3(0,0,0), 
+			max: new THREE.Vector3(100,0,0) };
+		
+		return blank;
 	}
 	
 	// textMaterialFront = new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } );
@@ -276,6 +302,8 @@ function generateTextGeometry(text) {
 	textGeometry.computeBoundingBox();
 	textGeometry.computeVertexNormals();
 	
+	
+	textGeometries[text] = textGeometry;
 	return textGeometry;
 
 }

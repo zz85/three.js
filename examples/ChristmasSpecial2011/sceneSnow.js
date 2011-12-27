@@ -369,7 +369,7 @@ function initSnowScene() {
 		new THREE.Vector3(0,0,2000)	);
 
 	sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
-	sparksEmitter.addInitializer(new SPARKS.Lifetime(5,10));
+	sparksEmitter.addInitializer(new SPARKS.Lifetime(5, 8));
 
 	sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -100, 50 ) ) ) );
 
@@ -378,10 +378,6 @@ function initSnowScene() {
 
 	sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
 	sparksEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
-
-
-	// var wind = new SPARKS.WindNoise();
-	// sparksEmitter.addAction(wind);
 
 	sparksEmitter.addAction( new SPARKS.DeathZone( new SPARKS.CubeZone(
 			new THREE.Vector3(-5000, FLOOR, -5000),
