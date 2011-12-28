@@ -18,6 +18,8 @@ var snowman;
 
 var textParticlesEmitter, textParticlesProducer;
 
+var snowSceneDirector;
+
 var ParticlePool;
 var particlePoolCount = 20000;
 var particles;
@@ -36,8 +38,10 @@ var frontAngle = 0;
 var topAngle = 1.73;
 var radius = 1200;
 
+var allowCompositing = !true;
+
 function moveSun() {
-	
+	return;
 	// frontAngle += 0.025;
 	// topAngle += 0.025;
 	var lx = Math.cos(frontAngle) * radius;
@@ -52,6 +56,37 @@ function moveSun() {
 	// earthRotation.rotation.x += 0.015;
 }
 
+function renderSnowScene() {
+	
+	moveSun();
+
+	var delta = clock.getDelta();
+	
+	
+	//controls.update( delta );
+	if (allowCompositing) {
+		controls.update( 0.025 );
+	} else {
+		snowSceneDirector.update();
+	}
+	
+	particleCloud.geometry.__dirtyVertices = true;
+
+	attributes.size.needsUpdate = true;
+	attributes.pcolor.needsUpdate = true;
+	
+	renderer.clear();
+	composer.render();
+	//renderer.render( scene, camera );
+	
+	if (playRecording) playbackDirector.update();
+	
+	// Render debug HUD with shadow map
+	// setInterval(function() {light.position.y += 100 ; }, 200);
+	// hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];
+	// renderer.render( sceneHUD, cameraOrtho );
+	
+}
 
 
 function initSnowScene() {
@@ -59,8 +94,6 @@ function initSnowScene() {
 
 	camera = new THREE.PerspectiveCamera( 23, TARGET_RATIO, NEAR, FAR );
 	camera.position.set( 700, 50, 1900 ); //700, 50, 1900
-	
-	
 	
 	controls = new THREE.FirstPersonControls( camera );
 
@@ -99,18 +132,14 @@ function initSnowScene() {
 
 
 	light = new THREE.SpotLight( 0xffffff ); // Sun light which casts shadows.
-	//light.position.set( 0, 1500, 1000 ); // front light
+	light.position.set( 0, 1500, 1000 ); // front light
 	
-	light.position.set( 0, 500, 500 );
-
-	// earthRotation.add(light);
-	// earthRotation.rotation.y = Math.PI ;
-	
+	// light.position.set( 0, 500, 500 );
 	// light.position.set( -800,000, -1000 ); // morning light
 	// light.position.set( 300,400, -600 ); // backlight
-	// TO FIX SUN POSITION
-	
-		
+
+	// earthRotation.add(light);
+	// earthRotation.rotation.y = Math.PI ;	
 
 	light.target.position.set( 0, 0, 0 );
 	light.castShadow = true;
@@ -474,7 +503,6 @@ function initSnowScene() {
 	composer.passes[composer.passes.length-1].renderToScreen = true;
 	
 	
-	
 	//Cubic.EaseInOut Bounce.EaseInOut
 	// anim("Camera Position",camera.position)
 	// 		.to({x: 700, y:50, z:2900},0)
@@ -485,14 +513,129 @@ function initSnowScene() {
 	// anim("Camera Position",camera.position.y).to({"y":100},0).to({"y":150},2.88, Timeline.Easing.Cubic.EaseIn);
 	// anim("Camera Position",camera.position.z).to({"z":2900},0).to({"z":1900},2.88, Timeline.Easing.Cubic.EaseIn);
 	// 
-	// Timeline.getGlobalInstance().loop(-1); //loop forever
+
 
 	// anim("snowman position",snowman.position)
 	// 		.to({ y: 100},0)
 	// 		.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
 	// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
 	// 
+
+	// anim("Camera Position",camera.position)
+	// 		.to({x: -280,
+	// 			y: 280,
+	// 			z: -3000},0)
+	// 		.to({x: -280,
+	// 			y: 100,
+	// 			z: -1000},8, Timeline.Easing.Cubic.EaseOut) //
+	// 		.to({	x: 2665.2575969466884,
+	// 			y: 300.73770261364837,
+	// 			z: 145.81159082687202},5);
+	// anim("Camera Rotation", camera.rotation)
+	// 	.to({x: -Math.PI,
+	// 		y: 0,
+	// 		z: -Math.PI
+	// 		}, 0)
+	// 	.to(	{x: -Math.PI,
+	// 			y: 0,
+	// 			z: -Math.PI
+	// 			}, 8)
+	// 	.to({x:0, y:0, z:0}, 5);
+	// Timeline.getGlobalInstance().loop(-1); //loop forever
+
+	snowSceneDirector = new THREE.Director();
 	
+	snowSceneDirector
+	.addAction(0, function() {
+		// Setup lens 
+		camera.setLens(108);
+	})
+	.addAction(2, function() {
+		console.log("Snowman front view");
+		camera.position.set(-152, 50, 2080);
+	})
+	.addAction(4, function() {
+		console.log("Snowman front view - zoom out1");
+
+		camera.position.set(-397, 260, 2133);
+
+		
+		
+	})
+	.addAction(6, function() {
+		console.log("Snowman front view - zoom out2");
+		camera.position.set(-514, 218, 2400);
+	})
+	.addAction(8, function() {
+		// 
+		console.log("CHRIST");
+		camera.position.set(-350, 162, 1032);
+	})
+	.addAction(10, function() {
+		// 
+		console.log("MAS");
+		camera.position.set(510, 161, 1054);
+	})
+	.addAction(12, function() {
+		console.log("Snowman Front");
+		camera.position.set(-1360, 230, 1036);
+	})
+	.addAction(14, function() {
+		// 
+		console.log("Snowman Back");
+		camera.position.set(-560, 257, -900);
+	})
+	.addAction(16, function() {
+		// Snowman Back
+		console.log("Snowman Back");
+		camera.position.set(-560, 257, -900);
+		camera.rotation.set(-Math.PI, 0, Math.PI);
+		// camera.rotation.set(-3, 0, 3.1);
+	})
+	.addAction(18, function() {
+		// 
+		console.log("Mas Back");
+		camera.position.set(-310, 298, -1145);
+	})
+	.addAction(20, function() {
+		// Mas Back
+		console.log("Mas Back2");
+		camera.position.set(-200, 214, -1050);
+	})
+	.addAction(22, function() {
+		// 
+		console.log("Snowman Back 2");
+		camera.position.set(-1204, 431, -1088);
+	})
+	.addAction(28, function() {
+		snowSceneDirector.stop();
+	})
+	
+	.start();
+	
+	var i= 0;
+	setInterval(function(){
+		i++;
+		console.log(i);
+		
+	}, 1000);
+	
+	// snowSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
+	// 	.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
+	// 	.addTween(6, 4, auroraPlane.material, null, {opacity: 0.4}, 'Bounce.EaseInOut')
+	// 	.addTween(10, 4, auroraPlane.material, null, {opacity: 0.6}, 'Cubic.EaseInOut')
+	// 	.addTween(14, 4, auroraPlane.material, null, {opacity: 0.01}, 'Cubic.EaseIn')
+	// 	.addTween(18, 1, auroraPlane.material, {opacity : 0.1}, {opacity : 0.2}, 'Quadratic.EaseOut')
+	// 	.addTween(19, 6, auroraPlane.material, {opacity : 0.4}, {opacity : 0.05}, 'Linear.EaseNone')
+	// 
+	// 	.addTween(0,	10,	starTrailsOpacity, {opacity: 0},	{opacity: 1}, 'Cubic.EaseIn') //Cubic.EaseOut Linear.EaseNone
+	// 
+
+	// .addAction(19, function() {
+	// 	
+	// 	camera.setLens(80);
+	// 	
+	// })
 
 }
 
@@ -735,29 +878,3 @@ function lensFlareUpdateCallback( object ) {
 
 }
 
-function renderSnowScene() {
-	
-	moveSun();
-
-	var delta = clock.getDelta();
-	
-	//controls.update( delta );
-	controls.update( 0.025 );
-	
-	particleCloud.geometry.__dirtyVertices = true;
-
-	attributes.size.needsUpdate = true;
-	attributes.pcolor.needsUpdate = true;
-	
-	renderer.clear();
-	//renderer.render( scene, camera );
-	composer.render();
-	
-	if (playRecording) playbackDirector.update();
-	
-	// Render debug HUD with shadow map
-	// setInterval(function() {light.position.y += 100 ; }, 200);
-	// hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];
-	// renderer.render( sceneHUD, cameraOrtho );
-	
-}

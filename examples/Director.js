@@ -222,8 +222,17 @@ THREE.Director.prototype.start = function() {
 
 THREE.Director.prototype.stop = function() {
 	this._started = false;
-	
+};
+
+THREE.Director.prototype.pause = function() {
 	//TODO pause
+	
+	var time = Date.now();
+	var elapsed = time - this._lastTime;
+	var totalElapsed = time - this._startTime;
+	var lastElpased = this._lastTime - this._startTime;
+	
+	
 };
 
 THREE.Director.prototype.update = function() {
