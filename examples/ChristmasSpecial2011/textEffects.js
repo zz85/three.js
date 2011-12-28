@@ -1,4 +1,4 @@
-var chars = [], xpos;
+var chars = [], xpos, allwords = [];
 var recorder;
 var textGeometries = {};
 var lastTextMesh;
@@ -6,13 +6,20 @@ var lastTextMesh;
 var allParticlePoints = [];
 var allParticleTargets = [];
 
+var cameraBaseX, cameraBaseY, cameraBaseZ;
+
 function bindTextRecording() {
 	
 	recorder = new Recorder();
 	recorder.start();
 	lastTextMesh = new THREE.Object3D();
+	allwords = [];
 	newTextLine();
 	scene.add(lastTextMesh);
+	
+	cameraBaseX = camera.position.x;
+	cameraBaseY = camera.position.y;
+	cameraBaseZ = camera.position.z;
 	
 	document.addEventListener( 'keypress', onDocumentKeyPress, false );
 	document.addEventListener( 'keydown', onDocumentKeyDown, false );
@@ -27,8 +34,15 @@ function unbindTextRecording() {
 	
 }
 
+function playbackRecording() {
+	r = recorder.getDirector(recordEventHandler);
+	r.start(); 
+	setInterval(function() { r.update(); }, 50);
+}
+
 
 function newTextLine() {
+	allwords.push(chars);
 	chars = [], xpos = 0;
 }
 
@@ -133,9 +147,12 @@ function typeBackspace() {
 		lastTextMesh.remove(last);
 	}
 	
+	followCamera();
+	
 	refreshText();
 }
 
+var h = 0.1135;
 
 function typeEnter() {
 	refreshText();
@@ -151,15 +168,15 @@ function typeEnter() {
 	
 		
 		randomH = function() {
-			return 0.24;
+			return h;
 		}
 		
 		randomS = function() {
-			return Math.random() * 0.5;
+			return Math.random() * 0.75 + 0.25;
 		}
 		
 		randomV = function() {
-			return Math.random() * 0.5 + 0.5;
+			return Math.random() * 0.5 ;	 //+ 0.5
 		}
 		
 		
@@ -200,6 +217,20 @@ function typeEnter() {
 	textParticlesProducer.rate = 4000;
 	
 	newTextLine();
+	//followCamera();
+}
+
+function followCamera() {
+	// var x, y;
+	// 
+	// x = xpos + Math.random() * 100;;
+	// y = cameraBaseY + (Math.random() - 0.5) * 150;
+	// 
+	// camera.position.x = x;
+	// camera.position.y += (y - camera.position.y ) * 0.5;
+	
+	camera.position.x = xpos + Math.random() * 50;
+	camera.position.y = cameraBaseY + (Math.random() - 0.5) * 80;
 }
 
 function typeCharacter(ch) {
@@ -213,6 +244,8 @@ function typeCharacter(ch) {
 	
 	lastTextMesh.add(charMesh);
 	
+	followCamera();
+
 	refreshText();
 }
 
