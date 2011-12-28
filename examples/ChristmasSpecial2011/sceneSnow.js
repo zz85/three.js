@@ -38,6 +38,7 @@ var frontAngle = 0;
 var topAngle = 1.73;
 var radius = 1200;
 
+var hoverControls;
 var allowCompositing = !true;
 
 function moveSun() {
@@ -543,73 +544,79 @@ function initSnowScene() {
 	// 	.to({x:0, y:0, z:0}, 5);
 	// Timeline.getGlobalInstance().loop(-1); //loop forever
 
+	var orbitTarget = new THREE.Vector3(0, 200,0);
+	//camera, target, distance, height
+	hoverControls = new THREE.OrbitControls(camera, orbitTarget, 800, 200);
+
 	snowSceneDirector = new THREE.Director();
 	
 	snowSceneDirector
-	.addAction(0, function() {
-		// Setup lens 
-		camera.setLens(108);
-	})
-	.addAction(2, function() {
-		console.log("Snowman front view");
-		camera.position.set(-152, 50, 2080);
-	})
-	.addAction(4, function() {
-		console.log("Snowman front view - zoom out1");
-
-		camera.position.set(-397, 260, 2133);
-
-		
-		
-	})
-	.addAction(6, function() {
-		console.log("Snowman front view - zoom out2");
-		camera.position.set(-514, 218, 2400);
-	})
-	.addAction(8, function() {
-		// 
-		console.log("CHRIST");
-		camera.position.set(-350, 162, 1032);
-	})
-	.addAction(10, function() {
-		// 
-		console.log("MAS");
-		camera.position.set(510, 161, 1054);
-	})
-	.addAction(12, function() {
-		console.log("Snowman Front");
-		camera.position.set(-1360, 230, 1036);
-	})
-	.addAction(14, function() {
-		// 
-		console.log("Snowman Back");
-		camera.position.set(-560, 257, -900);
-	})
-	.addAction(16, function() {
-		// Snowman Back
-		console.log("Snowman Back");
-		camera.position.set(-560, 257, -900);
-		camera.rotation.set(-Math.PI, 0, Math.PI);
-		// camera.rotation.set(-3, 0, 3.1);
-	})
-	.addAction(18, function() {
-		// 
-		console.log("Mas Back");
-		camera.position.set(-310, 298, -1145);
-	})
-	.addAction(20, function() {
-		// Mas Back
-		console.log("Mas Back2");
-		camera.position.set(-200, 214, -1050);
-	})
-	.addAction(22, function() {
-		// 
-		console.log("Snowman Back 2");
-		camera.position.set(-1204, 431, -1088);
-	})
-	.addAction(28, function() {
-		snowSceneDirector.stop();
-	})
+	.addTween(0, 6, hoverControls, {rotation: 0, height: 20, distance: 800}, 
+		{rotation: 1.5, height: 1000, distance: 1200}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	
+	// .addAction(0, function() {
+	// 	// Setup lens 
+	// 	// camera.setLens(108);
+	// })
+	// .addAction(2, function() {
+	// 	console.log("Snowman front view");
+	// 	camera.position.set(-152, 50, 2080);
+	// })
+	// .addAction(4, function() {
+	// 	console.log("Snowman front view - zoom out1");
+	// 
+	// 	camera.position.set(-397, 260, 2133);
+	// })
+	// .addAction(6, function() {
+	// 	console.log("Snowman front view - zoom out2");
+	// 	camera.position.set(-514, 218, 2400);
+	// })
+	// .addAction(8, function() {
+	// 	// 
+	// 	console.log("CHRIST");
+	// 	camera.position.set(-350, 162, 1032);
+	// })
+	// .addAction(10, function() {
+	// 	// 
+	// 	console.log("MAS");
+	// 	camera.position.set(510, 161, 1054);
+	// })
+	// .addAction(12, function() {
+	// 	console.log("Snowman Front");
+	// 	camera.position.set(-1360, 230, 1036);
+	// })
+	// .addAction(14, function() {
+	// 	// 
+	// 	console.log("Snowman Back");
+	// 	camera.position.set(-560, 257, -900);
+	// 	camera.position.set(-560, 257, -1200);
+	// 	camera.rotation.set(-Math.PI, 0, Math.PI);
+	// 			// camera.rotation.set(-3, 0, 3.1);
+	// })
+	// .addAction(16, function() {
+	// 	// Snowman Back
+	// 	console.log("Snowman Back");
+	// 
+	// 
+	// })
+	// .addAction(18, function() {
+	// 	// 
+	// 	console.log("Mas Back");
+	// 	camera.position.set(-310, 298, -1445);
+	// })
+	// .addAction(20, function() {
+	// 	// Mas Back
+	// 	console.log("Mas Back2");
+	// 	camera.position.set(-200, 214, -1050);
+	// })
+	// .addAction(22, function() {
+	// 	// 
+	// 	console.log("Snowman Back 2");
+	// 	camera.position.set(-1204, 231, -1088);
+	// })
+	// .addAction(28, function() {
+	// 	snowSceneDirector.stop();
+	// })
 	
 	.start();
 	
@@ -620,7 +627,7 @@ function initSnowScene() {
 		
 	}, 1000);
 	
-	// snowSceneDirector.addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
+	// .addTween(0, 2, auroraPlane.material,{opacity: 0} ,{opacity: 0.2}, 'Cubic.EaseIn')
 	// 	.addTween(2, 4, auroraPlane.material, null, {opacity: 0.2}, 'Cubic.EaseInOut')
 	// 	.addTween(6, 4, auroraPlane.material, null, {opacity: 0.4}, 'Bounce.EaseInOut')
 	// 	.addTween(10, 4, auroraPlane.material, null, {opacity: 0.6}, 'Cubic.EaseInOut')
@@ -878,3 +885,30 @@ function lensFlareUpdateCallback( object ) {
 
 }
 
+
+
+
+/*
+ * @author @blurspline https://github.com/zz85
+ * Similar to a turntable or a hovering camera?
+ */
+THREE.OrbitControls = function( camera, target, distance, height ) {
+
+
+	this.rotation = 0;
+	this.height = height;
+	this.distance = distance;
+	
+	var me = this;
+
+	this.update = function() {
+		
+		var angle =  me.rotation * Math.PI * 2;
+
+		camera.position.x = Math.sin(angle) * me.distance + target.x;
+		camera.position.z = Math.cos(angle) * me.distance + target.z;
+		camera.position.y = me.height + target.z;
+		camera.lookAt(target);
+	}
+
+};
