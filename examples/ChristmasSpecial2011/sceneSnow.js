@@ -27,29 +27,29 @@ var values_color; // Particle Color
 
 var earthRotation = new THREE.Object3D();
 
-
 function setupSnowScene() {
 	initSnowScene();
 	renderCallback = renderSnowScene;
 }
 
 var frontAngle = 0;
-var topAngle = 0;
+var topAngle = 1.73;
+var radius = 1200;
 
 function moveSun() {
-	// var radius = 600;
+	
 	// frontAngle += 0.025;
 	// topAngle += 0.025;
-	// var lx = Math.cos(topAngle) * radius;
-	// var ly = Math.sin(topAngle) * radius;
-	// 
-	// var lz = Math.sin(frontAngle) * lx;
-	// lx = Math.cos(frontAngle) * lx;
-	// 
-	// 
-	// light.position.set(lx, ly, lz);
+	var lx = Math.cos(frontAngle) * radius;
+	var ly = Math.sin(frontAngle) * radius;
 	
-	earthRotation.rotation.x += 0.015;
+	var lz = Math.sin(topAngle) * lx;
+	lx = Math.cos(topAngle) * lx;
+	
+	
+	light.position.set(lx, ly, lz);
+	
+	// earthRotation.rotation.x += 0.015;
 }
 
 
@@ -98,13 +98,13 @@ function initSnowScene() {
 	//PointLight
 
 
-	light = new THREE.SpotLight( 0xffffff );
+	light = new THREE.SpotLight( 0xffffff ); // Sun light which casts shadows.
 	//light.position.set( 0, 1500, 1000 ); // front light
 	
 	light.position.set( 0, 500, 500 );
 
-	earthRotation.add(light);
-	earthRotation.rotation.y = Math.PI ;
+	// earthRotation.add(light);
+	// earthRotation.rotation.y = Math.PI ;
 	
 	// light.position.set( -800,000, -1000 ); // morning light
 	// light.position.set( 300,400, -600 ); // backlight
@@ -114,8 +114,8 @@ function initSnowScene() {
 
 	light.target.position.set( 0, 0, 0 );
 	light.castShadow = true;
-	//scene.add( light );
-	scene.add( earthRotation );
+	scene.add( light );
+	// scene.add( earthRotation );
 
 	createHUD();
 	createScene();
@@ -127,45 +127,40 @@ function initSnowScene() {
 	var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare2.png" );
 	var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare3.png" );
 
+	// FLARES
+	//var frontlight;
+	frontlight = new THREE.PointLight( 0xffffff, 1.0, 4500 );
+	frontlight.position.set( 100,100, 600); //300,400, -600 
+	// frontlight.position = pos;
 
-	addLight( light.position );  // For flare and point light.
+	scene.add( frontlight );
+	// earthRotation.add( light );
+
+	frontlight.color.setHSV( 0.08, 0.825, 0.99 ); // Warmish
+	// White 	// addLight( 0.995, 0.025, 0.99, light.position );
+
+	var flareColor = new THREE.Color( 0xffffff );
+	flareColor.copy( frontlight.color );
+	THREE.ColorUtils.adjustHSV( flareColor, 0, -0.5, 0.5 );
+
+	var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
+
+	lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+
+	lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+
+	lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+	lensFlare.position = light.position;
+
+	scene.add( lensFlare );
+	// earthRotation.add( lensFlare );
 
 
-	function addLight(pos) {
-
-
-		var light = new THREE.PointLight( 0xffffff, 1.0, 4500 );
-		//light.position.set( x, y, z );
-		light.position = pos;
-
-		scene.add( light );
-		// earthRotation.add( light );
-
-		light.color.setHSV( 0.08, 0.825, 0.99 ); // Redish
-		// White 	// addLight( 0.995, 0.025, 0.99, light.position );
-
-		var flareColor = new THREE.Color( 0xffffff );
-		flareColor.copy( light.color );
-		THREE.ColorUtils.adjustHSV( flareColor, 0, -0.5, 0.5 );
-
-		var lensFlare = new THREE.LensFlare( textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor );
-
-		lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-		lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-		lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
-
-		lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
-		lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
-		lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
-		lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
-
-		lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-		lensFlare.position = light.position;
-
-		// scene.add( lensFlare );
-		earthRotation.add( lensFlare );
-
-	}
 
 	// PARTICLE SYSTEMS
 
