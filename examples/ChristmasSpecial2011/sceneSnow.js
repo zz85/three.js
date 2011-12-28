@@ -727,6 +727,8 @@ function renderSnowScene() {
 	//renderer.render( scene, camera );
 	composer.render();
 	
+	if (playRecording) playbackDirector.update();
+	
 	// Render debug HUD with shadow map
 	// setInterval(function() {light.position.y += 100 ; }, 200);
 	// hudMaterial.uniforms.tDiffuse.texture = renderer.shadowMapPlugin.shadowMap[0];

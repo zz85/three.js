@@ -2,6 +2,8 @@ var chars = [], xpos, allwords = [];
 var recorder;
 var textGeometries = {};
 var lastTextMesh;
+var playRecording = false;
+var playbackDirector;
 
 var allParticlePoints = [];
 var allParticleTargets = [];
@@ -35,9 +37,10 @@ function unbindTextRecording() {
 }
 
 function playbackRecording() {
-	r = recorder.getDirector(recordEventHandler);
-	r.start(); 
-	setInterval(function() { r.update(); }, 50);
+	playbackDirector = recorder.getDirector(recordEventHandler);
+	playbackDirector.start();
+	playRecording = true;
+	// setInterval(function() { r.update(); }, 50);
 }
 
 
@@ -218,6 +221,8 @@ function typeEnter() {
 	
 	newTextLine();
 	//followCamera();
+	camera.position.y = cameraBaseY + (Math.random() - 0.5) * 80 + 10;
+	camera.position.z += 50;
 }
 
 function followCamera() {
@@ -408,7 +413,17 @@ function generateTextGeometry(text) {
 	textGeometry.computeVertexNormals();
 	
 	
+	// Cache geometries
 	textGeometries[text] = textGeometry;
+	
+	// Testing.
+	
+	var textPath = new THREE.TextPath( text, textOptions );
+	var textShapes = textPath.toShapes();
+	console.log(textShapes);
+	
+	textShapes[0].debug();
+	
 	return textGeometry;
 
 }
