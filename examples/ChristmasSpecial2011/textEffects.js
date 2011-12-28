@@ -10,6 +10,8 @@ var allParticleTargets = [];
 
 var cameraBaseX, cameraBaseY, cameraBaseZ;
 
+var windEffect;
+
 function bindTextRecording() {
 	
 	recorder = new Recorder();
@@ -118,12 +120,14 @@ function initTextParticles() {
 	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
 	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
 	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(0.1,2));
-	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 50 ) ) ) );
+	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 20 ) ) ) );
 	textParticlesEmitter.addAction( new SPARKS.Age() );
 	textParticlesEmitter.addAction( new SPARKS.Move() );
-	textParticlesEmitter.addAction( new SPARKS.Accelerate( 100, 100, 50  ) );				
+	textParticlesEmitter.addAction( new SPARKS.Accelerate( 50, 100, 50  ) );				
 	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 2000 , 500, 1000 ) );
-	// var windEffect = new WindNoise();
+	
+	// windEffect = new SPARKS.WindNoise() ;
+	// textParticlesEmitter.addAction( windEffect );
 	
 	textParticlesEmitter.addCallback( "created", onParticleCreated );
 	textParticlesEmitter.addCallback( "dead", onParticleDead );
@@ -222,7 +226,7 @@ function typeEnter() {
 	newTextLine();
 	//followCamera();
 	camera.position.y = cameraBaseY + (Math.random() - 0.5) * 80 + 10;
-	camera.position.z += 50;
+	// camera.position.z += 50;
 }
 
 function followCamera() {
@@ -416,13 +420,12 @@ function generateTextGeometry(text) {
 	// Cache geometries
 	textGeometries[text] = textGeometry;
 	
-	// Testing.
-	
-	var textPath = new THREE.TextPath( text, textOptions );
-	var textShapes = textPath.toShapes();
-	console.log(textShapes);
-	
-	textShapes[0].debug();
+	// Testing.	
+	// var textPath = new THREE.TextPath( text, textOptions );
+	// var textShapes = textPath.toShapes();
+	// console.log(textShapes);
+	// 
+	// textShapes[0].debug();
 	
 	return textGeometry;
 

@@ -25,11 +25,34 @@ var particles;
 var values_size; // Particle Size
 var values_color; // Particle Color
 
+var earthRotation = new THREE.Object3D();
+
 
 function setupSnowScene() {
 	initSnowScene();
 	renderCallback = renderSnowScene;
 }
+
+var frontAngle = 0;
+var topAngle = 0;
+
+function moveSun() {
+	// var radius = 600;
+	// frontAngle += 0.025;
+	// topAngle += 0.025;
+	// var lx = Math.cos(topAngle) * radius;
+	// var ly = Math.sin(topAngle) * radius;
+	// 
+	// var lz = Math.sin(frontAngle) * lx;
+	// lx = Math.cos(frontAngle) * lx;
+	// 
+	// 
+	// light.position.set(lx, ly, lz);
+	
+	earthRotation.rotation.x += 0.015;
+}
+
+
 
 function initSnowScene() {
 	// SCENE CAMERA
@@ -68,21 +91,31 @@ function initSnowScene() {
 	ambient.color.setHSV(0,0,0.5);
 	scene.add( ambient );
 	
-	backlight = new THREE.PointLight( 0xffffff );
+	backlight = new THREE.PointLight( 0xffffff );  //DirectionalLight
 	backlight.position.set(0, FLOOR + 30, -100);
 	scene.add(backlight);
 	
+	//PointLight
 
 
 	light = new THREE.SpotLight( 0xffffff );
-	light.position.set( 0, 1500, 1000 ); // front light
+	//light.position.set( 0, 1500, 1000 ); // front light
+	
+	light.position.set( 0, 500, 500 );
+
+	earthRotation.add(light);
+	earthRotation.rotation.y = Math.PI ;
+	
 	// light.position.set( -800,000, -1000 ); // morning light
 	// light.position.set( 300,400, -600 ); // backlight
+	// TO FIX SUN POSITION
 	
+		
 
 	light.target.position.set( 0, 0, 0 );
 	light.castShadow = true;
-	scene.add( light );
+	//scene.add( light );
+	scene.add( earthRotation );
 
 	createHUD();
 	createScene();
@@ -94,25 +127,22 @@ function initSnowScene() {
 	var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare2.png" );
 	var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare3.png" );
 
-	//addLight( 0.55, 0.825, 0.99, -800,0, 800);
-	//addLight( 0.08, 0.825, 0.99,    0, 0, 1000 );
-	//addLight( 0.995, 0.025, 0.99, light.position.x, light.position.y, light.position.z );
-	addLight( 0.995, 0.025, 0.99, light.position );
 
-	// addLight( 0.55, 0.825, 0.99, 5000 , 0, 1000 );
-	// addLight( 0.08, 0.825, 0.99,    0, 0, 1000 );
-	// addLight( 0.995, 0.025, 0.99, 5000, 5000, 1000 );
-
-	function addLight( h, s, v, pos) { //x, y, z 
+	addLight( light.position );  // For flare and point light.
 
 
-		var light = new THREE.PointLight( 0xffffff, 0.5, 4500 );
+	function addLight(pos) {
+
+
+		var light = new THREE.PointLight( 0xffffff, 1.0, 4500 );
 		//light.position.set( x, y, z );
 		light.position = pos;
 
 		scene.add( light );
+		// earthRotation.add( light );
 
-		light.color.setHSV( h, s, v );
+		light.color.setHSV( 0.08, 0.825, 0.99 ); // Redish
+		// White 	// addLight( 0.995, 0.025, 0.99, light.position );
 
 		var flareColor = new THREE.Color( 0xffffff );
 		flareColor.copy( light.color );
@@ -132,7 +162,8 @@ function initSnowScene() {
 		lensFlare.customUpdateCallback = lensFlareUpdateCallback;
 		lensFlare.position = light.position;
 
-		scene.add( lensFlare );
+		// scene.add( lensFlare );
+		earthRotation.add( lensFlare );
 
 	}
 
@@ -299,10 +330,8 @@ function initSnowScene() {
 
 		var position = p.position;
 
-		//p.target.position = position;
-
-		var shadow = ParticlePool.get();
-		p.shadow = shadow;
+		// var shadow = ParticlePool.get();
+		// p.shadow = shadow;
 
 		if ( target ) {
 			particles.vertices[ target ].position = p.position;
@@ -310,9 +339,9 @@ function initSnowScene() {
 			values_color[ target ].setHSV( 0, 0, 0.4 + Math.random() * 0.4 );
 			values_size[ target ] = 10 +  Math.random() * 80;
 
-			values_color[ shadow ].setHSV( 0.5, 0, 0.5 );
-			//values_color[ shadow ].setRGB( 10, 10, 100 );
-			values_size[ shadow ] = 15; //values_size[ target ];
+			// values_color[ shadow ].setHSV( 0.5, 0, 0.5 );
+			// //values_color[ shadow ].setRGB( 10, 10, 100 );
+			// values_size[ shadow ] = 15; //values_size[ target ];
 
 		};
 
@@ -325,20 +354,18 @@ function initSnowScene() {
 		if ( target ) {
 
 			// Hide the particle
-
 			values_color[ target ].setHSV( 0, 0, 0 );
 			particles.vertices[ target ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
 
-
-			var shadow = particle.shadow;
-
-			values_color[ shadow ].setHSV( 0, 0, 0 );
-			particles.vertices[ shadow ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
-
 			// Mark particle system as available by returning to pool
-
 			ParticlePool.return( particle.target );
-			ParticlePool.return( shadow );
+
+			// var shadow = particle.shadow;
+			// 
+			// values_color[ shadow ].setHSV( 0, 0, 0 );
+			// particles.vertices[ shadow ].position.set( Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY );
+			// 
+			// ParticlePool.return( shadow );
 
 		}
 
@@ -346,11 +373,11 @@ function initSnowScene() {
 
 	var onParticleUpdate = function( particle ) {
 
-		particles.vertices[ particle.shadow ].position.set(
-			particle.position.x,
-			FLOOR + 5,
-			particle.position.z);
-			// SHould do some projection from light to particles to floor.
+		// particles.vertices[ particle.shadow ].position.set(
+		// 	particle.position.x,
+		// 	FLOOR + 5,
+		// 	particle.position.z);
+		// 	// SHould do some projection from light to particles to floor.
 
 	}
 	
@@ -364,20 +391,22 @@ function initSnowScene() {
 
 
 	var zone = new SPARKS.ParallelogramZone( 
-		new THREE.Vector3(-1000,800,-1000), 
-		new THREE.Vector3(2000,0,0),
+		new THREE.Vector3(-1400,800,-1000), 
+		new THREE.Vector3(2800,0,0),
 		new THREE.Vector3(0,0,2000)	);
 
 	sparksEmitter.addInitializer(new SPARKS.Position( zone ) );
 	sparksEmitter.addInitializer(new SPARKS.Lifetime(5, 8));
 
-	sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -100, 50 ) ) ) );
+	sparksEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 0, -100, 0 ) ) ) );
 
 	sparksEmitter.addAction( new SPARKS.Age() );
 	sparksEmitter.addAction( new SPARKS.Move() );
 
 	sparksEmitter.addAction( new SPARKS.Accelerate( 40, -100, 50  ) );				
-	sparksEmitter.addAction( new SPARKS.RandomDrift( 200 , 100, 200 ) );
+	sparksEmitter.addAction( new SPARKS.RandomDrift( 800 , 100, 800 ) );
+	
+	// sparksEmitter.addAction( new SPARKS.WindNoise() );
 
 	sparksEmitter.addAction( new SPARKS.DeathZone( new SPARKS.CubeZone(
 			new THREE.Vector3(-5000, FLOOR, -5000),
@@ -712,6 +741,8 @@ function lensFlareUpdateCallback( object ) {
 }
 
 function renderSnowScene() {
+	
+	moveSun();
 
 	var delta = clock.getDelta();
 	
