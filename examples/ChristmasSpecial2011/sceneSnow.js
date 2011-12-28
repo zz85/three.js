@@ -29,37 +29,50 @@ var values_color; // Particle Color
 
 var earthRotation = new THREE.Object3D();
 
+var textMesh;
+
 function setupSnowScene() {
 	initSnowScene();
 	renderCallback = renderSnowScene;
 }
 
-var frontAngle = 0;
-var topAngle = 1.73;
-var radius = 1200;
+
 
 var hoverControls;
 var allowCompositing = !true;
 
-function moveSun() {
-	return;
-	// frontAngle += 0.025;
-	// topAngle += 0.025;
-	var lx = Math.cos(frontAngle) * radius;
-	var ly = Math.sin(frontAngle) * radius;
+
+var moveSun; 
+
+
+
+function SunMovements() {
 	
-	var lz = Math.sin(topAngle) * lx;
-	lx = Math.cos(topAngle) * lx;
+	var me = this;
 	
-	
-	light.position.set(lx, ly, lz);
-	
-	// earthRotation.rotation.x += 0.015;
+	me.frontAngle = 0;
+	me.topAngle = 1.73;
+	me.radius = 1200;
+
+	this.update = function() {
+		// frontAngle += 0.025;
+		// topAngle += 0.025;
+		var lx = Math.cos(me.frontAngle) * me.radius;
+		var ly = Math.sin(me.frontAngle) * me.radius;
+
+		var lz = Math.sin(me.topAngle) * lx;
+		lx = Math.cos(me.topAngle) * lx;
+
+
+		light.position.set(lx, ly, lz);
+
+		// earthRotation.rotation.x += 0.015;
+	}
 }
 
 function renderSnowScene() {
 	
-	moveSun();
+	// moveSun.update();
 
 	var delta = clock.getDelta();
 	
@@ -547,16 +560,36 @@ function initSnowScene() {
 	var orbitTarget = new THREE.Vector3(0, 200,0);
 	//camera, target, distance, height
 	hoverControls = new THREE.OrbitControls(camera, orbitTarget, 800, 200);
+	moveSun = new SunMovements();
 
 	snowSceneDirector = new THREE.Director();
 	
 	snowSceneDirector
-	.addTween(0, 6, hoverControls, {rotation: 0, height: 20, distance: 800}, 
-		{rotation: 1.5, height: 1000, distance: 1200}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	.addTween(0, 8, hoverControls, {rotation: 0, height: 20, distance: 800}, 
+		{rotation: 1.5, height: 600, distance: 1200}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	// .addAction(8, function() {
+	// 	// Setup lens 
+	// 	camera.setLens(35);
+	// })
+	// .addTween(8, 1, camera, null,  
+	// 	{fov: 63}, 'Cubic.EaseInOut', camera.updateProjectionMatrix)
+	
+	// .addTween(2, 8, orbitTarget, null, {y: 400}, 'Linear.EaseNone')
+	// .addTween(10, 4, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
+		
+	.addTween(4, 8, camera, {lens: 105}, {lens: 50}, 'Cubic.EaseInOut', function() {camera.setLens(camera.lens);})
+	
+	.addTween(10, 8, hoverControls, null, 
+		{ rotation: 3, height: 200, distance: 600}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	.addTween(0, 30, moveSun, null, 
+		{ frontAngle: Math.PI - 0.3}, 'Cubic.EaseInOut', moveSun.update) //Linear.EaseNone
+	.addTween(24, 2, camera.position, null, 
+		{ z:-514, y:218, z:1000}, 'Cubic.EaseOut') //Linear.EaseNone
+	
 	
 	// .addAction(0, function() {
 	// 	// Setup lens 
-	// 	// camera.setLens(108);
+	// 	// camera.setLens(108); //105
 	// })
 	// .addAction(2, function() {
 	// 	console.log("Snowman front view");
@@ -731,7 +764,7 @@ function createScene( ) {
 	var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff, ambient: 0xaa0000 } );
 	var snowMaterial = new THREE.MeshPhongMaterial( { color: 0xfefefe, specular: 0xfefefe, ambient: 0xdedede } );
 
-	var textMesh = new THREE.Mesh( textGeo, faceMaterial ); //planeMaterial faceMaterial 
+	textMesh = new THREE.Mesh( textGeo, faceMaterial ); //planeMaterial faceMaterial 
 	textMesh.position.x = centerOffset;
 	textMesh.position.y = FLOOR + 10;
 
