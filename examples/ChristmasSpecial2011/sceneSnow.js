@@ -723,9 +723,6 @@ function renderSnowScene() {
 	attributes.size.needsUpdate = true;
 	attributes.pcolor.needsUpdate = true;
 	
-	//TWEEN.update();
-	
-	
 	renderer.clear();
 	//renderer.render( scene, camera );
 	composer.render();

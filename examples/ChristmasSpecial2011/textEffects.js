@@ -100,12 +100,14 @@ function initTextParticles() {
 	
 	textParticlesProducer = new SPARKS.SteadyCounter( 0 );
 	textParticlesEmitter = new SPARKS.Emitter( textParticlesProducer );
-	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(1,2));
+	textParticlesEmitter.addInitializer(new SPARKS.Lifetime(0.1,2));
 	textParticlesEmitter.addInitializer( new SPARKS.Velocity( new SPARKS.PointZone( new THREE.Vector3( 10, 20, 50 ) ) ) );
 	textParticlesEmitter.addAction( new SPARKS.Age() );
 	textParticlesEmitter.addAction( new SPARKS.Move() );
 	textParticlesEmitter.addAction( new SPARKS.Accelerate( 100, 100, 50  ) );				
 	textParticlesEmitter.addAction( new SPARKS.RandomDrift( 2000 , 500, 1000 ) );
+	// var windEffect = new WindNoise();
+	
 	textParticlesEmitter.addCallback( "created", onParticleCreated );
 	textParticlesEmitter.addCallback( "dead", onParticleDead );
 	// textParticlesEmitter.addCallback( "updated", onParticleUpdate );
@@ -303,7 +305,15 @@ function getTextMesh(text) {
 	textMesh.position.x = xpos;
 	xpos += ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x ) + 10;
 	
-	textMesh.position.y = FLOOR + 10;
+	// var yy =  -textGeo.boundingBox.max.y + 200;
+
+	var yy = 0;
+	if (textGeo.boundingBox.min.y < 0) {
+		yy = - textGeo.boundingBox.min.y;
+		yy *= 0.5;
+	}
+	//yy = 10 
+	textMesh.position.y = FLOOR + yy;
 	textMesh.position.z = 200;
 
 	// textMesh.rotation.x = 0;
