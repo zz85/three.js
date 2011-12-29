@@ -98,13 +98,6 @@ function runTheEndScene() {
 		}
 
 		
-		/*
-		y: 172.78450204059482
-	z: 2000 , plus white ambient light?*/
-	
-	
-	
-	
 		var endTransitionDirector = new THREE.Director();
 		endTransitionDirector
 			.addTween(0, 2, camera.position, null, {x:0, y:172, z:2000 }, 'Linear.EaseNone')
@@ -116,7 +109,7 @@ function runTheEndScene() {
 			})
 			
 		
-		endTransitionDirector = theEndDirector;
+		snowSceneDirector = endTransitionDirector;
 		endTransitionDirector.start();
 		
 }
