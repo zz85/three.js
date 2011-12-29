@@ -539,31 +539,31 @@ function initSnowScene() {
 	// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
 	// 
 
-	anim("Camera Position",camera.position)
-			.to({x: -280,
-				y: 280,
-				z: -3000},0)
-			.to({x: -280,
-				y: 100,
-				z: -1000},8, Timeline.Easing.Linear.None) //Cubic.EaseOut
-			.to({	x: 2665.2575969466884,
-				y: 300.73770261364837,
-				z: 145.81159082687202},5);
-		// -1500 155
-	anim("Camera Rotation", camera.rotation)
-		.to({x: -Math.PI,
-			y: 0,
-			z: -Math.PI
-			}, 0);
-		// .to({x: -Math.PI,
-		// 		y: 0,
-		// 		z: -Math.PI
-		// 		}, 8)
-		// .to({x:0, y:0, z:0}, 5);
+	// anim("Camera Position",camera.position)
+	// 		.to({x: -280,
+	// 			y: 280,
+	// 			z: -3000},0)
+	// 		.to({x: -280,
+	// 			y: 100,
+	// 			z: -1000},8, Timeline.Easing.Linear.None) //Cubic.EaseOut
+	// 		.to({	x: 2665.2575969466884,
+	// 			y: 300.73770261364837,
+	// 			z: 145.81159082687202},5);
+	// 	// -1500 155
+	// anim("Camera Rotation", camera.rotation)
+	// 	.to({x: -Math.PI,
+	// 		y: 0,
+	// 		z: -Math.PI
+	// 		}, 0);
+	// 	// .to({x: -Math.PI,
+	// 	// 		y: 0,
+	// 	// 		z: -Math.PI
+	// 	// 		}, 8)
+	// 	// .to({x:0, y:0, z:0}, 5);
 		
 	anim("Light", light)
 		.to({h:0.08, s:0.325, v:0}, 0)
-		.to({h:0.08, s:0.325, v:1}, 5)
+		.to({h:0.08, s:0.325, v:0.8}, 5)
 		.to({h:0.08, s:0, v:0.8}, 5)
 		;
 	anim("Backlight", backlight)
@@ -589,9 +589,8 @@ function initSnowScene() {
 		.to({h:0, s:0, v:0.4}, 5);
 		
 		//.to({h:0, s:0, v:0}, 0);
-	// Start: 700, 50, 1900
 		
-	Timeline.getGlobalInstance().loop(-1); //loop forever
+	// Timeline.getGlobalInstance().loop(-1); //loop forever
 
 	var orbitTarget = new THREE.Vector3(0, 200,0);
 	//camera, target, distance, height
@@ -600,13 +599,64 @@ function initSnowScene() {
 
 	snowSceneDirector = new THREE.Director();
 	
+	var backview = function() {
+		camera.rotation.set(-Math.PI, 0, -Math.PI);
+	};
+	
+	var frontview = function() {
+		camera.rotation.set(0, 0, 0);
+	};
+	
+	
+	// 		.to({x: -280,
+	// 			y: 280,
+	// 			z: -3000},0)
+	// 		.to({x: -280,
+	// 			y: 100,
+	// 			z: -1000},8, Timeline.Easing.Linear.None)
+	
+	
 	snowSceneDirector
-	.addTween(0, 10, moveSun, { frontAngle: 0 }, 
-		{ frontAngle: 0.25 }, 'Linear.EaseNone', moveSun.update) //Linear.EaseNone
-	.addTween(0, 10, renderer, { shadowMapDarkness: 0 }, 
-		{ shadowMapDarkness: 0.3 }, 'Cubic.EaseIn', moveSun.update) //Linear.EaseNone
+	.addAction(0, backview)
+	.addTween(0, 4, camera.position, { x: -280,	y: 280, z: -3000},
+		{ x: -280,	y: 280, z: -2800}, 'Linear.EaseNone')
+	.addAction(4.0, function() {
+		console.log('frontview pls!!')
+		camera.position.set(700, 50, 1900);
+		frontview();
+	})
+	.addTween(4, 1.5, camera.position, null,
+		{ x: 700, y: 50, z: 1900 }, 'Always.One')
+	.addTween(5.5, 1, camera.position, null, { x: -600,	y: 80, z: -1700}, 'Always.One')
+	.addTween(5.5, 1, camera.rotation, null, { x:-Math.PI, y:0, z:-Math.PI }, 'Always.One')
+	
+	.addAction(6.5, backview)
+	.addTween(6.5, 2 , camera.position, { x: -280,	y: 280, z: -2800},
+		{ x: -280, y: 240,z: -2400 }, 'Linear.EaseNone')
+		
+	.addAction(8.5, frontview)
+	.addTween(8.5, 0.5, camera.position, null, { x: -397, y: 260, z: 2133}, 'Always.One')
+	
+	// Panning
+	.addAction(9.5, backview)
+	.addTween(9.5, 8, camera.position, { x: -1400,y: 200, z: -1490},
+		 { x: 1000, y: 200, z: -1490}, 'Quadratic.EaseInOut')
+	
+	// Front view
+	.addAction(17.5, frontview)
+	.addTween(17.5, 0.5, camera.position, null, { x: -152, y: 50, z: 2080}, 'Always.One')
 		
 	
+	// .addTween(8.5, 5 , camera.position, { x: -280, y: 240,z: -2400 },
+	// 	{x: -280, y: 100, z: -1000}, 'Linear.EaseNone')
+
+
+	
+	.addTween(0, 10, moveSun, { frontAngle: 0 }, 
+		{ frontAngle: 0.15 }, 'Linear.EaseNone', moveSun.update) 
+	.addTween(0, 20, renderer, { shadowMapDarkness: 0 }, 
+		{ shadowMapDarkness: 0.3 }, 'Cubic.EaseIn', moveSun.update)
+		
 
 	// .addTween(0, 10, hoverControls, {rotation: 0, height: 20, distance: 800}, 
 	// 	{rotation: 0.5, height: 700, distance: 1400}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
@@ -700,7 +750,7 @@ function initSnowScene() {
 	// })
 	// .addAction(22, function() {
 	// 	// 
-	// 	console.log("Snowman Back 2");
+	// 	console.log("Snowman Back 2"); //XXX
 	// 	camera.position.set(-1204, 231, -1088);
 	// })
 	// .addAction(28, function() {

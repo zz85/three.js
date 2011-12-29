@@ -87,7 +87,7 @@ function startChristmas() {
 	
 	document.getElementById('intro').style.display = 'none';
 	unloadSceneIntro();
-	// playMusic();
+	playMusic();
 	setupNightScene();
 	
 	//

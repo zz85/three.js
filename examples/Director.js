@@ -1,4 +1,10 @@
+/*
+ * TOFIX: Goto Time
+ * ordering of tween/ actions
+ */
+
 // aka animation, sequencer, scheduler, timeline, stage, director, script, tween, secheduler?
+
 
 /*
  * TODO: new TweenAction() API?
@@ -92,6 +98,10 @@ THREE.Director.prototype.getEasingFunction = function(name) {
 	
 	for (var i=0; i<paths.length;i++) {
 		pointer = pointer[paths[i]];
+	}
+	
+	if (pointer===undefined) {
+		console.log("warning, tween " + name + " not found." )
 	}
 	
 	return pointer;
@@ -207,9 +217,7 @@ THREE.Director.prototype.applyActions = function(currentTime, lastTime) {
    		if (action.time > lastTime && action.time<= currentTime) {
 			action.action();
 		}
-    }  // certainly can optimize
-
-	// check require interpolation
+    }
 
 };
 
