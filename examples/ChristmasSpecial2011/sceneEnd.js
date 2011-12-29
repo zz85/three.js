@@ -1,8 +1,18 @@
 function runTheEndScene() {
+	
 		var theEndDirector = new THREE.Director();
 
 		var mrT = lastTextMesh.children[0];
 
+		var updateLights = function() {
+			// Update light colors
+			light.color.setHSV(light.h, light.s, light.v);
+			backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
+			frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
+			ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
+			// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
+			// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
+		}
 
 		theEndDirector
 		// snowman jumps
@@ -70,7 +80,10 @@ function runTheEndScene() {
 		.addAction(14, function() {
 				lastTextMesh.remove(lastTextMesh.children[0]);
 		})
-		// z= 200
+		.addTween(19, 2, [light.color,
+			backlight.color,
+			frontlight.color,
+			ambient.color], null, {h:0, s:0, v:0}, 'Linear.EaseNone', updateLights)
 		;
 
 		for (var i=0,il= lastTextMesh.children.length;i<il;i++) {
@@ -84,14 +97,26 @@ function runTheEndScene() {
 
 		}
 
-		theEndDirector.start();
-
+		
 		/*
 		y: 172.78450204059482
 	z: 2000 , plus white ambient light?*/
 	
 	
 	
-		snowSceneDirector = theEndDirector;
-
+	
+		var endTransitionDirector = new THREE.Director();
+		endTransitionDirector
+			.addTween(0, 2, camera.position, null, {x:0, y:172, z:2000 }, 'Linear.EaseNone')
+			.addTween(0, 2, camera.rotation, null, {x:0, y:0, z:0 }, 'Linear.EaseNone')
+			.addTween(0, 2, frontlight.color, null, {h:0, s:0, v:0.8}, 'Linear.EaseNone',  updateLights)
+			.addAction(2.5, function() {
+				snowSceneDirector = theEndDirector;
+				theEndDirector.start();
+			})
+			
+		
+		endTransitionDirector = theEndDirector;
+		endTransitionDirector.start();
+		
 }

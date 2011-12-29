@@ -52,6 +52,7 @@ THREE.Director.prototype.addTween = function(startTime, duration,
 		if (startTime===null) startTime = this.__lastTime;
 		if (object===null) object = this.__lastObject;
 		if (easing==null) easing = this.__lastEasing;
+		if (easing==null) easing = 'Linear.EaseNone';
 		var easingFunction = this.getEasingFunction(easing);
 		
 		

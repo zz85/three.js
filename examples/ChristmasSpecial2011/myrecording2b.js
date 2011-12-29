@@ -1607,7 +1607,7 @@ var myrecording = [{
     "time": 100531,
     "event": {
         "action": "snow",
-        "value": 500
+        "value": 400
     }
 }, {
     "time": 102545,
@@ -2201,16 +2201,6 @@ var myrecording = [{
         "character": " "
     }
 }, 
-
-/*
-{
-    "time": 143779,
-    "event": {
-        "action": "backspace"
-    }
-},
-*/ 
-//
 {
     "time": 142779,
     "event": {
@@ -2238,49 +2228,49 @@ var myrecording = [{
         "action": "enter"
     }
 }, {
-    "time": 153156,
+    "time": 148156,
     "event": {
         "action": "type",
         "character": "T"
     }
 }, {
-    "time": 153303,
+    "time": 148303,
     "event": {
         "action": "type",
         "character": "H"
     }
 }, {
-    "time": 153470,
+    "time": 148470,
     "event": {
         "action": "type",
         "character": "E"
     }
 }, {
-    "time": 153623,
+    "time": 148623,
     "event": {
         "action": "type",
         "character": " "
     }
 }, {
-    "time": 153873,
+    "time": 148873,
     "event": {
         "action": "type",
         "character": "E"
     }
 }, {
-    "time": 153957,
+    "time": 148957,
     "event": {
         "action": "type",
         "character": "N"
     }
 }, {
-    "time": 154121,
+    "time": 149121,
     "event": {
         "action": "type",
         "character": "D"
     }
 }, {
-    "time": 161640,
+    "time": 149640,
     "event": {
         "action": "theend"
 
