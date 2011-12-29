@@ -86,7 +86,7 @@ function initTextParticles() {
 			
 			if (allParticleTargets.length==0) {
 				textParticlesProducer.rate = 0;
-				console.log('stop');
+				// console.log('stop');
 			}
 			
 		} else {
@@ -245,7 +245,6 @@ function followCamera() {
 
 function typeCharacter(ch) {
 	chars.push(ch);
-	//text += ch;
 
 	var charMesh = getTextMesh(ch);
 	

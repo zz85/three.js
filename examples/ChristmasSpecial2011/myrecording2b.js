@@ -2273,7 +2273,5 @@ var myrecording = [{
     "time": 149640,
     "event": {
         "action": "theend"
-
-        //"action": "enter"
     }
 }];

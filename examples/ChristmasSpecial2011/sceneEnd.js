@@ -4,16 +4,6 @@ function runTheEndScene() {
 
 		var mrT = lastTextMesh.children[0];
 
-		var updateLights = function() {
-			// Update light colors
-			light.color.setHSV(light.h, light.s, light.v);
-			backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
-			frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
-			ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
-			// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
-			// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
-		}
-
 		theEndDirector
 		// snowman jumps
 		.addTween(0, 0.25, snowman.position, {y: 250}, {y: 400}, 'Linear.EaseNone')
@@ -84,6 +74,17 @@ function runTheEndScene() {
 			backlight.color,
 			frontlight.color,
 			ambient.color], null, {h:0, s:0, v:0}, 'Linear.EaseNone', updateLights)
+		.addAction(19, function() {
+			
+			var letters = "It Came Upon".split('');
+			letters.forEach(function(a,b) {
+				typeCharacter(a);
+			});
+			
+			allowCompositing = true;
+			showAbout();
+			
+		})
 		;
 
 		for (var i=0,il= lastTextMesh.children.length;i<il;i++) {

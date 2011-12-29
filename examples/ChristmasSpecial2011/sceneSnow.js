@@ -36,8 +36,6 @@ function setupSnowScene() {
 	renderCallback = renderSnowScene;
 }
 
-
-
 var hoverControls;
 var allowCompositing = !true;
 
@@ -64,6 +62,16 @@ function SunMovements() {
 		light.position.set(lx, ly, lz);
 
 	}
+}
+
+function updateLights() {
+	// Update light colors
+	light.color.setHSV(light.h, light.s, light.v);
+	backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
+	frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
+	ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
+	// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
+	// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
 }
 
 function renderSnowScene() {
@@ -100,6 +108,8 @@ function renderSnowScene() {
 
 
 function initSnowScene() {
+	
+	document.getElementById('snowoptions').style.display = 'inline';
 	// SCENE CAMERA
 
 	camera = new THREE.PerspectiveCamera( 23, TARGET_RATIO, NEAR, FAR );
@@ -521,16 +531,6 @@ function initSnowScene() {
 	var frontview = function() {
 		camera.rotation.set(0, 0, 0);
 	};
-	
-	var updateLights = function() {
-		// Update light colors
-		light.color.setHSV(light.h, light.s, light.v);
-		backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
-		frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
-		ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
-		// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
-		// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
-	}
 	
 	snowSceneDirector	
 	.addTween(0, 10, moveSun, { frontAngle: 0 }, 

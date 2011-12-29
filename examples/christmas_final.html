@@ -2,13 +2,12 @@
 <html lang="en">
 	<head>
 		
-		<title>A Little Christmas Greetings</title>
-
+		<title>It Came Upon</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
-		<meta name="description" content="Realtime Music Visualization using Coloured Particle Systems Trails with Three.js and Audio APIs! "/>
-		<meta name="keywords" content="three.js, sparks.js, webgl, procedural, text, snowman, lens flare, white christmas, jasmid, perlin noise, shadow mapping, particles" />
+		<meta name="description" content="A Little Christmas Greetings. A Short Film in Realtime. Just a Demo."/>
+		<meta name="keywords" content="three.js, sparks.js, webgl, procedural, text, snowman, lens flare, white christmas, jasmid, perlin noise, shadow mapping, particles, 3D" />
 		<meta name="author" content="Joshua Koo" />
 		
 		
@@ -183,6 +182,14 @@
 				*/
 			
 			}
+			
+			#credits {
+				display: none;
+			}
+			
+			#snow {
+				display: none;
+			}
 
 </style>
 	</head>
@@ -191,34 +198,104 @@
 <div class="overlay" id="intro">
 <div class="wrap">
 		<div class="messagebox">
-			<p><h2>Hello!</h2></p>
-			<p>We have prepared an interactive piece of work for you in midst of this festive season.</p>
-			<p>It may require just a little more attention on both you and your computer's resources, so you wish to try reduce some distractions like background videos, music or any other resource hungry applications, even unwanted browser windows...</p>
+			<p><h2>It Came Upon</h2></p>
+			<p>Hello!</p>
+			
+			<p><em>It Came Upon</em> began as an idea for an interactive greetings this Christmas season.</p>
+			<p>This short film will run realtime in your browser utilizing WebGL for 3D graphics, and it might just be a little demanding your computer. Turning down any background music, videos, unwanted tabs and applications might just be a little useful.</p>
 			<p>Hope you enjoy!</p>
-			<p id="startInfoPass">(<span id="stillLoading">Loading music...</span>)</p>
+			<p id="startInfoPass"><span id="stillLoading">Loading...</span></p>
 			<p id="startInfoFail" style="display:none;">Unfortunately, it seems that your browser or machine does not meet the requirements to playback this interactive experience. Please try running <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.getfirefox.net">Firefox</a> on a desktop with updated drives.</p>
-			<p><button onclick="startChristmas();">Start</button>
-		</div>
-</div>
-</div>
+			
+				
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
 
 
 <div class="overlay" id="about">
 <div class="wrap">
 		<div class="messagebox">
 			<p><h2>About</h2></p>
-			<p>This demo would not be possible without mrdoob, alteredq, and all other brilliant people behind and around three.js and webgl.</p>
-			<p></p>
-			Music: <a href="http://www.miditrax.com/xmasmidis.htm">It came upon a midnight clear</a> midi by <a href="mailto:xmas@davel.com">Davel</a>
-
-				particles engine, sparks.js.
-				audio is generate, as well as CSS, glsl etc...
-				<div class="smaller">Created with <a href="https://github.com/mrdoob/three.js/" target="_blank">Three.js</a> + WebGL, <a href="https://github.com/zz85/sparks.js/" target="_blank">Sparks.js</a>HTML5 Goodies</div>
-				<div class="smaller">More write ups and developments on <a href="http://twitter.com/BlurSpline" target="_blank">twitter</a>, <a href="http://www.lab4games.net/zz85/blog" target="_blank">blog</a> and <a href="https://github.com/zz85/" target="_blank">github</a></div>
+			<p>It Came Upon began as an idea for an interactive greetings this Christmas season.</p>
+			
+			<p>For more write ups and developments, stay tuned via <a href="http://twitter.com/BlurSpline" target="_blank">twitter</a>, <a href="http://www.lab4games.net/zz85/blog" target="_blank">blog</a> or <a href="https://github.com/zz85/" target="_blank">github</a>
 			</p>
-		</div>
-</div>
-</div>
+			
+			<p><h3>Share</h3></p>
+			
+			<p>
+				<div>
+
+					<a href='http://twitter.com/share' class='twitter-share-button' data-via='BlurSpline'>Tweet</a><script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
+
+					<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+					<g:plusone size="medium"></g:plusone>
+
+					<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
+					 type="text/javascript">
+					</script>
+
+					<br/>
+					<a name="fb_share" style="border-radius:0;border:0; padding:0; margin:0"></a>
+				</div>
+			</p>
+			<p><button id="returnToStart" onclick="showStart();">Return to Start</button></p>
+			<p><button onclick="showCredits();">Credits</button></p>
+			
+
+
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+
+<div class="overlay" id="credits">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>Credits</h2></p>
+
+			<p><em>Graphics:</em> Most part for this demo is created procedurally. As this demo is heavily dependent on WebGL and shaders, kudos to <a href="http://mrdoob.com/"  target="_blank">mrdoob</a>, <a href="http://alteredqualia.com/"  target="_blank">alteredq</a>, and many others for brilliant work put into the <a href="https://github.com/mrdoob/three.js/"  target="_blank">three.js</a> library.</p>
+			
+			<p>
+				<em>Particles:</em> The <a href="https://github.com/zz85/sparks.js/" target="_blank">Sparks.js</a> particle engine is utilized for snow and text particles. 
+				</p>
+				
+			<p><em>Music:</em> MIDI music used in the background, 
+			<br/><a href="http://www.miditrax.com/xmasmidis.htm" target="_blank">It came upon a midnight clear</a> by <a href="mailto:xmas@davel.com">Davel</a><br/><a href="http://www.christmas-songs.org/midis/silent_night_holy_night.mid" target="_blank">Silent Hight, Holy night</a>
+			</p>
+			<p>
+				<em>Sequencer:</em> Javascript based midi sequencer is based on the <a href="https://github.com/gasman/jasmid" target="_blank">jasmid</a> library, for plugin-free midi playback in browsers.
+			</p>
+
+
+			<p><button onclick="showAbout();">About</button></p>
+
+
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+<div class="overlay" id="snow">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>Pick your snowfall</h2></p>
+
+			<p><button onclick="particleProducer.rate = 0; return false;">No Snow</button></p>
+			<p><button onclick="particleProducer.rate = 10; return false;">Wishing for Snow</button></p>
+			<p><button onclick="particleProducer.rate = 100; return false;">A little Snow</button></p>
+			
+			<p><button onclick="particleProducer.rate = 250; return false;">More Snow</button></p>
+			<p><button onclick="particleProducer.rate = 500; return false;">Plentiful Snow</button></p>
+			<p><button onclick="particleProducer.rate = 1000; return false;">Snow Blizzard</button></p>
+
+			<p><a href="#" onclick="hideAllDialogs(); return false;">Close.</a></p>
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+
+
 
 		<!-- graphics -->
 		<script src="../build/Three.js"></script>
@@ -280,51 +357,29 @@
 		</script>
 		
 		<div id="links">
-			<a href="#" onclick="showAbout(); return false;">Hello.</a>
-			
+			<a href="#" onclick="toggleAboutDialog(); return false;">About</a>
+	
 			|
+			<a id="showStats" href="#" onclick="showFPS(); return false;">Show Stats</a>
+			<!--
 			<a href="#" onclick="bindTextRecording(); return false;">Start Recording.</a>
 			<a href="#" onclick="unbindTextRecording(); return false;">Stop Recording.</a>
 			
 			<a href="#" onclick="playbackRecording(); return false;">Playback Recording.</a>
-			
+			-->
+			|
+			<a id="snowoptions" href="#" onclick="showSnowDialog(); return false;" style="display:none;">Snow Options</a>
 
-			<a href="#" onclick="particleProducer.rate = 0; return false;">No Snow.</a>
-			<a href="#" onclick="particleProducer.rate = 10; return false;">Wishing for Snow.</a>
-			<a href="#" onclick="particleProducer.rate = 100; return false;">A little Snow.</a>
-			<a href="#" onclick="particleProducer.rate = 250; return false;">More Snow.</a>
-			<a href="#" onclick="particleProducer.rate = 500; return false;">Plentiful Snow.</a>
-			<a href="#" onclick="particleProducer.rate = 1000; return false;">Snow Blizzard.</a>
-			<a href="#" onclick="textParticlesProducer.rate = 4000; return false;">Fly Text.</a>
 			
 		</div>
 		
-		<!-- LINKS
+		<!-- SHARE LINKS-->
 	
-	
-	<div>
 
-	<a href='http://twitter.com/share' class='twitter-share-button' data-via='BlurSpline'>Tweet</a><script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
-
-	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-	<g:plusone size="medium"></g:plusone>
-
-	<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
-	 type="text/javascript">
-	</script>
-
-	<br/>
-	<a name="fb_share" style="border-radius:0;border:0; padding:0; margin:0"></a>
-	</div>
-	
-	
-	-->
 	
 		
 		<!-- scene control -->
 		<script src="Director.js"></script>
-		<script src="js/timeline.js"></script>
-		<script src="js/timeline-gui.js"></script>
 		
 		<!-- scenes -->
 		<script src="ChristmasSpecial2011/sceneIntro.js"></script>		
@@ -358,11 +413,9 @@
 
 		</script>
 		<script>
+		
 		startChristmas();
-		
-		
 		loadMusic('ChristmasSpecial2011/music/ItCameUponAMidniteClear.mid');
-		
 		
 		</script>
 		

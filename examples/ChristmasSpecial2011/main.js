@@ -17,7 +17,7 @@ function animate() {
 	requestAnimationFrame( animate );
 
 	render();
-	stats.update();
+	if (stats) stats.update();
 
 }
 
@@ -41,6 +41,8 @@ var renderCallback;
 
 var itemsToLoad = [ 'music' ];
 
+var toggleAbout = false;
+
 function init() {
 	
 	// Setup DOM and Renderers
@@ -54,11 +56,14 @@ function init() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	container.appendChild( renderer.domElement );
 
+}
+
+function showFPS() {
 	stats = new Stats();
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.top = '0px';
 	container.appendChild( stats.domElement );
-
+	document.getElementById('showStats').style.display = 'none';
 }
 
 // actually, do we need to preload? Largest files are three.js ~300kb, font~60kb, and shaders~40kb.
@@ -74,8 +79,23 @@ function preloaded(item) {
 	if (itemsToLoad.length > 0) {
 		document.getElementById('stillLoading').innerHTML = itemsToLoad.join(', ');
 	} else {
-		document.getElementById('stillLoading').innerHTML = 'Load completed';
+		document.getElementById('stillLoading').innerHTML = '<p><button onclick="startChristmas();">Start</button></p>';
+		//Load completed.
 	}
+	
+}
+
+function hideAllDialogs() {
+	var dialogs = document.getElementsByClassName("overlay");
+	
+	for (var i=0; i< dialogs.length;i++) {
+		dialogs[i].style.display = 'none';
+	}
+	
+	// var dialogs = ['intro', 'about'];
+	// dialogs.forEach(function(a,b) {
+	// 	document.getElementById(a).style.display = 'none';
+	// }) 
 	
 }
 
@@ -85,7 +105,10 @@ function startChristmas() {
 		return;
 	}
 	
-	document.getElementById('intro').style.display = 'none';
+	
+	document.getElementById('returnToStart').style.display = 'none';
+	hideAllDialogs();
+	
 	unloadSceneIntro();
 	// playMusic();
 	setupNightScene();
@@ -95,8 +118,36 @@ function startChristmas() {
 	
 }
 
+function showStart() {
+	hideAllDialogs();
+	document.getElementById('intro').style.display = 'table';
+}
+
 function showAbout() {
+	hideAllDialogs();
 	document.getElementById('about').style.display = 'table';
+}
+
+function toggleAboutDialog() {
+
+	if (!toggleAbout) {
+		toggleAbout = true;
+		showAbout();
+	} else {
+		toggleAbout = false;
+		hideAllDialogs();
+	}
+}
+
+function showCredits() {
+	hideAllDialogs();
+	document.getElementById('credits').style.display = 'table';
+	
+}
+
+function showSnowDialog() {
+	hideAllDialogs();
+	document.getElementById('snow').style.display = 'table';
 }
 
 init();
