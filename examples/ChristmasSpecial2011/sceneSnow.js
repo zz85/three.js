@@ -560,7 +560,7 @@ function initSnowScene() {
 	.addTween(0, 4, camera.position, { x: -280,	y: 280, z: -3000},
 		{ x: -280,	y: 280, z: -2600}, 'Linear.EaseNone')
 	.addAction(4.0, function() {
-		console.log('frontview pls!!')
+		// console.log('frontview pls!!')
 		camera.position.set(700, 160, 1900);
 		frontview();
 	})
@@ -653,13 +653,10 @@ function initSnowScene() {
 	})
 	;
 
-	snowSceneDirector.stop();
-	
-	snowSceneDirector = snowSceneDirector2;
-	snowSceneDirector.start();
-
-	
-
+	// snowSceneDirector.stop();
+	// 
+	// snowSceneDirector = snowSceneDirector2;
+	// snowSceneDirector.start();
 	// var i= 0;
 	// setInterval(function(){
 	// 	i++;
