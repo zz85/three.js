@@ -176,9 +176,9 @@ function initSnowScene() {
 
 	// lens flares
 
-	var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare0.png" );
-	var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare2.png" );
-	var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare/lensflare3.png" );
+	var textureFlare0 = THREE.ImageUtils.loadTexture( "textures/lensflare0.png" );
+	var textureFlare2 = THREE.ImageUtils.loadTexture( "textures/lensflare2.png" );
+	var textureFlare3 = THREE.ImageUtils.loadTexture( "textures/lensflare3.png" );
 
 	// FLARES
 	//var frontlight;
@@ -627,7 +627,7 @@ function initSnowScene() {
 		
 	.addTween(20, 4, camera, {lens: 50}, {lens: 100}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
 	.addAction(20, function() {
-		loadMusic('ChristmasSpecial2011/music/silent_night_holy_night.mid'); // awymngr.mid
+		loadMusic('music/silent_night_holy_night.mid'); // awymngr.mid
 	})
 	.addTween(24, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseInOut') //Linear.EaseNone
 	.addTween(24.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseInOut') //Linear.EaseNone
