@@ -19,7 +19,7 @@ var starTrailMaterials = [];
 var SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_RATIO, TARGET_RATIO, RESIZE_FACTOR,
 	MARGIN, RESIZE_FACTOR;
 	
-var NEAR = 5, FAR = 3000;
+var NEAR = 5, FAR = 3500;
 
 var auroraPlane;
 var auroraGenerator;

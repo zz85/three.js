@@ -12,6 +12,24 @@ var cameraBaseX, cameraBaseY, cameraBaseZ;
 
 var windEffect;
 
+function runMyRecording() {
+	
+	lastTextMesh = new THREE.Object3D();
+	allwords = [];
+	newTextLine();
+	scene.add(lastTextMesh);
+	
+	cameraBaseX = camera.position.x;
+	cameraBaseY = camera.position.y;
+	cameraBaseZ = camera.position.z;
+	
+	
+	recorder = new Recorder();
+	recorder._recordings = (myrecording);
+	
+	playbackRecording();
+}
+
 function bindTextRecording() {
 	
 	recorder = new Recorder();
@@ -238,7 +256,7 @@ function followCamera() {
 	// camera.position.x = x;
 	// camera.position.y += (y - camera.position.y ) * 0.5;
 	
-	camera.position.x = xpos + Math.random() * 50;
+	camera.position.x = xpos + Math.random() * 50 - 600;
 	camera.position.y = cameraBaseY + (Math.random() - 0.5) * 80;
 	frontlight.position.x = xpos;
 }

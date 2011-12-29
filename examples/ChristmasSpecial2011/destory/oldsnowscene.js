@@ -70,6 +70,14 @@ function renderSnowScene() {
 	
 	// moveSun.update();
 	
+	// Update light colors
+	light.color.setHSV(light.h, light.s, light.v);
+	backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
+	frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
+	ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
+	// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
+	// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
+		
 	var delta = clock.getDelta();
 	
 	
@@ -103,7 +111,7 @@ function initSnowScene() {
 	// SCENE CAMERA
 
 	camera = new THREE.PerspectiveCamera( 23, TARGET_RATIO, NEAR, FAR );
-	// camera.position.set( -280, 280, -3000 ); //700, 50, 1900
+	camera.position.set( 700, 50, 1900 ); //700, 50, 1900
 	
 	controls = new THREE.FirstPersonControls( camera );
 
@@ -135,9 +143,12 @@ function initSnowScene() {
 	scene.add( ambient );
 	
 	backlight = new THREE.PointLight( 0xffffff );  //DirectionalLight
-	backlight.position.set(0, FLOOR + 30, -150);
+	backlight.position.set(0, FLOOR + 30, -100);
 	scene.add(backlight);
 	
+	//PointLight
+
+
 	light = new THREE.SpotLight( 0xffffff ); // Sun light which casts shadows.
 	light.position.set( 0, 1500, 1000 ); // front light
 	
@@ -166,10 +177,14 @@ function initSnowScene() {
 	// FLARES
 	//var frontlight;
 	frontlight = new THREE.PointLight( 0xffffff, 1.0, 4500 );
-	frontlight.position.set( 100,100, 600);
+	frontlight.position.set( 100,100, 600); //300,400, -600 
+	// frontlight.position = pos;
 
 	scene.add( frontlight );
-	// frontlight.color.setHSV( 0.08, 0.825, 0.99 ); // Warmish
+	// earthRotation.add( light );
+
+	frontlight.color.setHSV( 0.08, 0.825, 0.99 ); // Warmish
+	// White 	// addLight( 0.995, 0.025, 0.99, light.position );
 
 	var flareColor = new THREE.Color( 0xffffff );
 	flareColor.copy( frontlight.color );
@@ -505,6 +520,74 @@ function initSnowScene() {
 
 	composer.passes[composer.passes.length-1].renderToScreen = true;
 	
+	
+	//Cubic.EaseInOut Bounce.EaseInOut
+	// anim("Camera Position",camera.position)
+	// 		.to({x: 700, y:50, z:2900},0)
+	// 		.to({x: 700, y:50, z:-1900},5, Timeline.Easing.Cubic.EaseIn);
+
+	// anim("snowman position",camera.position.y).to({"y":100},0).to({"y":1000},1, Timeline.Easing.Cubic.EaseOut).to({"y":100},1, Timeline.Easing.Bounce.EaseOut);
+	// anim("Camera Position",camera.position.x).to({"x":700},0).to({"x":697.8725114754761},2.87, Timeline.Easing.Cubic.EaseIn).to({"x":-200},3.415, Timeline.Easing.Cubic.EaseIn);
+	// anim("Camera Position",camera.position.y).to({"y":100},0).to({"y":150},2.88, Timeline.Easing.Cubic.EaseIn);
+	// anim("Camera Position",camera.position.z).to({"z":2900},0).to({"z":1900},2.88, Timeline.Easing.Cubic.EaseIn);
+	// 
+
+
+	// anim("snowman position",snowman.position)
+	// 		.to({ y: 100},0)
+	// 		.to({ y: 300},1, Timeline.Easing.Cubic.EaseOut) //Bounce -> Goes , end. / EaseInOut
+	// 		.to({ y: 100},1, Timeline.Easing.Bounce.EaseOut);
+	// 
+
+	// anim("Camera Position",camera.position)
+	// 		.to({x: -280,
+	// 			y: 280,
+	// 			z: -3000},0)
+	// 		.to({x: -280,
+	// 			y: 100,
+	// 			z: -1000},8, Timeline.Easing.Linear.None) //Cubic.EaseOut
+	// 		.to({	x: 2665.2575969466884,
+	// 			y: 300.73770261364837,
+	// 			z: 145.81159082687202},5);
+	// 	// -1500 155
+	// anim("Camera Rotation", camera.rotation)
+	// 	.to({x: -Math.PI,
+	// 		y: 0,
+	// 		z: -Math.PI
+	// 		}, 0);
+	// 	// .to({x: -Math.PI,
+	// 	// 		y: 0,
+	// 	// 		z: -Math.PI
+	// 	// 		}, 8)
+	// 	// .to({x:0, y:0, z:0}, 5);
+	// 	
+	// anim("Light", light)
+	// 	.to({h:0.08, s:0.325, v:0}, 0)
+	// 	.to({h:0.08, s:0.325, v:0.8}, 5)
+	// 	.to({h:0.08, s:0, v:0.8}, 5)
+	// 	;
+	// anim("Backlight", backlight)
+	// 	.to({h:0, s:0, v:0}, 0)
+	// 	.to({h:0, s:0, v:0.8}, 5)
+	// 	;
+	// anim("Frontlight", frontlight)
+	// 	.to({h:0, s:0, v:0}, 0)
+	// 	.to({h:0, s:0, v:1}, 5);
+	// 	;
+	// 	//.to({h:0, s:0, v:0}, 0);
+	// anim("Ambientlight", ambient)
+	// 	
+	// 	.to({h:0.08, s:0.325, v:0.2}, 0)
+	// 	.to({h:0.08, s:0.325, v:0.5}, 5);
+		
+		
+	// 
+	// anim("Fog", scene.fog)
+	// 	
+	// 	.to({h:0, s:0, v:0.2}, 0)
+	// 	.to({h:0, s:0, v:0.4}, 5);
+
+		
 	// Timeline.getGlobalInstance().loop(-1); //loop forever
 
 	var orbitTarget = new THREE.Vector3(0, 200,0);
@@ -522,130 +605,161 @@ function initSnowScene() {
 		camera.rotation.set(0, 0, 0);
 	};
 	
-	var updateLights = function() {
-		// Update light colors
-		light.color.setHSV(light.h, light.s, light.v);
-		backlight.color.setHSV(backlight.h, backlight.s, backlight.v);	
-		frontlight.color.setHSV(frontlight.h, frontlight.s, frontlight.v);
-		ambient.color.setHSV(ambient.h, ambient.s, ambient.v);
-		// THREE.ColorUtils.adjustHSV( scene.fog.color, scene.fog.h, scene.fog.s,  scene.fog.v );
-		// scene.fog.color.setHSV( scene.fog.h, scene.fog.s, scene.fog.v );
-	}
-	
-	snowSceneDirector	
-	.addTween(0, 10, moveSun, { frontAngle: 0 }, 
-		{ frontAngle: 0.17 }, 'Linear.EaseNone', moveSun.update) 
-	.addTween(0, 20, renderer, { shadowMapDarkness: 0 }, 
-		{ shadowMapDarkness: 0.3 }, 'Cubic.EaseIn', moveSun.update)
-		
-	.addTween(0, 5, light, {h:0.08, s:0.325, v:0.5}, {h:0.08, s:0.325, v:0.8}, 'Linear.EaseNone', updateLights)
-	.addTween(5, 5, light, null, {h:0.08, s:0, v:0.8}, 'Linear.EaseNone', updateLights)
-	
-	.addTween(0, 10, backlight, { h:0, s:0, v: 0.2 }, { h:0, s:0, v:1 }, 'Linear.EaseNone', updateLights)
-	.addTween(0, 10, frontlight, { h:0, s:0, v:0.2 }, {h:0, s:0, v:1}, 'Linear.EaseNone', updateLights)
-	.addTween(0, 5, ambient, { h:0.08, s:0.0, v:0.2 }, {h:0.08, s:0.325, v:0.5}, 'Linear.EaseNone', updateLights)
-	.addTween(5, 5, ambient, null, {h:0.08, s:0, v:0.8}, 'Linear.EaseNone', updateLights)
-	// 
-	// .addTween(0, 5, scene.fog, { h:1, s:0, v:0.2 }, { h:0, s:0, v:0.8 }, 'Linear.EaseNone')
 	
 	
+	snowSceneDirector
 	.addAction(0, backview)
 	.addTween(0, 4, camera.position, { x: -280,	y: 280, z: -3000},
-		{ x: -280,	y: 280, z: -2600}, 'Linear.EaseNone')
+		{ x: -280,	y: 280, z: -2800}, 'Linear.EaseNone')
 	.addAction(4.0, function() {
 		console.log('frontview pls!!')
-		camera.position.set(700, 160, 1900);
+		camera.position.set(700, 50, 1900);
 		frontview();
 	})
 	.addTween(4, 1.5, camera.position, null,
-		{ x: 700, y: 160, z: 1900 }, 'Always.One')
-	.addTween(5.5, 1, camera.position, null, { x: -600,	y: 160, z: -1700}, 'Always.One')
+		{ x: 700, y: 50, z: 1900 }, 'Always.One')
+	.addTween(5.5, 1, camera.position, null, { x: -600,	y: 80, z: -1700}, 'Always.One')
 	.addTween(5.5, 1, camera.rotation, null, { x:-Math.PI, y:0, z:-Math.PI }, 'Always.One')
 	
 	.addAction(6.5, backview)
-	.addTween(6.5, 3 , camera.position, { x: -280,	y: 280, z: -2800},
+	.addTween(6.5, 2 , camera.position, { x: -280,	y: 280, z: -2800},
 		{ x: -280, y: 240,z: -2400 }, 'Linear.EaseNone')
 		
-	.addAction(9.5, frontview)
-	.addTween(9.5, 0.5, camera.position, null, { x: -397, y: 260, z: 2133}, 'Always.One')
+	.addAction(8.5, frontview)
+	.addTween(8.5, 0.5, camera.position, null, { x: -397, y: 260, z: 2133}, 'Always.One')
 	
 	// Panning
-	.addAction(10.5, backview)
-	.addTween(10.5, 8, camera.position, { x: -1400,y: 200, z: -1490},
+	.addAction(9.5, backview)
+	.addTween(9.5, 8, camera.position, { x: -1400,y: 200, z: -1490},
 		 { x: 1000, y: 200, z: -1490}, 'Quadratic.EaseInOut')
 	
 	// Front view
-	.addAction(18.5, frontview)
-	.addTween(18.5, 0.5, camera.position, null, { x: -152, y: 50, z: 2080}, 'Always.One')
+	.addAction(17.5, frontview)
+	.addTween(17.5, 0.5, camera.position, null, { x: -152, y: 50, z: 2080}, 'Always.One')
 		
-	.addAction(20, function() {
-		snowSceneDirector.stop();
-		
-		snowSceneDirector = snowSceneDirector2;
-		snowSceneDirector.start();
-	})
+	
+	// .addTween(8.5, 5 , camera.position, { x: -280, y: 240,z: -2400 },
+	// 	{x: -280, y: 100, z: -1000}, 'Linear.EaseNone')
 
+
+	
+	.addTween(0, 10, moveSun, { frontAngle: 0 }, 
+		{ frontAngle: 0.15 }, 'Linear.EaseNone', moveSun.update) 
+	.addTween(0, 20, renderer, { shadowMapDarkness: 0 }, 
+		{ shadowMapDarkness: 0.3 }, 'Cubic.EaseIn', moveSun.update)
+		
+	.addTween(0, 5, light, {h:0.08, s:0.325, v:0}, {h:0.08, s:0.325, v:0.8}, 'Linear.EaseNone')
+	.addTween(5, 5, light, null, {h:0.08, s:0, v:0.8}, 'Linear.EaseNone')
+	
+	.addTween(0, 5, backlight, { h:0, s:0, v:0 }, { h:0, s:0, v:1 }, 'Linear.EaseNone')
+	.addTween(0, 5, frontlight, { h:0, s:0, v:0 }, {h:0, s:0, v:1}, 'Linear.EaseNone')
+	.addTween(0, 5, ambient, { h:0.08, s:0.325, v:0.2 }, {h:0.08, s:0.125, v:0.5}, 'Linear.EaseNone')
+	// 
+	// .addTween(0, 5, scene.fog, { h:1, s:0, v:0.2 }, { h:0, s:0, v:0.8 }, 'Linear.EaseNone')
+	
+
+
+	// .addTween(0, 10, hoverControls, {rotation: 0, height: 20, distance: 800}, 
+	// 	{rotation: 0.5, height: 700, distance: 1400}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	// // .addAction(8, function() {
+	// // 	// Setup lens 
+	// // 	camera.setLens(35);
+	// // })
+	// // .addTween(8, 1, camera, null,  
+	// // 	{fov: 63}, 'Cubic.EaseInOut', camera.updateProjectionMatrix)
+	// 
+	// .addTween(2, 10, orbitTarget, null, {y: 300}, 'Linear.EaseNone')
+	// .addTween(12, 6, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
+	// 	
+	// .addTween(4, 12, camera, {lens: 105}, {lens: 50}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
+	// 
+	// .addTween(12, 8, hoverControls, null, 
+	// 	{ rotation: 1, height: 200, distance: 600}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	// .addTween(0, 30, moveSun, null, 
+	// 	{ frontAngle: Math.PI - 0.3}, 'Cubic.EaseInOut', moveSun.update) //Linear.EaseNone
+	// .addTween(20, 4, camera.position, null, 
+	// 	{ y:318, z:1400}, 'Cubic.EaseInOut', function() { // x:-514,
+	// 		camera.lookAt(orbitTarget);
+	// 	}) //Linear.EaseNone
+	// .addTween(22, 2, camera, {lens: 50}, {lens: 70}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
+	// 
+	// .addTween(24, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	// .addTween(24.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	// .addTween(24.5, 0.25, textMesh.scale, null, { y: 0.8 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	// .addTween(25, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addTween(25.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addTween(25.25, 0.25, textMesh.scale, null, { y: 0.25 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addTween(26, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addTween(26.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addTween(26.25, 0.25, textMesh.scale, null, { y: 0 }, 'Bounce.EaseOut') //Linear.EaseNone
+	// .addAction(27, function() { scene.remove(textMesh); particleProducer.rate = 0; })
+	
+	// .addAction(0, function() {
+	// 	// Setup lens 
+	// 	// camera.setLens(108); //105
+	// })
+	// .addAction(2, function() {
+	// 	console.log("Snowman front view");
+	// 	camera.position.set(-152, 50, 2080);
+	// })
+	// .addAction(4, function() {
+	// 	console.log("Snowman front view - zoom out1");
+	// 
+	// 	camera.position.set(-397, 260, 2133);
+	// })
+	// .addAction(6, function() {
+	// 	console.log("Snowman front view - zoom out2");
+	// 	camera.position.set(-514, 218, 2400);
+	// })
+	// .addAction(8, function() {
+	// 	// 
+	// 	console.log("CHRIST");
+	// 	camera.position.set(-350, 162, 1032);
+	// })
+	// .addAction(10, function() {
+	// 	// 
+	// 	console.log("MAS");
+	// 	camera.position.set(510, 161, 1054);
+	// })
+	// .addAction(12, function() {
+	// 	console.log("Snowman Front");
+	// 	camera.position.set(-1360, 230, 1036);
+	// })
+	// .addAction(14, function() {
+	// 	// 
+	// 	console.log("Snowman Back");
+	// 	camera.position.set(-560, 257, -900);
+	// 	camera.position.set(-560, 257, -1200);
+	// 	camera.rotation.set(-Math.PI, 0, Math.PI);
+	// 			// camera.rotation.set(-3, 0, 3.1);
+	// })
+	// .addAction(16, function() {
+	// 	// Snowman Back
+	// 	console.log("Snowman Back");
+	// 
+	// 
+	// })
+	// .addAction(18, function() {
+	// 	// 
+	// 	console.log("Mas Back");
+	// 	camera.position.set(-310, 298, -1445);
+	// })
+	// .addAction(20, function() {
+	// 	// Mas Back
+	// 	console.log("Mas Back2");
+	// 	camera.position.set(-200, 214, -1050);
+	// })
+	// .addAction(22, function() {
+	// 	// 
+	// 	console.log("Snowman Back 2"); //XXX
+	// 	camera.position.set(-1204, 231, -1088);
+	// })
+	// .addAction(28, function() {
+	// 	snowSceneDirector.stop();
+	// })
 	
 	.start();
-
-
-
-
-	snowSceneDirector2 = new THREE.Director();
-
-	snowSceneDirector2
-	.addTween(0, 10, hoverControls, {rotation: 0, height: 20, distance: 1000}, 
-		{rotation: 1.5, height: 700, distance: 1800}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
-	// .addAction(8, function() {
-	// 	// Setup lens 
-	// 	camera.setLens(35);
-	// })
-	// .addTween(8, 1, camera, null,  
-	// 	{fov: 63}, 'Cubic.EaseInOut', camera.updateProjectionMatrix)
 	
-		
-	.addTween(4, 12, camera, {lens: 105}, {lens: 50}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
-	
-	.addTween(12, 8, hoverControls, null, 
-		{ rotation: 2, height: 200, distance: 1000}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
-	.addTween(0, 30, moveSun, null, 
-		{ frontAngle: Math.PI - 0.3}, 'Cubic.EaseInOut', moveSun.update) //Linear.EaseNone
-	.addTween(20, 4, camera.position, null, 
-		{ y:418, z:2100}, 'Cubic.EaseInOut', function() { // x:-514,
-			camera.lookAt(orbitTarget);
-		}) //Linear.EaseNone
-		
-	// .addTween(4, 2, orbitTarget, null, {y: 300}, 'Linear.EaseNone')
-	// .addTween(6, 2, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
-		
-	.addTween(20, 4, camera, {lens: 50}, {lens: 100}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
-	
-	.addTween(24, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseInOut') //Linear.EaseNone
-	.addTween(24.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseInOut') //Linear.EaseNone
-	.addTween(24.5, 0.25, textMesh.scale, null, { y: 0.8 }, 'Cubic.EaseInOut') //Linear.EaseNone
-	.addTween(25, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Bounce.EaseOut') //Linear.EaseNone
-	.addTween(25.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseOut') //Linear.EaseNone
-	.addTween(25.5, 0.25, textMesh.scale, null, { y: 0.25 }, 'Cubic.EaseOut') //Linear.EaseNone
-	.addTween(26, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseOut') //Linear.EaseNone
-	.addTween(26.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Bounce.EaseOut') //Linear.EaseNone
-	.addTween(26.5, 0.24, textMesh.scale, null, { y: 0 }, 'Bounce.EaseOut') //Linear.EaseNone
-	.addAction(27, function() { 
-		scene.remove(textMesh); 
-		particleProducer.rate = 0; 
-		// runMyRecording(); 
-		
-		// frontlight.color.setHex(0xffdd99);
-		frontlight.color.setHSV(0.05, 0.5, 0.8)
-	})
-	;
-
-	snowSceneDirector.stop();
-	
-	snowSceneDirector = snowSceneDirector2;
-	snowSceneDirector.start();
-
-	
-
 	// var i= 0;
 	// setInterval(function(){
 	// 	i++;
