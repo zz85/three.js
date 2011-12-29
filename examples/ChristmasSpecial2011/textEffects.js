@@ -48,7 +48,7 @@ function playbackRecording() {
 
 function newTextLine() {
 	allwords.push(chars);
-	chars = [], xpos = 0;
+	chars = [], xpos = -600;
 }
 
 function refreshText() {
@@ -240,6 +240,7 @@ function followCamera() {
 	
 	camera.position.x = xpos + Math.random() * 50;
 	camera.position.y = cameraBaseY + (Math.random() - 0.5) * 80;
+	frontlight.position.x = xpos;
 }
 
 function typeCharacter(ch) {

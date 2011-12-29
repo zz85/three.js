@@ -50,9 +50,9 @@ function SunMovements() {
 	
 	var me = this;
 	
-	me.frontAngle = 0;
-	me.topAngle = 1.73;
-	me.radius = 1200;
+	me.frontAngle = 0.15;
+	me.topAngle = 1.73; //1.73
+	me.radius = 1400;
 
 	this.update = function() {
 		// frontAngle += 0.025;
@@ -565,8 +565,8 @@ function initSnowScene() {
 	snowSceneDirector = new THREE.Director();
 	
 	snowSceneDirector
-	.addTween(0, 8, hoverControls, {rotation: 0, height: 20, distance: 800}, 
-		{rotation: 1.5, height: 600, distance: 1200}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	.addTween(0, 10, hoverControls, {rotation: 0, height: 20, distance: 800}, 
+		{rotation: 0.5, height: 700, distance: 1400}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
 	// .addAction(8, function() {
 	// 	// Setup lens 
 	// 	camera.setLens(35);
@@ -574,18 +574,31 @@ function initSnowScene() {
 	// .addTween(8, 1, camera, null,  
 	// 	{fov: 63}, 'Cubic.EaseInOut', camera.updateProjectionMatrix)
 	
-	// .addTween(2, 8, orbitTarget, null, {y: 400}, 'Linear.EaseNone')
-	// .addTween(10, 4, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
+	.addTween(2, 10, orbitTarget, null, {y: 300}, 'Linear.EaseNone')
+	.addTween(12, 6, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
 		
-	.addTween(4, 8, camera, {lens: 105}, {lens: 50}, 'Cubic.EaseInOut', function() {camera.setLens(camera.lens);})
+	.addTween(4, 12, camera, {lens: 105}, {lens: 50}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
 	
-	.addTween(10, 8, hoverControls, null, 
-		{ rotation: 3, height: 200, distance: 600}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
+	.addTween(12, 8, hoverControls, null, 
+		{ rotation: 1, height: 200, distance: 600}, 'Cubic.EaseInOut', hoverControls.update) //Linear.EaseNone
 	.addTween(0, 30, moveSun, null, 
 		{ frontAngle: Math.PI - 0.3}, 'Cubic.EaseInOut', moveSun.update) //Linear.EaseNone
-	.addTween(24, 2, camera.position, null, 
-		{ z:-514, y:218, z:1000}, 'Cubic.EaseOut') //Linear.EaseNone
+	.addTween(20, 4, camera.position, null, 
+		{ y:318, z:1400}, 'Cubic.EaseInOut', function() { // x:-514,
+			camera.lookAt(orbitTarget);
+		}) //Linear.EaseNone
+	.addTween(22, 2, camera, {lens: 50}, {lens: 70}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
 	
+	.addTween(24, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	.addTween(24.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	.addTween(24.5, 0.25, textMesh.scale, null, { y: 0.8 }, 'Cubic.EaseInOut') //Linear.EaseNone
+	.addTween(25, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addTween(25.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addTween(25.25, 0.25, textMesh.scale, null, { y: 0.25 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addTween(26, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addTween(26.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addTween(26.25, 0.25, textMesh.scale, null, { y: 0 }, 'Bounce.EaseOut') //Linear.EaseNone
+	.addAction(27, function() { scene.remove(textMesh); particleProducer.rate = 0; })
 	
 	// .addAction(0, function() {
 	// 	// Setup lens 
