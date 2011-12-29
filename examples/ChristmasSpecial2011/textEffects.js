@@ -1,3 +1,11 @@
+/*
+ * Text Particles
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
+
 var chars = [], xpos, allwords = [];
 var recorder;
 var textGeometries = {};

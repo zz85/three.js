@@ -1,3 +1,10 @@
+/*
+ * End Scene Information
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
 function runTheEndScene() {
 	
 		var theEndDirector = new THREE.Director();

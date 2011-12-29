@@ -1,3 +1,11 @@
+/*
+ * Night Sky Scene Information
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
+
 var clear = true;
 var cameraTarget ;
 var solarSystem = new THREE.Object3D();
@@ -6,15 +14,6 @@ var starTrailLayers = 3;
 var starTrailParticles = [];
 var starTrailGeometries = [];
 var starTrailMaterials = [];
-
-// init/setup/load release/teardown|destory/unload render
-
-// Scenes = Sequences? | Timeline > Tween
-// Movie/ Clip / Stage / Library / Director
-// Sequence : Add update clear
-// Effect : init, load, show, hide, update
-
-// Init Load RenderLoop Unload
 
 var SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_RATIO, TARGET_RATIO, RESIZE_FACTOR,
 	MARGIN, RESIZE_FACTOR;

@@ -1,3 +1,11 @@
+/*
+ * Main entrance for "It Came Upon"
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
+
 // First things first, check for WebGL support
 
 if ( !Detector.webgl ) {
@@ -110,10 +118,10 @@ function startChristmas() {
 	hideAllDialogs();
 	
 	unloadSceneIntro();
-	// playMusic();
+	playMusic();
 	setupNightScene();
 	
-	releaseNightScene();
+	// releaseNightScene();
 
 	
 }
@@ -150,7 +158,9 @@ function showSnowDialog() {
 	document.getElementById('snow').style.display = 'table';
 }
 
+
 init();
 setupSceneIntro();
 
 animate();
+loadMusic('music/ItCameUponAMidniteClear.mid');

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		
+		<title>It Came Upon</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" /> 
+		<meta name="description" content="A Little Christmas Greetings. A Short Film in Realtime. Just a Demo."/>
+		<meta name="keywords" content="three.js, sparks.js, webgl, procedural, text, snowman, lens flare, white christmas, jasmid, perlin noise, shadow mapping, particles, 3D" />
+		<meta name="author" content="Joshua Koo" />
+		
+		
+		<style>
+			/*
+			 * CSS for "It Came Upon"
+			 * http://www.lab4games.net/zz85/blog
+			 * @blurspline twitter.com/blurspline
+			 * https://github.com/zz85/
+			 */
+
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family: Helvetica, sans-serif;
+				font-size:14px;
+				text-align:center;
+				color: #fff;
+			}
+
+			a {
+				/*text-decoration: none;*/
+				color: #eee;
+			}
+			
+			a:hover {
+				font-weight: bold;
+				
+				color: #fff;
+			}
+
+			
+			/*
+				Old Html Table Vertical Align Hack
+				for javascript-less overlay dialog display
+				because I couldn't get CSS3 box models to work
+				nicely across webkit and firefox :(
+			*/
+			
+			html {
+				100%; /* Important to work in Firefox Doctype mode!!! */ 
+			}
+			
+			.overlay {
+				position: fixed;
+				
+				z-index: 10;
+				width: 100%;
+				height: 100%;
+				
+				display:table;
+				
+				background: -webkit-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+					
+				background: -moz-radial-gradient(
+					rgba(119, 106, 127, 0.15) 0, 
+					rgba(220, 127, 178, 0.15) 23%, 
+					transparent 66%, 
+					rgba(127, 18, 148, 0.2)  78%
+				
+				);
+				bottom: 0;			
+				left: 0;
+				right: 0;
+				top: 0;
+								
+				overflow: auto;
+				padding: 20px;
+				padding-bottom: 80px;
+			
+
+			}
+			
+			.overlay > .wrap {
+
+				display:table-cell;
+				vertical-align:middle;
+				text-align:center;
+
+			}
+			
+			.messagebox {
+				margin:auto;
+				width: 450px;
+				color: #fff;
+				background-color: rgba(0,0,0,0.6);
+				padding: 30px;
+				opacity: 0.95;
+				
+				border-radius: 10px;
+				-webkit-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+				-moz-box-shadow: 0px 0px 20px rgba(0,0,0,1);
+			}
+			
+			button {
+				border-radius: 10px;
+				padding:10px;
+
+				border: 0;
+				min-width: 100px;
+				
+				background: -moz-linear-gradient(top, 
+					rgba(130, 130, 130, 0.15) 0%, 
+					rgba(120, 120, 120, 0.15) 50%, 
+					rgba(110, 110, 110, 0.15) 50%, 
+					rgba(20, 20, 20, 0.15) 100%);
+				
+				background: -webkit-gradient(linear, 0 0, 0 100%, 
+					color-stop(0, rgba(130, 130, 130, 0.1)), 
+					color-stop(0.5, rgba(120, 120, 120, 0.1)), 
+					color-stop(0.5, rgba(110, 110, 110, 0.1)), 
+					color-stop(1, rgba(10, 10, 10, 0.1))
+				);
+				
+				color: #fff;
+			}
+			
+			button:hover {
+
+				background: -moz-linear-gradient(top, 
+					rgba(130, 130, 130, 0.3) 0%, 
+					rgba(120, 120, 120, 0.3) 50%, 
+					rgba(120, 120, 120, 0.3) 50%, 
+					rgba(20, 20, 20, 0.3) 100%
+				);
+				
+				background: -webkit-gradient(linear, 0 0, 0 100%, 
+					color-stop(0, rgba(130, 130, 130, 0.25)), 
+					color-stop(0.5, rgba(120, 120, 120, 0.2)), 
+					color-stop(0.5, rgba(110, 110, 110, 0.2)), 
+					color-stop(1, rgba(10, 10, 10, 0.25))
+				);
+			}
+			
+			/*
+			
+			border-radius: 15px;
+			padding-left: 10px ;
+			padding-right: 10px ;
+			border: 1px solid grey;
+			color: black;			
+			*/
+			
+			#links {
+				z-index: 100;
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				margin: 10px;
+				/*padding: 10px;*/
+			}
+			
+			#about {
+				z-index: 80;
+				display: none;
+			}
+			
+			#credits {
+				display: none;
+			}
+			
+			#snow {
+				display: none;
+			}
+
+</style>
+	</head>
+	<body>
+
+<div class="overlay" id="intro">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>It Came Upon</h2></p>
+			<p>Hello!</p>
+			
+			<p><em>It Came Upon</em> began as an idea for an interactive greetings this Christmas season.</p>
+			<p>This short film will run realtime in your browser utilizing WebGL for 3D graphics, and it might just be a little demanding your computer. Turning down any background music, videos, unwanted tabs and applications might just be a little useful.</p>
+			<p>Hope you enjoy!</p>
+			<p id="startInfoPass"><span id="stillLoading">Loading...</span></p>
+			<p id="startInfoFail" style="display:none;">Unfortunately, it seems that your browser or machine does not meet the requirements to playback this interactive experience. Please try running <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.getfirefox.net">Firefox</a> on a desktop with updated drives.</p>
+			
+				
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+
+<div class="overlay" id="about">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>About</h2></p>
+			<p>It Came Upon began as an idea for an interactive greetings this Christmas season.</p>
+			
+			<p>For more write ups and developments, stay tuned via <a href="http://twitter.com/BlurSpline" target="_blank">twitter</a>, <a href="http://www.lab4games.net/zz85/blog" target="_blank">blog</a> or <a href="https://github.com/zz85/" target="_blank">github</a>
+			</p>
+			
+			<p><h3>Share</h3></p>
+			
+			<p>
+				<div>
+
+					<a href='http://twitter.com/share' class='twitter-share-button' data-via='BlurSpline'>Tweet</a><script type='text/javascript' src='http://platform.twitter.com/widgets.js'></script>
+
+					<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+					<g:plusone size="medium"></g:plusone>
+
+					<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
+					 type="text/javascript">
+					</script>
+
+					<br/>
+					<a name="fb_share" style="border-radius:0;border:0; padding:0; margin:0"></a>
+				</div>
+			</p>
+			<p><button id="returnToStart" onclick="showStart();">Return to Start</button></p>
+			<p><button onclick="showCredits();">Credits</button></p>
+			
+
+
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+
+<div class="overlay" id="credits">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>Credits</h2></p>
+
+			<p><em>Graphics:</em> Most part for this demo is created procedurally. As this demo is heavily dependent on WebGL and shaders, kudos to <a href="http://mrdoob.com/"  target="_blank">mrdoob</a>, <a href="http://alteredqualia.com/"  target="_blank">alteredq</a>, and many others for brilliant work put into the <a href="https://github.com/mrdoob/three.js/"  target="_blank">three.js</a> library.</p>
+			
+			<p>
+				<em>Particles:</em> The <a href="https://github.com/zz85/sparks.js/" target="_blank">Sparks.js</a> particle engine is utilized for snow and text particles. 
+				</p>
+				
+			<p><em>Music:</em> MIDI music used in the background, 
+			<br/><a href="http://www.miditrax.com/xmasmidis.htm" target="_blank">It came upon a midnight clear</a> by <a href="mailto:xmas@davel.com">Davel</a><br/><a href="http://www.christmas-songs.org/midis/silent_night_holy_night.mid" target="_blank">Silent Hight, Holy night</a>
+			</p>
+			<p>
+				<em>Sequencer:</em> Javascript based midi sequencer is based on the <a href="https://github.com/gasman/jasmid" target="_blank">jasmid</a> library, for plugin-free midi playback in browsers.
+			</p>
+
+
+			<p><button onclick="showAbout();">About</button></p>
+
+
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+<div class="overlay" id="snow">
+<div class="wrap">
+		<div class="messagebox">
+			<p><h2>Pick your snowfall</h2></p>
+
+			<p><button onclick="particleProducer.rate = 0; return false;">No Snow</button></p>
+			<p><button onclick="particleProducer.rate = 10; return false;">Wishing for Snow</button></p>
+			<p><button onclick="particleProducer.rate = 100; return false;">A little Snow</button></p>
+			
+			<p><button onclick="particleProducer.rate = 250; return false;">More Snow</button></p>
+			<p><button onclick="particleProducer.rate = 500; return false;">Plentiful Snow</button></p>
+			<p><button onclick="particleProducer.rate = 1000; return false;">Snow Blizzard</button></p>
+
+			<p><a href="#" onclick="hideAllDialogs(); return false;">Close.</a></p>
+		</div><!-- end message box-->
+</div><!-- end wrap-->
+</div><!-- end overlay -->
+
+
+
+
+		<!-- graphics -->
+		<script src="Three.js"></script>
+		
+		<script src="helvetiker_bold.typeface.js"></script>		
+		
+		<script src="Detector.js"></script>
+		<script src="Stats.js"></script>
+		
+		<script src="SimplexNoise.js"></script>
+		
+		<script src="Tween.js"></script>
+		<script src="Sparks.js"></script>
+		
+		
+		<!-- shaders -->
+		<script src="ShaderExtras.js"></script>
+		<script src="EffectComposer.js"></script>
+		<script src="RenderPass.js"></script>
+		<script src="ShaderPass.js"></script>
+		<script src="MaskPass.js"></script>
+		
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+			attribute float size;
+			attribute vec3 pcolor;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vColor = pcolor;
+
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = size * ( 200.0 / length( mvPosition.xyz ) );
+
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform sampler2D texture;
+
+			varying vec3 vColor;
+
+			void main() {
+
+				vec4 outColor = texture2D( texture, gl_PointCoord );
+
+				gl_FragColor = outColor * vec4( vColor, 1.0 );
+
+			}
+
+		</script>
+		
+		<div id="links">
+			<a href="#" onclick="toggleAboutDialog(); return false;">About</a>
+	
+			|
+			<a id="showStats" href="#" onclick="showFPS(); return false;">Show Stats</a>
+			<!--
+			<a href="#" onclick="bindTextRecording(); return false;">Start Recording.</a>
+			<a href="#" onclick="unbindTextRecording(); return false;">Stop Recording.</a>
+			
+			<a href="#" onclick="playbackRecording(); return false;">Playback Recording.</a>
+			-->
+			|
+			<a id="snowoptions" href="#" onclick="showSnowDialog(); return false;" style="display:none;">Snow Options</a>
+
+			
+		</div>
+		
+		<!-- SHARE LINKS-->
+	
+
+	
+		
+		<!-- scene control -->
+		<script src="Director.js"></script>
+		
+		<!-- scenes -->
+		<script src="sceneIntro.js"></script>		
+		<script src="sceneNightsky.js"></script>
+		<script src="sceneSnow.js"></script>
+		<script src="sceneEnd.js"></script>
+		<script src="myrecording2b.js"></script>
+		<script src="textEffects.js"></script>
+		
+		<!-- music -->
+		<script src="stream.js"></script>
+		<script src="midifile.js"></script>
+		<script src="replayer.js"></script>
+		<script src="synth.js"></script>
+		<script src="audio.js"></script>
+		<script src="music.js"></script>
+		
+		
+		<script src="main.js"></script>
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-7549263-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+
+		
+	</body>
+</html>

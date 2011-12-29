@@ -1,3 +1,11 @@
+/*
+ * Teaser Starfield Scene Information
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
+
 var starFieldLength = 2000;
 var starFieldsCount = 3;
 var starFields = new THREE.Object3D();

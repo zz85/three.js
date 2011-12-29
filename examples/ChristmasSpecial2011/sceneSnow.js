@@ -1,3 +1,10 @@
+/*
+ * The Main Snow Scene 
+ * http://www.lab4games.net/zz85/blog
+ * @blurspline twitter.com/blurspline
+ * https://github.com/zz85/
+ */
+
 var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 var FLOOR = 0;
 
