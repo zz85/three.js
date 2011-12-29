@@ -648,8 +648,8 @@ function initSnowScene() {
 
 	snowSceneDirector.stop();
 	
-	// snowSceneDirector = snowSceneDirector2;
-	// snowSceneDirector.start();
+	snowSceneDirector = snowSceneDirector2;
+	snowSceneDirector.start();
 
 	
 
