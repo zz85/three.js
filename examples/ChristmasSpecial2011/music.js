@@ -24,8 +24,6 @@ function loadMusic(file) {
 	loadRemote(file, function(data) {
 		midiFile = MidiFile(data);
 		musicReady(midiFile);
-		//midiFile.tracks[2][0].programNumber = 39;
-		
 	});
 }
 

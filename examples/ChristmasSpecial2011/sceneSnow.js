@@ -544,7 +544,7 @@ function initSnowScene() {
 	.addTween(0, 10, backlight, { h:0, s:0, v: 0.2 }, { h:0, s:0, v:1 }, 'Linear.EaseNone', updateLights)
 	.addTween(0, 10, frontlight, { h:0, s:0, v:0.2 }, {h:0, s:0, v:1}, 'Linear.EaseNone', updateLights)
 	.addTween(0, 5, ambient, { h:0.08, s:0.0, v:0.2 }, {h:0.08, s:0.325, v:0.5}, 'Linear.EaseNone', updateLights)
-	.addTween(5, 5, ambient, null, {h:0.08, s:0, v:0.8}, 'Linear.EaseNone', updateLights)
+	.addTween(5, 5, ambient, null, {h:0.08, s:0, v:0.6}, 'Linear.EaseNone', updateLights)
 	// 
 	// .addTween(0, 5, scene.fog, { h:1, s:0, v:0.2 }, { h:0, s:0, v:0.8 }, 'Linear.EaseNone')
 	
@@ -632,17 +632,22 @@ function initSnowScene() {
 	.addAction(27, function() { 
 		scene.remove(textMesh); 
 		particleProducer.rate = 0; 
-		// runMyRecording(); 
+		
 		
 		// frontlight.color.setHex(0xffdd99);
 		frontlight.color.setHSV(0.05, 0.5, 0.8)
+		loadMusic('ChristmasSpecial2011/music/awymngr.mid');
+	})
+	.addAction(28.5, function() { 
+		runMyRecording();
+		playMusic();
 	})
 	;
 
-	snowSceneDirector.stop();
-	
-	snowSceneDirector = snowSceneDirector2;
-	snowSceneDirector.start();
+	// snowSceneDirector.stop();
+	// 
+	// snowSceneDirector = snowSceneDirector2;
+	// snowSceneDirector.start();
 
 	
 

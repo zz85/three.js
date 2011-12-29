@@ -291,7 +291,11 @@ function recordEventHandler(event) {
 		case 'type':
 			typeCharacter(event.character);
 			break;
-
+		case 'snow':
+			particleProducer.rate = event.value;
+			break;
+		case 'theend':
+			break;
 	}
 	
 }

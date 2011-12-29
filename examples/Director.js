@@ -212,7 +212,8 @@ THREE.Director.prototype.applyActions = function(currentTime, lastTime) {
 	// get all start time and end times in seconds
 	var i, stage = this._actions, action;
     
-	for (i=stage.length; i--; ) { 
+	// for (i=stage.length; i--; ) { 
+	for (i=0, il=stage.length; i<il;i++) {
 		action = stage[i];
    		if (action.time > lastTime && action.time<= currentTime) {
 			action.action();
