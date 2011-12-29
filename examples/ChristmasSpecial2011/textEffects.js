@@ -69,22 +69,6 @@ function newTextLine() {
 	chars = [], xpos = -600;
 }
 
-function refreshText() {
-
-	console.log("chars", chars);
-	
-	return;
-	
-	
-	xpos = 0;
-	chars.forEach(function(a,b) {
-		getTextMesh(a);
-	});
-		
-
-}
-
-
 
 function initTextParticles() {
 	var onParticleCreated = function( p ) {
@@ -173,14 +157,12 @@ function typeBackspace() {
 	}
 	
 	followCamera();
-	
-	refreshText();
+
 }
 
 var h = 0.1135;
 
 function typeEnter() {
-	refreshText();
 	
 	// Turn to particles.
 	particleCount = 500; // 20 fps 20k
@@ -274,12 +256,11 @@ function typeCharacter(ch) {
 	
 	followCamera();
 
-	refreshText();
 }
 
 function recordEventHandler(event) {
 	
-	console.log('recordEventHandler', event);
+	// console.log('recordEventHandler', event);
 	
 	switch (event.action) {
 		case 'backspace':
@@ -295,6 +276,7 @@ function recordEventHandler(event) {
 			particleProducer.rate = event.value;
 			break;
 		case 'theend':
+			runTheEndScene();
 			break;
 	}
 	

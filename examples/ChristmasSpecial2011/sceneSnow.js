@@ -619,7 +619,9 @@ function initSnowScene() {
 	// .addTween(6, 2, orbitTarget, null, {y: 200}, 'Linear.EaseNone')	
 		
 	.addTween(20, 4, camera, {lens: 50}, {lens: 100}, 'Linear.EaseNone', function() {camera.setLens(camera.lens);})
-	
+	.addAction(20, function() {
+		loadMusic('ChristmasSpecial2011/music/silent_night_holy_night.mid'); // awymngr.mid
+	})
 	.addTween(24, 0.5, textMesh.position, null, { y: FLOOR + 60 }, 'Cubic.EaseInOut') //Linear.EaseNone
 	.addTween(24.5, 0.25, textMesh.position, null, { y: FLOOR + 10 }, 'Cubic.EaseInOut') //Linear.EaseNone
 	.addTween(24.5, 0.25, textMesh.scale, null, { y: 0.8 }, 'Cubic.EaseInOut') //Linear.EaseNone
@@ -636,7 +638,7 @@ function initSnowScene() {
 		
 		// frontlight.color.setHex(0xffdd99);
 		frontlight.color.setHSV(0.05, 0.5, 0.8)
-		loadMusic('ChristmasSpecial2011/music/awymngr.mid');
+		
 	})
 	.addAction(28.5, function() { 
 		runMyRecording();
@@ -644,8 +646,8 @@ function initSnowScene() {
 	})
 	;
 
-	// snowSceneDirector.stop();
-	// 
+	snowSceneDirector.stop();
+	
 	// snowSceneDirector = snowSceneDirector2;
 	// snowSceneDirector.start();
 
