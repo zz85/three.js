@@ -9,6 +9,7 @@ function musicReady(midifile) {
 }
 
 function playMusic() {
+	stopMusic();
 	if (replayer) {
 		audio = AudioPlayer(replayer);
 	}
