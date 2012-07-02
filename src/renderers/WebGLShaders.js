@@ -1076,6 +1076,8 @@ THREE.ShaderChunk = {
 
 			"varying vec4 vShadowCoord[ MAX_SHADOWS ];",
 
+			"uniform float uLinearDepthConstant;",
+
 			"float unpackDepth( const in vec4 rgba_depth ) {",
 
 				"const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
@@ -1113,6 +1115,8 @@ THREE.ShaderChunk = {
 			"for( int i = 0; i < MAX_SHADOWS; i ++ ) {",
 
 				"vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;",
+
+				"shadowCoord.z *= uLinearDepthConstant;", //length(vWorldVertex.xyz - Light[0].Position) * 
 
 				// "if ( something && something )" 		 breaks ATI OpenGL shader compiler
 				// "if ( all( something, something ) )"  using this instead
@@ -1940,9 +1944,12 @@ THREE.ShaderLib = {
 
 			"}",
 
+			"uniform float uLinearDepthConstant;",
+
 			"void main() {",
 
-				"gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );",
+				// "gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );",
+				"gl_FragData[ 0 ] = pack_depth( length(gl_FragCoord.z) * uLinearDepthConstant );",
 
 				//"gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z / gl_FragCoord.w );",
 				//"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );",

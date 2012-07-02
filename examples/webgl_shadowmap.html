@@ -32,6 +32,8 @@
 		</div>
 
 		<script src="../build/Three.js"></script>
+		<script src="../src/renderers/WebGLShaders.js"></script>
+<script src="../src/extras/renderers/plugins/ShadowMapPlugin.js"></script>
 
 		<script src="js/ShaderExtras.js"></script>
 
@@ -422,8 +424,8 @@
 
 				// Render debug HUD with shadow map
 
-				//hudMaterial.uniforms.tDiffuse.texture = light.shadowMap;
-				//renderer.render( sceneHUD, cameraOrtho );
+				hudMaterial.uniforms.tDiffuse.texture = light.shadowMap;
+				renderer.render( sceneHUD, cameraOrtho );
 
 			}
 

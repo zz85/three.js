@@ -21,6 +21,8 @@ THREE.ShadowMapPlugin = function ( ) {
 
 		var depthShader = THREE.ShaderLib[ "depthRGBA" ];
 		var depthUniforms = THREE.UniformsUtils.clone( depthShader.uniforms );
+		console.log("mod ShadowMapPlugin")
+		depthUniforms["uLinearDepthConstant"] = { type: "f", value: 1 };
 
 		_depthMaterial = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms } );
 		_depthMaterialMorph = new THREE.ShaderMaterial( { fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader, uniforms: depthUniforms, morphTargets: true } );
@@ -125,6 +127,11 @@ THREE.ShadowMapPlugin = function ( ) {
 			}
 
 		}
+
+		// console.log
+		// console.log(camera.far, camera.near);
+		_depthMaterial.uniforms["uLinearDepthConstant"].value = 1.0 / (camera.far - camera.near);
+
 
 		// render depth map
 
