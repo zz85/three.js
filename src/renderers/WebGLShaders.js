@@ -1017,7 +1017,9 @@ THREE.ShaderChunk = {
 
 			"morphed += position;",
 
-			"gl_Position = projectionMatrix * modelViewMatrix * vec4( morphed, 1.0 );",
+			"mvPosition = modelViewMatrix * vec4( morphed, 1.0 );",
+
+			"gl_Position = projectionMatrix * mvPosition;",
 
 		"#endif"
 
@@ -1112,11 +1114,14 @@ THREE.ShaderChunk = {
 			"float fDepth;",
 			"vec3 shadowColor = vec3( 1.0 );",
 
+			// Start calculating shadow ammount
 			"for( int i = 0; i < MAX_SHADOWS; i ++ ) {",
 
 				"vec3 shadowCoord = vShadowCoord[ i ].xyz / vShadowCoord[ i ].w;",
 
-				"shadowCoord.z *= uLinearDepthConstant;", //length(vWorldVertex.xyz - Light[0].Position) * 
+				// This is fail.
+				// We need length(varyingWorldVertex - lightPosition) * linear
+				"shadowCoord.z = length(-spotLightPosition[i]) * uLinearDepthConstant;",
 
 				// "if ( something && something )" 		 breaks ATI OpenGL shader compiler
 				// "if ( all( something, something ) )"  using this instead
@@ -1921,9 +1926,11 @@ THREE.ShaderLib = {
 
 			THREE.ShaderChunk[ "morphtarget_pars_vertex" ],
 
+			"varying vec4 mvPosition;",
+
 			"void main() {",
 
-				"vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+				"mvPosition = modelViewMatrix * vec4( position, 1.0 );",
 
 				THREE.ShaderChunk[ "morphtarget_vertex" ],
 				THREE.ShaderChunk[ "default_vertex" ],
@@ -1944,12 +1951,14 @@ THREE.ShaderLib = {
 
 			"}",
 
+			"varying vec4 mvPosition;",
 			"uniform float uLinearDepthConstant;",
 
 			"void main() {",
 
 				// "gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z );",
-				"gl_FragData[ 0 ] = pack_depth( length(gl_FragCoord.z) * uLinearDepthConstant );",
+				// Z -> linear Z
+				"gl_FragData[ 0 ] = pack_depth( length(mvPosition) * uLinearDepthConstant );",
 
 				//"gl_FragData[ 0 ] = pack_depth( gl_FragCoord.z / gl_FragCoord.w );",
 				//"float z = ( ( gl_FragCoord.z / gl_FragCoord.w ) - 3.0 ) / ( 4000.0 - 3.0 );",

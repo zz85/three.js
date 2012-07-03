@@ -128,10 +128,6 @@ THREE.ShadowMapPlugin = function ( ) {
 
 		}
 
-		// console.log
-		// console.log(camera.far, camera.near);
-		_depthMaterial.uniforms["uLinearDepthConstant"].value = 1.0 / (camera.far - camera.near);
-
 
 		// render depth map
 
@@ -155,10 +151,16 @@ THREE.ShadowMapPlugin = function ( ) {
 				if ( light instanceof THREE.SpotLight ) {
 
 					light.shadowCamera = new THREE.PerspectiveCamera( light.shadowCameraFov, light.shadowMapWidth / light.shadowMapHeight, light.shadowCameraNear, light.shadowCameraFar );
+					// console.log
+					// console.log(camera.far, camera.near);
+					_depthMaterial.uniforms["uLinearDepthConstant"].value = 1.0 / (light.shadowCameraFar - light.shadowCameraNear);
+					console.log(_depthMaterial.uniforms["uLinearDepthConstant"].value, light.shadowCameraFar, light.shadowCameraNear);
+
 
 				} else if ( light instanceof THREE.DirectionalLight ) {
 
 					light.shadowCamera = new THREE.OrthographicCamera( light.shadowCameraLeft, light.shadowCameraRight, light.shadowCameraTop, light.shadowCameraBottom, light.shadowCameraNear, light.shadowCameraFar );
+					_depthMaterial.uniforms["uLinearDepthConstant"].value = 1.0 / (light.shadowCameraFar - light.shadowCameraNear);
 
 				} else {
 
