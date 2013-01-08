@@ -62,6 +62,20 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	// methods
 
+	this.enable = function () {
+
+		_state = STATE.NONE;
+		this.enabled = true;
+
+	}
+
+	this.disable = function () {
+
+		_this.enabled = false;
+		_state = STATE.NONE;
+
+	}
+
 	this.handleResize = function () {
 
 		this.screen.width = window.innerWidth;
