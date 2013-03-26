@@ -11,6 +11,11 @@
 
 
 THREE.BokehShader = {
+	
+	defines: {
+            RINGS: 3,
+            SAMPLES: 4
+        },
 
 	uniforms: {
 
