@@ -555,11 +555,9 @@ THREE.Shape.Utils = {
 
 		for ( var h = 0, hl = holes.length; h < hl; h ++ ) {
 
-			Array.prototype.push.apply( allpoints, holes[ h ] );
+			allpoints.push.apply( allpoints, holes[ h ] );
 
 		}
-
-		//console.log( "allpoints",allpoints, allpoints.length );
 
 		// prepare all points map
 
