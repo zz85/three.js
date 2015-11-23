@@ -14,27 +14,8 @@ self.onmessage = function(e) {
 	}
 }
 
-// var xhr = new XMLHttpRequest();
-// xhr.addEventListener("load", reqListener);
-// xhr.open('GET', '../../../build/three.min.js');
-// xhr.send();
-
-// var THREE;
-
-// function reqListener() {
-// 	// console.log(this.responseText);
-// 	THREE = eval(this.responseText);
-
-// 	// console.log(THREE, self.THREE)
-// 	o = new THREE.Object3D();
-// }
-
 importScripts('../../../build/three.min.js');
 importScripts('../../../examples/raytrace_scene.js');
-
-o = new THREE.Object3D();
-
-console.log(o);
 
 /**
  * DOM-less version of Raytracing Renderer
@@ -461,6 +442,7 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 					data[ index ]     = Math.sqrt( pixelColor.r ) * 255;
 					data[ index + 1 ] = Math.sqrt( pixelColor.g ) * 255;
 					data[ index + 2 ] = Math.sqrt( pixelColor.b ) * 255;
+					data[ index + 3 ] = 255;
 
 				}
 
@@ -469,9 +451,17 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 			self.postMessage({
 				blockX: blockX,
 				blockY: blockY,
-				renderered: blockSize,
-				index: index
+				blockSize: blockSize,
+				data: data
 			})
+
+
+			// worker.postMessage(data.buffer, [data.buffer]);
+
+			// data = new Uint8ClampedArray(blockSize * blockSize * 4);
+
+
+
 			// OK Done!
 			// context.putImageData( imagedata, blockX, blockY );
 
@@ -487,19 +477,20 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 					console.log('Absolute time', (Date.now() - reallyThen) / 1000, 's');
 					scope.dispatchEvent( { type: "complete" } );
 					return;
-
 				}
 
 			}
 
-			animationFrameId = requestAnimationFrame( function () {
+			function next () {
 				console.time('render')
 				var then = Date.now();
 				renderBlock( blockX, blockY );
 				timeRendering += Date.now() - then;
 				console.timeEnd('render')
+			}
 
-			} );
+			// animationFrameId = requestAnimationFrame( next );
+			next();
 
 		};
 

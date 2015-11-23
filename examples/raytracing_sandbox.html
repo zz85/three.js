@@ -27,6 +27,26 @@
 				var worker = new Worker('js/renderers/RaytracingWorker.js');
 				worker.onmessage = function(e) {
 					console.log(worker, e);
+
+					var data = e.data;
+
+					if (data.blockSize) {
+						// blockX: 448
+						// blockY: 320
+						// blockSize
+						// renderered: 64
+
+						var d = data.data;
+
+						var imagedata = new ImageData(d, data.blockSize, data.blockSize);
+
+						// console.log(d, imagedata, i);
+
+						renderer.ctx.putImageData( imagedata, data.blockX, data.blockY );
+
+						// renderer.ctx.fillRect( data.blockX, data.blockY, data.blockSize, data.blockSize );
+					}
+
 				}
 				pool.push(worker);
 			}
