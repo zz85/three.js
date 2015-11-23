@@ -38,6 +38,7 @@ THREE.RaytracingRenderer = function ( parameters ) {
 	var objects;
 	var lights = [];
 	var cache = {};
+	var timeRendering = 0;
 
 	var animationFrameId = null;
 
@@ -461,7 +462,8 @@ THREE.RaytracingRenderer = function ( parameters ) {
 				blockY += blockSize;
 
 				if ( blockY >= canvasHeight ) {
-
+					console.log('Total Renderering time', timeRendering / 1000, 's');
+					console.log('Absolute time', (Date.now() - reallyThen) / 1000, 's');
 					scope.dispatchEvent( { type: "complete" } );
 					return;
 
@@ -472,8 +474,11 @@ THREE.RaytracingRenderer = function ( parameters ) {
 			context.fillRect( blockX, blockY, blockSize, blockSize );
 
 			animationFrameId = requestAnimationFrame( function () {
-
+				console.time('render')
+				var then = Date.now();
 				renderBlock( blockX, blockY );
+				timeRendering += Date.now() - then;
+				console.timeEnd('render')
 
 			} );
 
@@ -482,6 +487,7 @@ THREE.RaytracingRenderer = function ( parameters ) {
 	}() );
 
 	this.render = function ( scene, camera ) {
+		reallyThen = Date.now()
 
 		if ( this.autoClear === true ) this.clear();
 
