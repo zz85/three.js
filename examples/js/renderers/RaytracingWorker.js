@@ -448,22 +448,24 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 
 			}
 
+			// self.postMessage({
+			// 	blockX: blockX,
+			// 	blockY: blockY,
+			// 	blockSize: blockSize,
+			// 	// data: data
+			// })
+
+			// Use transferable objects! :)
 			self.postMessage({
+				data: data.buffer,
 				blockX: blockX,
 				blockY: blockY,
 				blockSize: blockSize,
-				data: data
-			})
+			}, [data.buffer]);
 
-
-			// worker.postMessage(data.buffer, [data.buffer]);
-
-			// data = new Uint8ClampedArray(blockSize * blockSize * 4);
-
-
+			data = new Uint8ClampedArray(blockSize * blockSize * 4);
 
 			// OK Done!
-			// context.putImageData( imagedata, blockX, blockY );
 
 			blockX += blockSize;
 

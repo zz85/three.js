@@ -23,28 +23,26 @@
 			var WORKERS = 1;
 			var pool = [];
 
+			var lastData;
+
 			for (var i = 0; i < WORKERS; i++) {
 				var worker = new Worker('js/renderers/RaytracingWorker.js');
 				worker.onmessage = function(e) {
-					console.log(worker, e);
-
 					var data = e.data;
 
+					if (!data) return;
+
 					if (data.blockSize) {
-						// blockX: 448
-						// blockY: 320
-						// blockSize
-						// renderered: 64
+
+						lastData = data;
 
 						var d = data.data;
-
-						var imagedata = new ImageData(d, data.blockSize, data.blockSize);
+						var imagedata = new ImageData(new Uint8ClampedArray(d), lastData.blockSize, lastData.blockSize);
 
 						// console.log(d, imagedata, i);
+						renderer.ctx.putImageData( imagedata, lastData.blockX, lastData.blockY );
 
-						renderer.ctx.putImageData( imagedata, data.blockX, data.blockY );
-
-						// renderer.ctx.fillRect( data.blockX, data.blockY, data.blockSize, data.blockSize );
+						// renderer.ctx.fillRect( lastData.blockX, lastData.blockY, lastData.blockSize, lastData.blockSize );
 					}
 
 				}
