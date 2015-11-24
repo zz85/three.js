@@ -1,12 +1,35 @@
 self.postMessage('hi!');
 
+var workers, worker;
+var BLOCK = 64;
+var startX, startY, division, completed = 0;
+
 self.onmessage = function(e) {
 	var data = e.data;
 	if (!data) return;
 
 	if (data.init) {
 		console.log('init')
-		initScene(data.init[0], data.init[1]);
+		var
+			width = data.init[0],
+			height = data.init[1];
+
+		initScene(width, height);
+		worker = data.worker;
+		workers = data.workers;
+
+		console.log(workers);
+
+		var xblocks = Math.ceil(width / BLOCK);
+		var yblocks = Math.ceil(height / BLOCK);
+
+		division = Math.ceil(xblocks * yblocks / workers);
+
+		var start = division * worker;
+		startX = (start % xblocks) * BLOCK;
+		startY = (start / xblocks | 0) * BLOCK;
+
+		console.log(xblocks, yblocks, startX, startY);
 	}
 
 	if (data.render) {
@@ -21,6 +44,7 @@ importScripts('../../../examples/raytrace_scene.js');
  * DOM-less version of Raytracing Renderer
  * @author mrdoob / http://mrdoob.com/
  * @author alteredq / http://alteredqualia.com/
+ * @author zz95 / http://github.com/zz85
  */
 
 THREE.RaytracingRenderer =
@@ -452,7 +476,7 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 			// 	blockX: blockX,
 			// 	blockY: blockY,
 			// 	blockSize: blockSize,
-			// 	// data: data
+			// 	data: data
 			// })
 
 			// Use transferable objects! :)
@@ -469,19 +493,24 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 
 			blockX += blockSize;
 
+			completed++;
+
 			if ( blockX >= canvasWidth ) {
 
 				blockX = 0;
 				blockY += blockSize;
 
-				if ( blockY >= canvasHeight ) {
-					console.log('Total Renderering time', timeRendering / 1000, 's');
-					console.log('Absolute time', (Date.now() - reallyThen) / 1000, 's');
-					scope.dispatchEvent( { type: "complete" } );
-					return;
-				}
-
 			}
+
+			console.log('completed', completed, '/', division)
+
+			if ( blockY >= canvasHeight || completed === division ) {
+				console.log('Total Renderering time', timeRendering / 1000, 's');
+				console.log('Absolute time', (Date.now() - reallyThen) / 1000, 's');
+				scope.dispatchEvent( { type: "complete" } );
+				return;
+			}
+
 
 			function next () {
 				console.time('render')
@@ -555,7 +584,7 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 
 		} );
 
-		renderBlock( 0, 0 );
+		renderBlock( startX, startY );
 
 	};
 

@@ -20,7 +20,7 @@
 
 		<script>
 
-			var WORKERS = 1;
+			var WORKERS = 4;
 			var pool = [];
 
 			var lastData;
@@ -56,7 +56,7 @@
 			var torus, cube;
 
 			init();
-			// render();
+			render();
 
 			function init() {
 
@@ -77,9 +77,11 @@
 				renderer = new THREE.RaytracingWorkerRenderer();
 				renderer.setClearColor( 0xf0f0f0 );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				pool.forEach(function(p) {
+				pool.forEach(function(p, i) {
 					p.postMessage({
-						init: [ window.innerWidth, window.innerHeight]
+						init: [ window.innerWidth, window.innerHeight],
+						worker: i,
+						workers: pool.length
 					})
 				})
 
