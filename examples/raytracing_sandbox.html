@@ -43,6 +43,8 @@
 						renderer.ctx.putImageData( imagedata, lastData.blockX, lastData.blockY );
 
 						// renderer.ctx.fillRect( lastData.blockX, lastData.blockY, lastData.blockSize, lastData.blockSize );
+					} else if (data.type == 'complete') {
+						// TODO can terminate worker here or schedule more other jobs...
 					}
 
 				}

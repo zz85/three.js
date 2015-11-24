@@ -1,5 +1,3 @@
-self.postMessage('hi!');
-
 var workers, worker;
 var BLOCK = 128;
 var startX, startY, division, completed = 0;
@@ -508,6 +506,10 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 				console.log('Total Renderering time', timeRendering / 1000, 's');
 				console.log('Absolute time', (Date.now() - reallyThen) / 1000, 's');
 				scope.dispatchEvent( { type: "complete" } );
+				self.postMessage({
+					type: 'complete',
+					time: Date.now() - reallyThen
+				});
 				return;
 			}
 
