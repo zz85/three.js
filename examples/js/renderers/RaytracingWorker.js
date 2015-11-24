@@ -1,7 +1,7 @@
 self.postMessage('hi!');
 
 var workers, worker;
-var BLOCK = 64;
+var BLOCK = 128;
 var startX, startY, division, completed = 0;
 
 self.onmessage = function(e) {
@@ -438,7 +438,7 @@ THREE.RaytracingRendererWorker = function ( parameters ) {
 
 	var renderBlock = ( function () {
 
-		var blockSize = 64;
+		var blockSize = BLOCK;
 
 		var data = new Uint8ClampedArray(blockSize * blockSize * 4);
 
