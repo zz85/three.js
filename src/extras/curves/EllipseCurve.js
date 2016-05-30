@@ -14,7 +14,7 @@ THREE.EllipseCurve = function ( aX, aY, xRadius, yRadius, aStartAngle, aEndAngle
 	this.aEndAngle = aEndAngle;
 
 	this.aClockwise = aClockwise;
-	
+
 	this.aRotation = aRotation || 0;
 
 };
@@ -24,35 +24,18 @@ THREE.EllipseCurve.prototype.constructor = THREE.EllipseCurve;
 
 THREE.EllipseCurve.prototype.getPoint = function ( t ) {
 
-	// Calculate deltaAngle just once.
 	var twoPi = Math.PI * 2;
+	var deltaAngle = this.aEndAngle - this.aStartAngle;
 
-    var deltaAngle = this.aEndAngle - this.aStartAngle;
-    var samePoints = Math.abs( deltaAngle ) < Number.EPSILON;
-
-    // ensures that deltaAngle is 0 .. 2 PI
+	// ensures that deltaAngle is 0 .. 2 PI
 	while ( deltaAngle < 0 ) deltaAngle += twoPi;
 	while ( deltaAngle > twoPi ) deltaAngle -= twoPi;
 
-    if ( deltaAngle < Number.EPSILON ) {
+	if ( this.aClockwise ) {
 
-		if ( samePoints ) {
+		deltaAngle = deltaAngle - twoPi;
 
-			deltaAngle = 0;
-
-		} else {
-
-			deltaAngle = twoPi;
-
-		}
-
-    }
-
-    if ( this.aClockwise === true && deltaAngle != twoPi && !samePoints ) {
-
-        deltaAngle = deltaAngle - twoPi;
-
-    }
+	}
 
 	var angle = this.aStartAngle + t * deltaAngle;
 	var x = this.aX + this.xRadius * Math.cos( angle );
