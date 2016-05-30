@@ -151,8 +151,7 @@ THREE.Path.prototype = Object.assign( Object.create( THREE.CurvePath.prototype )
 			xRadius, yRadius,
 			aStartAngle, aEndAngle,
 			aClockwise,
-			aRotation || 0, // aRotation is optional.
-			this.curves.length
+			aRotation || 0 // aRotation is optional.
 		];
 
 		var curve = new THREE.EllipseCurve( aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation );
@@ -329,10 +328,9 @@ THREE.Path.prototype = Object.assign( Object.create( THREE.CurvePath.prototype )
 					yRadius = args[ 3 ],
 					aStartAngle = args[ 4 ], aEndAngle = args[ 5 ],
 					aClockwise = !! args[ 6 ],
-					aRotation = args[ 7 ],
-					curveIndex = args[8];
+					aRotation = args[ 7 ];
 
-				var ellipse = this.curves[ curveIndex ];
+				var ellipse = new THREE.EllipseCurve( aX, aY, xRadius, yRadius, aStartAngle, aEndAngle, aClockwise, aRotation );
 
 				for ( var j = 0; j <= divisions; j++ ) {
 
@@ -341,8 +339,6 @@ THREE.Path.prototype = Object.assign( Object.create( THREE.CurvePath.prototype )
 					points.push( ellipse.getPoint( t ) );
 
 				}
-
-				//console.log(points);
 
 				break;
 
